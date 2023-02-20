@@ -23,8 +23,9 @@
 
 using namespace std;
 static const int START_PARAM_INVALID_CODE = 11;
+static const int NOTIFY_INTERVAL_TIME = 1000; //Unit millisecond
 
-void InitDeviceOrientation()
+static void InitDeviceOrientation()
 {
     CommandParser& parser = CommandParser::GetInstance();
     if (parser.GetCompressionResolutionWidth() <= parser.GetCompressionResolutionHeight()) {
@@ -36,7 +37,7 @@ void InitDeviceOrientation()
     }
 }
 
-void InitJsApp()
+static void InitJsApp()
 {
     CommandParser& parser = CommandParser::GetInstance();
     // Initialize Image Pipeline Name
@@ -100,7 +101,7 @@ static void NotifyInspectorChanged()
 static void ProcessCommand()
 {
     static CppTimer inspectorNotifytimer(NotifyInspectorChanged);
-    inspectorNotifytimer.Start(1000); // Notify per second
+    inspectorNotifytimer.Start(NOTIFY_INTERVAL_TIME); // Notify per second
     CppTimerManager::GetTimerManager().AddCppTimer(inspectorNotifytimer);
 
     VirtualScreenImpl::GetInstance().InitFrameCountTimer();
@@ -112,7 +113,7 @@ static void ProcessCommand()
     JsAppImpl::GetInstance().Stop();
 }
 
-void InitSharedData()
+static void InitSharedData()
 {
     CommandParser& parser = CommandParser::GetInstance();
     if (parser.IsSet("l")) {

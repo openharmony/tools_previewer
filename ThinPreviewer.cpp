@@ -28,8 +28,9 @@
 
 using namespace std;
 static const int START_PARAM_INVALID_CODE = 11;
+static const int NOTIFY_INTERVAL_TIME = 1000; //Unit millisecond
 
-void InitSettings()
+static void InitSettings()
 {
     CommandParser& parser = CommandParser::GetInstance();
     // Setting the Simulator Model
@@ -43,7 +44,7 @@ void InitSettings()
     VirtualScreenImpl::GetInstance().InitFrameCountTimer();
 }
 
-void InitJsApp()
+static void InitJsApp()
 {
     CommandParser& parser = CommandParser::GetInstance();
     string args = parser.GetConfigPath();
@@ -83,12 +84,12 @@ void InitJsApp()
     }
 }
 
-void DataChangeCheck()
+static void DataChangeCheck()
 {
     SharedDataManager::CheckTick();
 }
 
-void InitSharedData()
+static void InitSharedData()
 {
     // The brightness ranges from 1 to 255. The default value is 255.
     SharedData<uint8_t>(BRIGHTNESS_VALUE, 255, 1, 255);
@@ -113,7 +114,7 @@ void InitSharedData()
     SharedData<double>(LATITUDE, 0, -90, 90);
 }
 
-void SendJsHeapData()
+static void SendJsHeapData()
 {
     OHOS::ACELite::JSHeapStatus status;
     OHOS::ACELite::JSI::GetJSHeapStatus(status);
@@ -164,7 +165,7 @@ int main(int argc, char* argv[])
     CppTimer jsHeapSendTimer(SendJsHeapData);
     if (parser.IsSendJSHeap()) {
         manager.AddCppTimer(jsHeapSendTimer);
-        jsHeapSendTimer.Start(1000); // 1000ms Timer polling period
+        jsHeapSendTimer.Start(NOTIFY_INTERVAL_TIME); // 1000ms Timer polling period
     }
 
     // Registering and monitoring the changes of the brightness and volume
