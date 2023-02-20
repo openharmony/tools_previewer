@@ -28,7 +28,7 @@
 
 using namespace std;
 static const int START_PARAM_INVALID_CODE = 11;
-static const int NOTIFY_INTERVAL_TIME = 1000; //Unit millisecond
+static const int NOTIFY_INTERVAL_TIME = 1000; // Unit millisecond
 
 static void InitSettings()
 {
