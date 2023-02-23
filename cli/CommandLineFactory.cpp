@@ -26,7 +26,7 @@ CommandLineFactory::CommandLineFactory() {}
 
 using namespace std;
 
-void CommandLineFactory::InitCommandMap()
+static void CommandLineFactory::InitCommandMap()
 {
     CommandParser& cmdParser = CommandParser::GetInstance();
     string deviceType = cmdParser.GetDeviceType();
@@ -99,8 +99,7 @@ unique_ptr<CommandLine> CommandLineFactory::CreateCommandLine(string command,
 }
 
 template <typename T>
-unique_ptr<CommandLine>
-    CommandLineFactory::CreateObject(CommandLine::CommandType type, const Json::Value& args, const LocalSocket& socket)
+unique_ptr<CommandLine> CommandLineFactory::CreateObject(CommandLine::CommandType type, const Json::Value& args, const LocalSocket& socket)
 {
     return make_unique<T>(type, args, socket);
 }
