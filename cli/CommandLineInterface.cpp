@@ -55,7 +55,7 @@ void CommandLineInterface::InitPipe(const string name)
 
 CommandLineInterface& CommandLineInterface::GetInstance()
 {
-    static CommandLineInterface instance;
+    CommandLineInterface instance;
     return instance;
 }
 
