@@ -42,23 +42,23 @@ public:
     void SetJSHeapSize(uint32_t size);
     virtual std::string GetJSONTree();
     virtual std::string GetDefaultJSONTree();
-    virtual void OrientationChanged(std::string);
+    virtual void OrientationChanged(std::string commandOrientation);
     virtual void ResolutionChanged(int32_t, int32_t, int32_t, int32_t, int32_t);
-    virtual void SetArgsColorMode(const std::string& name);
-    virtual void SetArgsAceVersion(const std::string& aceVersion);
+    virtual void SetArgsColorMode(const std::string& value);
+    virtual void SetArgsAceVersion(const std::string& value);
     virtual std::string GetOrientation() const;
     virtual std::string GetColorMode() const;
-    virtual void ColorModeChanged(const std::string);
-    static bool IsLiteDevice(std::string);
+    virtual void ColorModeChanged(const std::string commandColorMode);
+    static bool IsLiteDevice(std::string deviceType);
     virtual void ReloadRuntimePage(const std::string);
-    virtual void SetScreenDensity(const std::string);
-    virtual void SetConfigChanges(const std::string);
+    virtual void SetScreenDensity(const std::string value);
+    virtual void SetConfigChanges(const std::string value);
     virtual bool MemoryRefresh(const std::string) const;
     virtual void LoadDocument(const std::string, const std::string, const Json::Value);
 
 protected:
     JsApp();
-    virtual ~JsApp(){};
+    virtual ~JsApp() {};
     std::string pipeName;
     std::string pipePort;
     std::string jsAppPath;

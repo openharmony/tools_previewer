@@ -66,14 +66,14 @@ bool JsApp::IsLiteDevice(std::string deviceType)
     return true;
 }
 
-void JsApp::SetPipeName(const std::string& value)
+void JsApp::SetPipeName(const std::string& name)
 {
-    pipeName = value;
+    pipeName = name;
 }
 
-void JsApp::SetPipePort(const std::string& value)
+void JsApp::SetPipePort(const std::string& port)
 {
-    pipePort = value;
+    pipePort = port;
 }
 
 void JsApp::SetJsAppPath(const string& value)
@@ -168,9 +168,9 @@ void JsApp::OrientationChanged(std::string commandOrientation)
     orientation = commandOrientation;
 };
 
-void JsApp::ResolutionChanged(int32_t, int32_t, int32_t, int32_t, int32_t){};
+void JsApp::ResolutionChanged(int32_t, int32_t, int32_t, int32_t, int32_t) {};
 
-void JsApp::ReloadRuntimePage(const std::string){};
+void JsApp::ReloadRuntimePage(const std::string) {};
 
 bool JsApp::MemoryRefresh(const std::string) const
 {
