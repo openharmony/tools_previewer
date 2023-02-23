@@ -100,7 +100,7 @@ unique_ptr<CommandLine> CommandLineFactory::CreateCommandLine(string command,
 
 template <typename T>
 unique_ptr<CommandLine> CommandLineFactory::CreateObject(CommandLine::CommandType type,
-                                                        const Json::Value& args, const LocalSocket& socket)
+                                                         const Json::Value& args, const LocalSocket& socket)
 {
     return make_unique<T>(type, args, socket);
 }
