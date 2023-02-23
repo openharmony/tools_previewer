@@ -75,6 +75,6 @@ protected:
     std::string screenDensity;
     std::string configChanges;
 };
-static std::vector<std::string> liteDevice = {"liteWearable", "smartVision"};
+static std::vector<std::string> liteDevice;
 
 #endif // JSAPP_H
