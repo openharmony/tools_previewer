@@ -55,7 +55,7 @@ void CommandLineInterface::InitPipe(const string name)
 
 CommandLineInterface& CommandLineInterface::GetInstance()
 {
-    CommandLineInterface instance;
+    static CommandLineInterface instance; /* NOLINT */
     return instance;
 }
 
@@ -93,7 +93,7 @@ void CommandLineInterface::SendWebsocketStartupSignal() const
 
 void CommandLineInterface::ProcessCommand() const
 {
-    string message;
+    string message; /* NOLINT */
     if (socket == nullptr) {
         ELOG("CommandLineInterface::ProcessCommand socket is null");
         return;
@@ -119,7 +119,7 @@ void CommandLineInterface::ProcessCommandMessage(std::string message) const
     }
 
     Json::Value jsonData;
-    std::string errors;
+    std::string errors; /* NOLINT */
 
     bool parsingSuccessful = reader->parse(message.c_str(), message.c_str() + message.size(), &jsonData, &errors);
     delete reader;
