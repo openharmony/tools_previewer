@@ -21,6 +21,8 @@
 
 using namespace std;
 
+static std::vector<std::string> liteDevice = {"liteWearable", "smartVision"};
+
 JsApp::JsApp()
     : pipeName(""),
       pipePort(""),
