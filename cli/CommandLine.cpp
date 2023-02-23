@@ -986,3 +986,326 @@ void BrightnessCommand::RunSet()
     SetCommandResult("result", result);
     ILOG("Set brightness run finished, the value is: %s", args["Brightness"].asString().c_str());
 }
+
+bool BrightnessCommand::IsSetArgValid() const
+{
+    if (args.isNull() || !args.isMember("Brightness")) {
+        ELOG("Invalid number of arguments!");
+        return false;
+    }
+    if (!std::regex_match(args["Brightness"].asString().data(), std::regex("\\d+"))) {
+        ELOG("Invalid arguments!");
+        return false;
+    }
+    uint8_t temp = ToUint8(args["Brightness"].asString());
+    if (!SharedData<uint8_t>::IsValid(BRIGHTNESS_VALUE, temp)) {
+        ELOG("BrightnessCommand invalid value: ", temp);
+        return false;
+    }
+    return true;
+}
+
+HeartRateCommand::HeartRateCommand(CommandType commandType, const Json::Value& arg, const LocalSocket& socket)
+    : CommandLine(commandType, arg, socket)
+{
+}
+
+void HeartRateCommand::RunGet()
+{
+    Json::Value result;
+    result["HeartRate"] = SharedData<uint8_t>::GetData(HEARTBEAT_VALUE);
+    SetCommandResult("result", result);
+    ILOG("Get heartRate run finished");
+}
+
+void HeartRateCommand::RunSet()
+{
+    SharedData<uint8_t>::SetData(HEARTBEAT_VALUE, static_cast<uint8_t>(atoi(args["HeartRate"].asString().data())));
+    Json::Value result = true;
+    SetCommandResult("result", result);
+    ILOG("Set heartRate run finished, the value is: %s", args["HeartRate"].asString().c_str());
+}
+
+bool HeartRateCommand::IsSetArgValid() const
+{
+    if (args.isNull() || !args.isMember("HeartRate")) {
+        ELOG("Invalid number of arguments!");
+        return false;
+    }
+    if (!std::regex_match(args["HeartRate"].asString().data(), std::regex("\\d+"))) {
+        ELOG("Invalid arguments!");
+        return false;
+    }
+    if (atoi(args["HeartRate"].asString().data()) > UINT8_MAX) {
+        ELOG("Invalid arguments!");
+        return false;
+    }
+    uint8_t temp = ToUint8(args["HeartRate"].asString());
+    if (!SharedData<uint8_t>::IsValid(HEARTBEAT_VALUE, temp)) {
+        ELOG("HeartRateCommand invalid value: %d", temp);
+        return false;
+    }
+    return true;
+}
+
+StepCountCommand::StepCountCommand(CommandType commandType, const Json::Value& arg, const LocalSocket& socket)
+    : CommandLine(commandType, arg, socket)
+{
+}
+
+void StepCountCommand::RunGet()
+{
+    Json::Value result;
+    result["StepCount"] = SharedData<uint32_t>::GetData(SUMSTEP_VALUE);
+    SetCommandResult("result", result);
+    ILOG("Get stepCount run finished");
+}
+
+void StepCountCommand::RunSet()
+{
+    SharedData<uint32_t>::SetData(SUMSTEP_VALUE, static_cast<uint32_t>(atoi(args["StepCount"].asString().data())));
+    Json::Value result = true;
+    SetCommandResult("result", result);
+    ILOG("Set stepCount run finished, the value is: %s", args["StepCount"].asString().c_str());
+}
+
+bool StepCountCommand::IsSetArgValid() const
+{
+    if (args.isNull() || !args.isMember("StepCount")) {
+        ELOG("Invalid number of arguments!");
+        return false;
+    }
+    if (!std::regex_match(args["StepCount"].asString().data(), std::regex("\\d+"))) {
+        ELOG("Invalid arguments!");
+        return false;
+    }
+
+    uint32_t temp = ToUint8(args["StepCount"].asString());
+    if (!SharedData<uint32_t>::IsValid(SUMSTEP_VALUE, temp)) {
+        ELOG("StepCountCommand invalid value: %d", temp);
+        return false;
+    }
+    return true;
+}
+
+InspectorJSONTree::InspectorJSONTree(CommandType commandType, const Json::Value& arg, const LocalSocket& socket)
+    : CommandLine(commandType, arg, socket)
+{
+}
+
+void InspectorJSONTree::RunAction()
+{
+    ILOG("GetJsonTree run!");
+    std::string str = JsAppImpl::GetInstance().GetJSONTree();
+    if (str == "null") {
+        str = "{\"children\":\"empty json tree\"}";
+    }
+    SetCommandResult("result", str);
+    ILOG("SendJsonTree end!");
+}
+
+InspectorDefault::InspectorDefault(CommandType commandType, const Json::Value& arg, const LocalSocket& socket)
+    : CommandLine(commandType, arg, socket)
+{
+}
+
+void InspectorDefault::RunAction()
+{
+    ILOG("GetDefaultJsonTree run!");
+    std::string str = JsAppImpl::GetInstance().GetDefaultJSONTree();
+    SetCommandResult("result", str);
+    ILOG("SendDefaultJsonTree end!");
+}
+
+ExitCommand::ExitCommand(CommandType commandType, const Json::Value& arg, const LocalSocket& socket)
+    : CommandLine(commandType, arg, socket)
+{
+}
+
+void ExitCommand::RunAction()
+{
+    ILOG("ExitCommand run.");
+    Json::Value res = true;
+    SetCommandResult("result", res);
+    SendResult();
+    Interrupter::Interrupt();
+    ILOG("Ready to exit");
+}
+
+DeviceTypeCommand::DeviceTypeCommand(CommandLine::CommandType commandType,
+                                     const Json::Value& arg,
+                                     const LocalSocket& socket)
+    : CommandLine(commandType, arg, socket)
+{
+}
+
+void DeviceTypeCommand::RunSet() {}
+
+ResolutionCommand::ResolutionCommand(CommandLine::CommandType commandType,
+                                     const Json::Value& arg,
+                                     const LocalSocket& socket)
+    : CommandLine(commandType, arg, socket)
+{
+}
+
+void ResolutionCommand::RunSet() {}
+
+BackClickedCommand::BackClickedCommand(CommandLine::CommandType commandType,
+                                       const Json::Value& arg,
+                                       const LocalSocket& socket)
+    : CommandLine(commandType, arg, socket)
+{
+}
+
+void BackClickedCommand::RunAction()
+{
+    MouseInputImpl::GetInstance().DispatchOsBackEvent();
+    ILOG("BackClickCommand run");
+    Json::Value res = true;
+    SetCommandResult("result", res);
+    ILOG("BackClickCommand end");
+}
+
+RestartCommand::RestartCommand(CommandLine::CommandType commandType, const Json::Value& arg, const LocalSocket& socket)
+    : CommandLine(commandType, arg, socket)
+{
+}
+
+void RestartCommand::RunAction()
+{
+    ILOG("RestartCommand start");
+    JsAppImpl::GetInstance().Restart();
+    Json::Value res = true;
+    SetCommandResult("result", res);
+    ILOG("RestartCommand end");
+}
+
+FastPreviewMsgCommand::FastPreviewMsgCommand(CommandType commandType, const Json::Value& arg, const LocalSocket& socket)
+    : CommandLine(commandType, arg, socket)
+{
+}
+
+void FastPreviewMsgCommand::RunGet()
+{
+    Json::Value resultContent;
+    std::string fastPreviewMsg = VirtualScreenImpl::GetInstance().GetFastPreviewMsg();
+    resultContent["FastPreviewMsg"] = fastPreviewMsg;
+    SetResultToManager("args", resultContent, "MemoryRefresh");
+    ILOG("Get FastPreviewMsgCommand run finished.");
+}
+
+DropFrameCommand::DropFrameCommand(CommandType commandType, const Json::Value& arg, const LocalSocket& socket)
+    : CommandLine(commandType, arg, socket)
+{
+}
+
+bool DropFrameCommand::IsSetArgValid() const
+{
+    if (args.isNull() || !args.isMember("frequency") || !args["frequency"].isInt()) {
+        ELOG("Invalid DropFrame of arguments!");
+        return false;
+    }
+    if (args["frequency"].asInt() < 0) {
+        ELOG("DropFrame param frequency must greater than or equal to 0");
+        return false;
+    }
+    return true;
+}
+
+void DropFrameCommand::RunSet()
+{
+    ILOG("Set DropFrame frequency start.");
+    int frequency = args["frequency"].asInt();
+    VirtualScreenImpl::GetInstance().SetDropFrameFrequency(frequency);
+    SetCommandResult("result", true);
+    ILOG("Set DropFrame frequency: %sms.", frequency);
+}
+
+bool KeyPressCommand::IsActionArgValid() const
+{
+    if (args.isNull() || !args.isMember("isInputMethod") || !args["isInputMethod"].isBool()) {
+        ELOG("Param isInputMethod's value is invalid.");
+        return false;
+    }
+    bool isInputMethod = args["isInputMethod"].asBool();
+    if (isInputMethod) {
+        return IsImeArgsValid();
+    } else {
+        return IsKeyArgsValid();
+    }
+}
+
+bool KeyPressCommand::IsImeArgsValid() const
+{
+    if (!args.isMember("codePoint") || !args["codePoint"].isInt()) {
+        ELOG("Param codePoint's value is invalid.");
+        return false;
+    }
+    return true;
+}
+
+bool KeyPressCommand::IsKeyArgsValid() const
+{
+    if (!args.isMember("keyCode") || !args["keyCode"].isInt() || !args["keyAction"].isInt() ||
+        !args.isMember("keyAction") || !args["keyAction"].isInt() ||
+        !args.isMember("pressedCodes") || !args["pressedCodes"].isArray() ||
+        args["pressedCodes"].size() < 1) {
+        ELOG("Param keyEvent's value is invalid.");
+        return false;
+    }
+    if (args["keyAction"].asInt() < minActionVal || args["keyAction"].asInt() > maxActionVal) {
+        ELOG("Param keyAction's value is invalid,value range %d-%d.", minActionVal, maxActionVal);
+        return false;
+    }
+    int keyCode = args["keyCode"].asInt();
+    if (keyCode > maxKeyVal || keyCode < minKeyVal) {
+        ELOG("Param pressedCode value is invalid,value range %d-%d.", minKeyVal, maxKeyVal);
+        return false;
+    }
+    Json::Value arrayNum = args["pressedCodes"];
+    for (unsigned int i = 0; i < arrayNum.size(); i++) {
+        if (!arrayNum[i].isInt()) {
+            ELOG("Param pressedCodes's value is invalid.");
+            return false;
+        }
+        int pressedCode = arrayNum[i].asInt();
+        if (pressedCode > maxKeyVal || pressedCode < minKeyVal) {
+            ELOG("Param pressedCode value is invalid,value range %d-%d.", minKeyVal, maxKeyVal);
+            return false;
+        }
+    }
+    return true;
+}
+
+KeyPressCommand::KeyPressCommand(CommandType commandType, const Json::Value& arg,
+                                 const LocalSocket& socket)
+    : CommandLine(commandType, arg, socket)
+{
+}
+
+void KeyPressCommand::RunAction()
+{
+    if (CommandParser::GetInstance().GetScreenMode() == CommandParser::ScreenMode::STATIC) {
+        return;
+    }
+    bool isInputMethod = args["isInputMethod"].asBool();
+    if (isInputMethod) {
+        VirtualScreen::inputMethodCountPerMinute++;
+        unsigned int codePoint = args["codePoint"].asInt();
+        KeyInputImpl::GetInstance().SetCodePoint(codePoint);
+        KeyInputImpl::GetInstance().DispatchOsInputMethodEvent();
+    } else {
+        VirtualScreen::inputKeyCountPerMinute++;
+        int32_t keyCode = args["keyCode"].asInt();
+        int32_t keyAction = args["keyAction"].asInt();
+        Json::Value pressedCodes = args["pressedCodes"];
+        vector<int32_t> pressedCodesVec;
+        for (unsigned int i = 0; i < pressedCodes.size(); i++) {
+            pressedCodesVec.push_back(pressedCodes[i].asInt());
+        }
+        KeyInputImpl::GetInstance().SetKeyEvent(keyCode, keyAction, pressedCodesVec);
+        KeyInputImpl::GetInstance().DispatchOsKeyEvent();
+    }
+    SetCommandResult("result", true);
+    ILOG("KeyPressCommand run finished.");
+}
