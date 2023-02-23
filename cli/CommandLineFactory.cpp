@@ -21,7 +21,7 @@
 #include "PreviewerEngineLog.h"
 #include "TraceTool.h"
 
-CommandLineFactory::CommandTypeMap CommandLineFactory::typeMap = CommandLineFactory::CommandTypeMap();
+static CommandLineFactory::CommandTypeMap CommandLineFactory::typeMap = CommandLineFactory::CommandTypeMap();
 CommandLineFactory::CommandLineFactory() {}
 
 using namespace std;
