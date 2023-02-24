@@ -39,18 +39,19 @@ public:
     void Interrupt() override;
     std::string GetJSONTree() override;
     std::string GetDefaultJSONTree() override;
-    void OrientationChanged(std::string) override;
-    void ResolutionChanged(int32_t, int32_t, int32_t, int32_t, int32_t) override;
-    void SetArgsColorMode(const std::string& name) override;
+    void OrientationChanged(std::string commandOrientation) override;
+    void ResolutionChanged(int32_t changedOriginWidth, int32_t changedOriginHeight,
+                           int32_t changedWidth, int32_t changedHeight, int32_t screenDensity) override;
+    void SetArgsColorMode(const std::string& value) override;
     void SetArgsAceVersion(const std::string& aceVersion) override;
-    void SetDeviceOrentation(const std::string& name);
+    void SetDeviceOrentation(const std::string& value);
     std::string GetOrientation() const override;
     std::string GetColorMode() const override;
-    void ColorModeChanged(const std::string) override;
-    void ReloadRuntimePage(const std::string) override;
-    void SetScreenDensity(const std::string) override;
-    void SetConfigChanges(const std::string) override;
-    bool MemoryRefresh(const std::string) const override;
+    void ColorModeChanged(const std::string commandColorMode) override;
+    void ReloadRuntimePage(const std::string currentPage) override;
+    void SetScreenDensity(const std::string value) override;
+    void SetConfigChanges(const std::string value) override;
+    bool MemoryRefresh(const std::string memoryRefreshArgs) const override;
     void LoadDocument(const std::string, const std::string, const Json::Value) override;
 
 protected:
@@ -84,12 +85,13 @@ private:
     void SetOnRender(OHOS::Ace::Platform::AceRunArgs& args) const;
     void SetOnRouterChange(OHOS::Ace::Platform::AceRunArgs& args) const;
     void SetOnError(OHOS::Ace::Platform::AceRunArgs& args) const;
-    void AssignValueForWidthAndHeight(const int32_t, const int32_t, const int32_t, const int32_t);
+    void AssignValueForWidthAndHeight(const int32_t origWidth, const int32_t origHeight,
+                                      const int32_t compWidth, const int32_t compHeight);
     void AdaptDeviceType(OHOS::Ace::Platform::AceRunArgs& args, const std::string,
                          const int32_t, double screenDendity = 0) const;
     void ParseSystemParams(OHOS::Ace::Platform::AceRunArgs& args, Json::Value paramObj);
     void SetSystemParams(OHOS::Ace::Platform::SystemParams& args, Json::Value paramObj);
-    void SetDeviceScreenDensity(const int32_t, const std::string);
+    void SetDeviceScreenDensity(const int32_t screenDensity, const std::string type);
     std::string GetDeviceTypeName(const OHOS::Ace::DeviceType) const;
     const double BASE_SCREEN_DENSITY = 160; // Device Baseline Screen Density
     std::unique_ptr<OHOS::Ace::Platform::AceAbility> ability;
