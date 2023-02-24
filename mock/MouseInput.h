@@ -18,7 +18,7 @@
 
 class MouseInput {
 public:
-    enum MouseStatus { INDEV_STATE_RELEASE = 0, INDEV_STATE_PRESS, INDEV_STATE_MOVE };
+    enum class MouseStatus { INDEV_STATE_RELEASE = 0, INDEV_STATE_PRESS, INDEV_STATE_MOVE };
 
     double GetMouseXPosition() const;
     double GetMouseYPosition() const;

@@ -27,7 +27,7 @@ public:
 
 private:
     SystemCapability();
-    virtual ~SystemCapability(){};
+    virtual ~SystemCapability() {};
     void ReadCapability();
     std::map<std::string, bool> capabilities;
 };

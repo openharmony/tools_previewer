@@ -34,7 +34,7 @@ public:
     void SetOrignalWidth(const int32_t& value);
 
     std::string GetCurrentRouter() const;
-    void SetCurrentRouter(const std::string currentRouter);
+    void SetCurrentRouter(const std::string currentRouterValue);
 
     int32_t GetOrignalHeight() const;
     void SetOrignalHeight(const int32_t& value);
@@ -66,14 +66,14 @@ public:
 
     int GetJpgQualityValue(int32_t width, int32_t height) const;
 
-    enum LoadDocType { INIT = 3, START = 1, FINISHED = 2, NORMAL = 0 };
+    enum class LoadDocType { INIT = 3, START = 1, FINISHED = 2, NORMAL = 0 };
     void SetLoadDocFlag(VirtualScreen::LoadDocType flag);
     VirtualScreen::LoadDocType GetLoadDocFlag() const;
 
-    enum ProtocolVersion { LOADNORMAL = 2, LOADDOC = 3 };
+    enum class ProtocolVersion { LOADNORMAL = 2, LOADDOC = 3 };
 
-    enum JpgPixCountLevel { LOWCOUNT = 100000, MIDDLECOUNT = 300000, HIGHCOUNT = 500000};
-    enum JpgQualityLevel { HIGHLEVEL = 100, MIDDLELEVEL = 90, LOWLEVEL = 85, DEFAULTLEVEL = 75};
+    enum class JpgPixCountLevel { LOWCOUNT = 100000, MIDDLECOUNT = 300000, HIGHCOUNT = 500000};
+    enum class JpgQualityLevel { HIGHLEVEL = 100, MIDDLELEVEL = 90, LOWLEVEL = 85, DEFAULTLEVEL = 75};
 
     static bool isOutOfSeconds;
     static bool isStartCount;

@@ -16,7 +16,6 @@
 #ifndef KEYINPUT_H
 #define KEYINPUT_H
 
-#include <cstdint>
 #include <vector>
 
 class KeyInput {

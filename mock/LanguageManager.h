@@ -17,7 +17,6 @@
 #define LANGUAGEMANAGER_H
 
 #include <list>
-#include <string>
 
 class LanguageManager {
 public:
