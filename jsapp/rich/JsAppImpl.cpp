@@ -393,7 +393,7 @@ void JsAppImpl::SetArgsColorMode(const string& value)
     colorMode = value;
 }
 
-void JsAppImpl::SetArgsAceVersion(const string& value)
+void JsAppImpl::SetArgsAceVersion(const string& aceVersion)
 {
     aceVersion = value;
 }
