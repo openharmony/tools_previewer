@@ -99,7 +99,8 @@ bool VirtualScreenImpl::LoadDocCallback(const unsigned char* data,
     return true;
 }
 
-bool VirtualScreenImpl::CallBack(const unsigned char* data, const size_t length, const int32_t width, const int32_t height)
+bool VirtualScreenImpl::CallBack(const unsigned char* data, const size_t length,
+                                 const int32_t width, const int32_t height)
 {
     if (VirtualScreenImpl::GetInstance().GetLoadDocFlag() < VirtualScreen::LoadDocType::FINISHED) {
         return false;
@@ -293,4 +294,12 @@ void VirtualScreenImpl::FreeJpgMemory()
         delete [] VirtualScreenImpl::GetInstance().loadDocCopyBuffer;
         VirtualScreenImpl::GetInstance().loadDocCopyBuffer = nullptr;
     }
+}
+
+void WriteBuffer(const T data)
+{
+    T dataToSend = EndianUtil::ToNetworkEndian<T>(data);
+    unsigned char* startPos = reinterpret_cast<unsigned char*>(&dataToSend);
+    std::copy(startPos, startPos + sizeof(dataToSend), screenBuffer + currentPos);
+    currentPos += sizeof(dataToSend);
 }
