@@ -81,6 +81,9 @@ bool VirtualScreenImpl::LoadDocCallback(const void* data,
             GetInstance().lengthTemp = length;
             GetInstance().widthTemp = width;
             GetInstance().heightTemp = height;
+            if(length <= 0){
+                return false;
+            }
             GetInstance().loadDocTempBuffer = new uint8_t[length];
             uint8_t*  dataPtr = reinterpret_cast<uint8_t*>(const_cast<void*>(data));
             std::copy(dataPtr, dataPtr + length, GetInstance().loadDocTempBuffer);
