@@ -26,13 +26,13 @@
 class AsyncWorkManager {
 public:
     static AsyncWorkManager& GetInstance();
-    void AppendAsyncWork(OHOS::ACELite::AsyncWorkHandler work, void* arg);
+    void AppendAsyncWork(OHOS::ACELite::AsyncWorkHandler work, unsigned char* arg);
     void ExecAllAsyncWork();
     void ClearAllAsyncWork();
 
 private:
-    AsyncWorkManager(){};
-    ~AsyncWorkManager(){};
+    AsyncWorkManager() {};
+    ~AsyncWorkManager() {};
     std::mutex mutex;
     std::list<std::pair<OHOS::ACELite::AsyncWorkHandler, void*>> workList;
 };
