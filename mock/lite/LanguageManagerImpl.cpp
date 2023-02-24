@@ -26,7 +26,7 @@ using namespace std;
 
 LanguageManagerImpl& LanguageManagerImpl::GetInstance()
 {
-    static LanguageManagerImpl manager;
+    static LanguageManagerImpl manager; // NOLINT
     return manager;
 }
 

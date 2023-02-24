@@ -41,7 +41,7 @@ void AsyncWorkManager::ClearAllAsyncWork()
     mutex.unlock();
 }
 
-void AsyncWorkManager::AppendAsyncWork(OHOS::ACELite::AsyncWorkHandler work, void* arg)
+void AsyncWorkManager::AppendAsyncWork(OHOS::ACELite::AsyncWorkHandler work, unsigned char* arg)
 {
     mutex.lock();
     workList.push_back(std::make_pair(work, arg));

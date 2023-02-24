@@ -21,8 +21,8 @@
 
 using namespace std;
 
-const int32_t RES_OK = 0;
-const int32_t RES_ERROR = -1;
+static const int32_t RES_OK = 0;
+static const int32_t RES_ERROR = -1;
 
 #ifdef __cplusplus
 #if __cplusplus
@@ -40,7 +40,7 @@ const char* GetSupportedGeoCoordTypes()
     return "wgs84";
 }
 
-int32_t GetGeoLocation(LocDataUpdateCallback callback, LocTimeoutCallback timeoutCallback, void *arg, uint32_t timeout)
+int32_t GetGeoLocation(LocDataUpdateCallback callback, LocTimeoutCallback timeoutCallback, unsigned char *arg, uint32_t timeout)
 {
     (void)timeoutCallback;
     (void)arg;
