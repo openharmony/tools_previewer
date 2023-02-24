@@ -296,7 +296,7 @@ void VirtualScreenImpl::FreeJpgMemory()
     }
 }
 
-static void WriteBuffer(const T data)
+void VirtualScreenImpl::WriteBuffer(const T data)
 {
     T dataToSend = EndianUtil::ToNetworkEndian<T>(data);
     unsigned char* startPos = reinterpret_cast<unsigned char*>(&dataToSend);
