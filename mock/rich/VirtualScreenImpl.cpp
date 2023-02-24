@@ -66,7 +66,7 @@ void VirtualScreenImpl::StartTimer()
     }
 }
 
-bool VirtualScreenImpl::LoadDocCallback(const void* data,
+bool VirtualScreenImpl::LoadDocCallback(const unsigned char* data,
                                         const size_t length,
                                         const int32_t width,
                                         const int32_t height)
@@ -99,7 +99,7 @@ bool VirtualScreenImpl::LoadDocCallback(const void* data,
     return true;
 }
 
-bool VirtualScreenImpl::CallBack(const void* data, const size_t length, const int32_t width, const int32_t height)
+bool VirtualScreenImpl::CallBack(const unsigned char* data, const size_t length, const int32_t width, const int32_t height)
 {
     if (VirtualScreenImpl::GetInstance().GetLoadDocFlag() < VirtualScreen::LoadDocType::FINISHED) {
         return false;
@@ -178,7 +178,7 @@ VirtualScreenImpl::~VirtualScreenImpl()
     }
 }
 
-void VirtualScreenImpl::Send(const void* data, int32_t retWidth, int32_t retHeight)
+void VirtualScreenImpl::Send(const unsigned char* data, int32_t retWidth, int32_t retHeight)
 {
     if (CommandParser::GetInstance().GetScreenMode() == CommandParser::ScreenMode::STATIC
         && VirtualScreen::isOutOfSeconds) {
@@ -220,7 +220,7 @@ void VirtualScreenImpl::Send(const void* data, int32_t retWidth, int32_t retHeig
     FreeJpgMemory();
 }
 
-bool VirtualScreenImpl::SendPixmap(const void* data, size_t length, int32_t retWidth, int32_t retHeight)
+bool VirtualScreenImpl::SendPixmap(const unsigned char* data, size_t length, int32_t retWidth, int32_t retHeight)
 {
     if (data == nullptr) {
         ELOG("render callback data is null.");
