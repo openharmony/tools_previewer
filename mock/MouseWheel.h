@@ -22,7 +22,7 @@ public:
     double GetMouseYPosition() const;
     double GetRotate() const;
     virtual void SetMousePosition(double xPosition, double yPosition);
-    virtual void SetRotate(double rotate);
+    virtual void SetRotate(double rotation);
     virtual void DispatchWheelEvent() const {};
 
 protected:

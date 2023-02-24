@@ -22,9 +22,9 @@ void MouseWheel::SetMousePosition(double xPosition, double yPosition)
     mouseYPosition = yPosition;
 }
 
-void MouseWheel::SetRotate(double rotate)
+void MouseWheel::SetRotate(double rotation)
 {
-    this->rotate = rotate;
+    this->rotate = rotation;
 }
 
 double MouseWheel::GetMouseXPosition() const

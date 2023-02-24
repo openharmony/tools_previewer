@@ -33,7 +33,7 @@ uint32_t VirtualScreen::inputMethodCountPerMinute = 0;
 bool VirtualScreen::isWebSocketListening = false;
 std::string VirtualScreen::webSocketPort = "";
 
-std::chrono::system_clock::time_point VirtualScreen::startTime = std::chrono::system_clock::now();
+static std::chrono::system_clock::time_point VirtualScreen::startTime = std::chrono::system_clock::now();
 bool VirtualScreen::isStartCount = true;
 bool VirtualScreen::isOutOfSeconds = false;
 
