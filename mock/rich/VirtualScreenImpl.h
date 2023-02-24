@@ -38,7 +38,7 @@ private:
     bool SendPixmap(const unsigned char* data, size_t length, int32_t retWidth, int32_t retHeight);
     void FreeJpgMemory();
     template<class T, class = typename std::enable_if<std::is_integral<T>::value>::type>
-    void WriteBuffer(const T data);
+    inline void WriteBuffer(const T data);
 
     bool isFirstSend;
     bool isFirstRender;
