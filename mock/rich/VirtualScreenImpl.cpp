@@ -81,7 +81,7 @@ bool VirtualScreenImpl::LoadDocCallback(const void* data,
             GetInstance().lengthTemp = length;
             GetInstance().widthTemp = width;
             GetInstance().heightTemp = height;
-            if(length <= 0){
+            if (length <= 0) {
                 return false;
             }
             GetInstance().loadDocTempBuffer = new uint8_t[length];
