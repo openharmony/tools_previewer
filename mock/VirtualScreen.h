@@ -66,14 +66,14 @@ public:
 
     int GetJpgQualityValue(int32_t width, int32_t height) const;
 
-    enum class LoadDocType { INIT = 3, START = 1, FINISHED = 2, NORMAL = 0 };
+    enum LoadDocType { INIT = 3, START = 1, FINISHED = 2, NORMAL = 0 };
     void SetLoadDocFlag(VirtualScreen::LoadDocType flag);
     VirtualScreen::LoadDocType GetLoadDocFlag() const;
 
-    enum class ProtocolVersion { LOADNORMAL = 2, LOADDOC = 3 };
+    enum ProtocolVersion { LOADNORMAL = 2, LOADDOC = 3 };
 
-    enum class JpgPixCountLevel { LOWCOUNT = 100000, MIDDLECOUNT = 300000, HIGHCOUNT = 500000};
-    enum class JpgQualityLevel { HIGHLEVEL = 100, MIDDLELEVEL = 90, LOWLEVEL = 85, DEFAULTLEVEL = 75};
+    enum JpgPixCountLevel { LOWCOUNT = 100000, MIDDLECOUNT = 300000, HIGHCOUNT = 500000};
+    enum JpgQualityLevel { HIGHLEVEL = 100, MIDDLELEVEL = 90, LOWLEVEL = 85, DEFAULTLEVEL = 75};
 
     static bool isOutOfSeconds;
     static bool isStartCount;
