@@ -52,7 +52,8 @@ void VirtualScreenImpl::StartTimer()
                           GetInstance().loadDocTempBuffer + GetInstance().lengthTemp,
                           GetInstance().loadDocCopyBuffer);
             }
-            VirtualScreenImpl::GetInstance().protocolVersion = GetInstance().ProtocolVersion::LOADDOC;
+            VirtualScreenImpl::GetInstance().protocolVersion = 
+                static_cast<uint16_t>(VirtualScreen::ProtocolVersion::LOADDOC);
             GetInstance().bufferSize = GetInstance().lengthTemp + GetInstance().headSize;
             GetInstance().wholeBuffer = new uint8_t[LWS_PRE + GetInstance().bufferSize];
             GetInstance().screenBuffer = GetInstance().wholeBuffer + LWS_PRE;

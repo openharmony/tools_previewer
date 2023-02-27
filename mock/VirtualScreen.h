@@ -66,14 +66,14 @@ public:
 
     int GetJpgQualityValue(int32_t width, int32_t height) const;
 
-    enum LoadDocType { INIT = 3, START = 1, FINISHED = 2, NORMAL = 0 };
+    enum class LoadDocType { INIT = 3, START = 1, FINISHED = 2, NORMAL = 0 };
     void SetLoadDocFlag(VirtualScreen::LoadDocType flag);
     VirtualScreen::LoadDocType GetLoadDocFlag() const;
 
-    enum ProtocolVersion { LOADNORMAL = 2, LOADDOC = 3 };
+    enum class ProtocolVersion { LOADNORMAL = 2, LOADDOC = 3 };
 
-    enum JpgPixCountLevel { LOWCOUNT = 100000, MIDDLECOUNT = 300000, HIGHCOUNT = 500000};
-    enum JpgQualityLevel { HIGHLEVEL = 100, MIDDLELEVEL = 90, LOWLEVEL = 85, DEFAULTLEVEL = 75};
+    enum class JpgPixCountLevel { LOWCOUNT = 100000, MIDDLECOUNT = 300000, HIGHCOUNT = 500000};
+    enum class JpgQualityLevel { HIGHLEVEL = 100, MIDDLELEVEL = 90, LOWLEVEL = 85, DEFAULTLEVEL = 75};
 
     static bool isOutOfSeconds;
     static bool isStartCount;
@@ -105,7 +105,7 @@ protected:
     const size_t headReservedSize = 20;         // The reserved length of the packet header is 20 bytes.
     const uint32_t headStart = 0x12345678;      // Buffer header starts with magic value 0x12345678
     const int32_t frameCountPeriod = 60 * 1000; // Frame count per minute
-    uint16_t protocolVersion = VirtualScreen::ProtocolVersion::LOADNORMAL;
+    uint16_t protocolVersion = static_cast<uint16_t>(VirtualScreen::ProtocolVersion::LOADNORMAL);
     bool isWebSocketConfiged;
     std::string currentRouter;
     std::string fastPreviewMsg;

@@ -130,7 +130,7 @@ void CommandLineInterface::ProcessCommandMessage(std::string message) const
     }
 
     CommandLine::CommandType type = GetCommandType(jsonData["type"].asString());
-    if (type == CommandLine::INVALID) {
+    if (type == CommandLine::CommandType::INVALID) {
         return;
     }
 
@@ -172,13 +172,13 @@ bool CommandLineInterface::ProcessCommandValidate(bool parsingSuccessful,
 
 CommandLine::CommandType CommandLineInterface::GetCommandType(string name) const
 {
-    CommandLine::CommandType type = CommandLine::INVALID;
+    CommandLine::CommandType type = CommandLine::CommandType::INVALID;
     if (name == "set") {
-        type = CommandLine::SET;
+        type = CommandLine::CommandType::SET;
     } else if (name == "get") {
-        type = CommandLine::GET;
+        type = CommandLine::CommandType::GET;
     } else if (name == "action") {
-        type = CommandLine::ACTION;
+        type = CommandLine::CommandType::ACTION;
     } else {
         ELOG("Command type invalid!");
     }
@@ -219,7 +219,7 @@ void CommandLineInterface::ApplyConfigMembers(const Json::Value& commands,
             continue;
         }
         std::unique_ptr<CommandLine> command =
-            CommandLineFactory::CreateCommandLine(key, CommandLine::SET, commands[key]["args"], *socket);
+            CommandLineFactory::CreateCommandLine(key, CommandLine::CommandType::SET, commands[key]["args"], *socket);
         ApplyConfigCommands(key, command);
     }
 }
