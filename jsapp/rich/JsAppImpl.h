@@ -43,7 +43,7 @@ public:
     void ResolutionChanged(int32_t changedOriginWidth, int32_t changedOriginHeight,
                            int32_t changedWidth, int32_t changedHeight, int32_t screenDensity) override;
     void SetArgsColorMode(const std::string& value) override;
-    void SetArgsAceVersion(const std::string& aceVersion) override;
+    void SetArgsAceVersion(const std::string& value) override;
     void SetDeviceOrentation(const std::string& value);
     std::string GetOrientation() const override;
     std::string GetColorMode() const override;

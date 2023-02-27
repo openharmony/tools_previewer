@@ -40,8 +40,7 @@ const char* GetSupportedGeoCoordTypes()
     return "wgs84";
 }
 
-int32_t GetGeoLocation(LocDataUpdateCallback callback, LocTimeoutCallback timeoutCallback,
-                       unsigned char *arg, uint32_t timeout)
+int32_t GetGeoLocation(LocDataUpdateCallback callback, LocTimeoutCallback timeoutCallback, void *arg, uint32_t timeout)
 {
     (void)timeoutCallback;
     (void)arg;
