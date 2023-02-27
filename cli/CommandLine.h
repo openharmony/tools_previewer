@@ -22,7 +22,7 @@
 
 class CommandLine {
 public:
-    enum CommandType { SET = 0, GET, ACTION, INVALID };
+    enum class CommandType { SET = 0, GET, ACTION, INVALID };
 
     CommandLine(CommandType commandType, const Json::Value& arg, const LocalSocket& socket);
     virtual ~CommandLine();
