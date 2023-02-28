@@ -22,8 +22,8 @@
 
 class CallbackQueue {
 public:
-    CallbackQueue(){};
-    virtual ~CallbackQueue(){};
+    CallbackQueue() {};
+    virtual ~CallbackQueue() {};
     CallbackQueue(const CallbackQueue&) = delete;
     CallbackQueue& operator=(const CallbackQueue&) = delete;
 

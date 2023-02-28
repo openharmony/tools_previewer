@@ -17,6 +17,8 @@
 
 bool EndianUtil::IsBigEndian()
 {
+    const uint32_t ENDIAN_TEST_MAGIC = 0x01020304;
+    const uint32_t BIG_ENDIAN_FIRST_BYTE = 0x1;
     union {
         uint32_t data;
         char buffer[sizeof(uint32_t)];

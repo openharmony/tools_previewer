@@ -26,14 +26,14 @@ CppTimer::~CppTimer()
     }
 }
 
-void CppTimer::Start(int64_t interval)
+void CppTimer::Start(int64_t value)
 {
     thread::id curThreadId = this_thread::get_id();
     if (curThreadId != threadId) {
         ILOG("CppTimer can not started by other thread!");
     }
 
-    this->interval = interval;
+    this->interval = value;
     startTime = std::chrono::system_clock::now();
     isRunning = true;
 }

@@ -20,8 +20,6 @@
 #include <type_traits>
 
 namespace EndianUtil {
-    const uint32_t ENDIAN_TEST_MAGIC = 0x01020304;
-    const uint32_t BIG_ENDIAN_FIRST_BYTE = 0x1;
     bool IsBigEndian();
 
     template <class T, class = typename std::enable_if<std::is_integral<T>::value>::type>
@@ -42,6 +40,9 @@ namespace EndianUtil {
         }
         return dest.data;
     }
+
+private:
+
 }; // namespace EndianUtil
 
 #endif // ENDIANUTIL_H
