@@ -78,7 +78,7 @@ public:
         } else if (size > utf16HeadLen && data[0] == 0xFE && data[1] == 0xFF) {
             return Encode::UTF16_BE;
         // Detect the size and the first, second, and third bytes
-        } else if (size > utf8HeadLen && data[0] == 0xEF && data[1] == 0xBB&& data[2] == 0xBF) {
+        } else if (size > utf8HeadLen && data[0] == 0xEF && data[1] == 0xBB&& data[2] == 0xBF) { // NOLINT
             return Encode::UTF8_BOM;
         } else {
             return IsUtf8Data(data, size);
