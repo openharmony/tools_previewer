@@ -22,10 +22,9 @@
 #include <windows.h>
 #endif // _WIN32
 
-const int32_t MAX_ITOA_BIT = 65;
-
 class PublicMethods final {
 public:
+    static const int32_t MAX_ITOA_BIT = 65;
     PublicMethods() = default;
     virtual ~PublicMethods() = default;
     PublicMethods& operator=(const PublicMethods&) = delete;
