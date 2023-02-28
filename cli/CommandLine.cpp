@@ -86,13 +86,13 @@ void CommandLine::SendResultToManager()
 
 bool CommandLine::IsArgValid() const
 {
-    if (type == GET) {
+    if (type == CommandType::GET) {
         return IsGetArgValid();
     }
-    if (type == SET) {
+    if (type == CommandType::SET) {
         return IsSetArgValid();
     }
-    if (type == ACTION) {
+    if (type == CommandType::ACTION) {
         return IsActionArgValid();
     }
     return true;
@@ -129,11 +129,11 @@ void CommandLine::SetResultToManager(const std::string& resultType,
 
 void CommandLine::Run()
 {
-    if (type == GET) {
+    if (type == CommandType::GET) {
         RunGet();
-    } else if (type == SET) {
+    } else if (type == CommandType::SET) {
         RunSet();
-    } else if (type == ACTION) {
+    } else if (type == CommandType::ACTION) {
         RunAction();
     }
 }
