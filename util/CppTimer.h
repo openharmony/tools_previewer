@@ -67,7 +67,7 @@ public:
         return isRunning;
     }
 
-    void Start(int64_t interval);
+    void Start(int64_t value);
 
     void Stop();
 
