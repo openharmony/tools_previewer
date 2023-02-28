@@ -40,9 +40,6 @@ namespace EndianUtil {
         }
         return dest.data;
     }
-
-private:
-
 }; // namespace EndianUtil
 
 #endif // ENDIANUTIL_H
