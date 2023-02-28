@@ -47,7 +47,7 @@ Json::Value JsonReader::ParseJsonData(const string jsonStr)
         ELOG("JsonReader: CharReader get null.");
         return val;
     }
-    string message;
+    string message; // NOLINT
     if (!reader->parse(jsonStr.data(), jsonStr.data() + jsonStr.size(), &val, &message)) {
         ELOG("JsonReader: Failed to parse the json data, errors: %s", message.c_str());
     }

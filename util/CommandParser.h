@@ -63,7 +63,7 @@ private:
     std::map<std::string, std::vector<std::string>> argsMap;
     std::map<std::string, uint32_t> regsArgsCountMap;
     std::map<std::string, std::string> regsHelpMap;
-    static CommandParser* instance;
+    static CommandParser* example;
     const std::vector<std::string> supportedDevices = {
         "liteWearable",
         "smartVision",
