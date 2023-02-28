@@ -44,7 +44,7 @@ public:
     bool IsCardDisplay() const;
     std::string GetConfigPath() const;
     std::string GetProjectID() const;
-    enum ScreenMode { DYNAMIC = 0, STATIC = 1};
+    enum class ScreenMode { DYNAMIC = 0, STATIC = 1};
     CommandParser::ScreenMode GetScreenMode() const;
     std::string GetConfigChanges() const;
     std::string GetAppResourcePath() const;
