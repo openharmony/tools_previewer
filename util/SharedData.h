@@ -21,7 +21,6 @@
 #include <map>
 #include <mutex>
 #include <thread>
-#include <utility>
 
 #include "SharedDataManager.h"
 #include "PreviewerEngineLog.h"
