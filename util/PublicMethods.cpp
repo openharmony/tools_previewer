@@ -20,6 +20,8 @@ using namespace std;
 uint32_t PublicMethods::Ulltoa(uintptr_t value, int8_t (&rstStr)[MAX_ITOA_BIT])
 {
     const int32_t RADIX_HEXADECIMAL = 16;
+    const int32_t dividendLength = 10;
+
 
     auto remainder = value;
     int8_t strSpace[MAX_ITOA_BIT] = {0};
@@ -30,10 +32,10 @@ uint32_t PublicMethods::Ulltoa(uintptr_t value, int8_t (&rstStr)[MAX_ITOA_BIT])
         rstLength++;
         dividend = remainder % RADIX_HEXADECIMAL;
         remainder = remainder / RADIX_HEXADECIMAL;
-        if (dividend < 10) { // Converted to hexadecimal
+        if (dividend < dividendLength) { // Converted to hexadecimal
             *curPoint++ = dividend + '0';
         } else {
-            *curPoint++ = dividend + 'a' - 10;
+            *curPoint++ = dividend + 'a' - dividendLength;
         }
     }
     int8_t* tmpRstStr = rstStr;
