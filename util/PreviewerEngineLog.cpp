@@ -34,7 +34,7 @@ void PrintLog(const char* level, const char* file, const char* func, int line, c
 {
 #ifdef NDEBUG
     string levelStr(level);
-    if ("DEBUG" == levelStr) {
+    if (levelStr == "DEBUG") {
         return;
     }
 #endif

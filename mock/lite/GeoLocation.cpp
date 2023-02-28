@@ -92,8 +92,8 @@ int32_t SerializeLocData(const int8_t *rawData, uint32_t len, LocationData *resu
     }
 
     result->accuracy = VirtualLocation::GetInstance().GetAccuracy();
-    result->latitude = SharedData<double>::GetData(LATITUDE);
-    result->longitude = SharedData<double>::GetData(LONGITUDE);
+    result->latitude = SharedData<double>::GetData(SharedDataType::LATITUDE);
+    result->longitude = SharedData<double>::GetData(SharedDataType::LONGITUDE);
     result->time = VirtualLocation::GetInstance().GetTime();
     return RES_OK;
 }

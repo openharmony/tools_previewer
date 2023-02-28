@@ -20,11 +20,11 @@
 #include <set>
 #include <string>
 
-enum BrightnessMode { MANUAL = 0, AUTO, BRIGHTNESSMODE_MAX };
+enum class BrightnessMode { MANUAL = 0, AUTO, BRIGHTNESSMODE_MAX };
 
-enum ChargeState { NOCHARGE = 0, CHARGING, CHARGESTATE_MAX };
+enum class ChargeState { NOCHARGE = 0, CHARGING, CHARGESTATE_MAX };
 
-enum SharedDataType {
+enum class SharedDataType {
     BRIGHTNESS_VALUE,
     BRIGHTNESS_MODE,
     KEEP_SCREEN_ON,

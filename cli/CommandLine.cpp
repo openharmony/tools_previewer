@@ -285,7 +285,7 @@ bool PowerCommand::IsSetArgValid() const
         return false;
     }
     float val = args["Power"].asFloat();
-    if (!SharedData<double>::IsValid(BATTERY_LEVEL, val)) {
+    if (!SharedData<double>::IsValid(SharedDataType::BATTERY_LEVEL, val)) {
         ELOG("PowerCommand invalid value: %f", val);
         return false;
     }
@@ -294,7 +294,7 @@ bool PowerCommand::IsSetArgValid() const
 
 void PowerCommand::RunGet()
 {
-    double power = SharedData<double>::GetData(BATTERY_LEVEL);
+    double power = SharedData<double>::GetData(SharedDataType::BATTERY_LEVEL);
     Json::Value resultContent;
     resultContent["Power"] = power;
     SetCommandResult("result", resultContent);
@@ -304,7 +304,7 @@ void PowerCommand::RunGet()
 void PowerCommand::RunSet()
 {
     string power(args["Power"].asString());
-    SharedData<double>::SetData(BATTERY_LEVEL, atof(power.data()));
+    SharedData<double>::SetData(SharedDataType::BATTERY_LEVEL, atof(power.data()));
     Json::Value resultContent = true;
     SetCommandResult("result", resultContent);
     ILOG("Set power run finished, the value is: %s", args["Power"].asString().c_str());
@@ -351,7 +351,7 @@ bool BarometerCommand::IsSetArgValid() const
         return false;
     }
 
-    if (!SharedData<uint32_t>::IsValid(PRESSURE_VALUE, static_cast<uint32_t>(atoi(barometer.data())))) {
+    if (!SharedData<uint32_t>::IsValid(SharedDataType::PRESSURE_VALUE, static_cast<uint32_t>(atoi(barometer.data())))) {
         ELOG("Barometer invalid value: %d", atoi(barometer.data()));
         return false;
     }
@@ -360,7 +360,7 @@ bool BarometerCommand::IsSetArgValid() const
 
 void BarometerCommand::RunGet()
 {
-    int barometer = static_cast<int>(SharedData<uint32_t>::GetData(PRESSURE_VALUE));
+    int barometer = static_cast<int>(SharedData<uint32_t>::GetData(SharedDataType::PRESSURE_VALUE));
     Json::Value resultContent;
     resultContent["Barometer"] = barometer;
     SetCommandResult("result", resultContent);
@@ -370,7 +370,7 @@ void BarometerCommand::RunGet()
 void BarometerCommand::RunSet()
 {
     string barometer(args["Barometer"].asString());
-    SharedData<uint32_t>::SetData(PRESSURE_VALUE, static_cast<uint32_t>(atoi(barometer.data())));
+    SharedData<uint32_t>::SetData(SharedDataType::PRESSURE_VALUE, static_cast<uint32_t>(atoi(barometer.data())));
     SetCommandResult("result", true);
     ILOG("Set barometer run finished, the value is: %s", args["Barometer"].asString().c_str());
 }
@@ -681,7 +681,7 @@ bool LanguageCommand::IsSetArgValid() const
 
 void LanguageCommand::RunGet()
 {
-    std::string language = SharedData<string>::GetData(LANGUAGE);
+    std::string language = SharedData<string>::GetData(SharedDataType::LANGUAGE);
     Json::Value resultContent;
     resultContent["Language"] = language;
     SetCommandResult("result", resultContent);
@@ -691,7 +691,7 @@ void LanguageCommand::RunGet()
 void LanguageCommand::RunSet()
 {
     string language(args["Language"].asString());
-    SharedData<string>::SetData(LANGUAGE, language);
+    SharedData<string>::SetData(SharedDataType::LANGUAGE, language);
     SetCommandResult("result", true);
     ILOG("Set language run finished, language is: %s", language.c_str());
 }
@@ -742,12 +742,12 @@ bool LocationCommand::IsSetArgValid() const
         return false;
     }
 
-    if (!SharedData<double>::IsValid(LATITUDE, atof(latitude.data()))) {
+    if (!SharedData<double>::IsValid(SharedDataType::LATITUDE, atof(latitude.data()))) {
         ELOG("LocationCommand invalid latitude value: %f", atof(latitude.data()));
         return false;
     }
 
-    if (!SharedData<double>::IsValid(LONGITUDE, atof(longitude.data()))) {
+    if (!SharedData<double>::IsValid(SharedDataType::LONGITUDE, atof(longitude.data()))) {
         ELOG("LocationCommand invalid longitude value: %f", atof(longitude.data()));
         return false;
     }
@@ -756,8 +756,8 @@ bool LocationCommand::IsSetArgValid() const
 
 void LocationCommand::RunGet()
 {
-    double longitude = SharedData<double>::GetData(LONGITUDE);
-    double latitude = SharedData<double>::GetData(LATITUDE);
+    double longitude = SharedData<double>::GetData(SharedDataType::LONGITUDE);
+    double latitude = SharedData<double>::GetData(SharedDataType::LATITUDE);
     Json::Value resultContent;
     resultContent["latitude"] = latitude;
     resultContent["longitude"] = longitude;
@@ -769,8 +769,8 @@ void LocationCommand::RunSet()
 {
     string latitude(args["latitude"].asString());
     string longitude(args["longitude"].asString());
-    SharedData<double>::SetData(LONGITUDE, atof(longitude.data()));
-    SharedData<double>::SetData(LATITUDE, atof(latitude.data()));
+    SharedData<double>::SetData(SharedDataType::LONGITUDE, atof(longitude.data()));
+    SharedData<double>::SetData(SharedDataType::LATITUDE, atof(latitude.data()));
     Json::Value resultContent = true;
     SetCommandResult("result", resultContent);
     ILOG("Set location run finished, latitude: %s,longitude: %s", latitude.c_str(), longitude.c_str());
@@ -828,14 +828,14 @@ KeepScreenOnStateCommand::KeepScreenOnStateCommand(CommandType commandType,
 void KeepScreenOnStateCommand::RunGet()
 {
     Json::Value result;
-    result["KeepScreenOnState"] = SharedData<bool>::GetData(KEEP_SCREEN_ON);
+    result["KeepScreenOnState"] = SharedData<bool>::GetData(SharedDataType::KEEP_SCREEN_ON);
     SetCommandResult("result", result);
     ILOG("Get keepScreenOnState run finished");
 }
 
 void KeepScreenOnStateCommand::RunSet()
 {
-    SharedData<bool>::SetData(KEEP_SCREEN_ON, args["KeepScreenOnState"].asString() == "true");
+    SharedData<bool>::SetData(SharedDataType::KEEP_SCREEN_ON, args["KeepScreenOnState"].asString() == "true");
     Json::Value result = true;
     SetCommandResult("result", result);
     ILOG("Set keepScreenOnState run finished, the value is: %s", args["KeepScreenOnState"].asString().c_str());
@@ -862,14 +862,14 @@ WearingStateCommand::WearingStateCommand(CommandType commandType, const Json::Va
 void WearingStateCommand::RunGet()
 {
     Json::Value result;
-    result["WearingState"] = SharedData<bool>::GetData(WEARING_STATE);
+    result["WearingState"] = SharedData<bool>::GetData(SharedDataType::WEARING_STATE);
     SetCommandResult("result", result);
     ILOG("Get wearingState run finished");
 }
 
 void WearingStateCommand::RunSet()
 {
-    SharedData<bool>::SetData(WEARING_STATE, args["WearingState"].asString() == "true");
+    SharedData<bool>::SetData(SharedDataType::WEARING_STATE, args["WearingState"].asString() == "true");
     Json::Value result = true;
     SetCommandResult("result", result);
     ILOG("Set wearingState run finished, the value is: %s", args["WearingState"].asString().c_str());
@@ -896,14 +896,15 @@ BrightnessModeCommand::BrightnessModeCommand(CommandType commandType, const Json
 void BrightnessModeCommand::RunGet()
 {
     Json::Value result;
-    result["BrightnessMode"] = SharedData<uint8_t>::GetData(BRIGHTNESS_MODE);
+    result["BrightnessMode"] = SharedData<uint8_t>::GetData(SharedDataType::BRIGHTNESS_MODE);
     SetCommandResult("result", result);
     ILOG("Get brightnessMode run finished");
 }
 
 void BrightnessModeCommand::RunSet()
 {
-    SharedData<uint8_t>::SetData(BRIGHTNESS_MODE, static_cast<uint8_t>(atoi(args["BrightnessMode"].asString().data())));
+    SharedData<uint8_t>::SetData(SharedDataType::BRIGHTNESS_MODE,
+                                 static_cast<uint8_t>(atoi(args["BrightnessMode"].asString().data())));
     Json::Value result = true;
     SetCommandResult("result", result);
     ILOG("Set brightnessMode run finished, the value is: %s", args["BrightnessMode"].asString().c_str());
@@ -920,7 +921,7 @@ bool BrightnessModeCommand::IsSetArgValid() const
         return false;
     }
     uint8_t temp = ToUint8(args["BrightnessMode"].asString());
-    if (!SharedData<uint8_t>::IsValid(BRIGHTNESS_MODE, temp)) {
+    if (!SharedData<uint8_t>::IsValid(SharedDataType::BRIGHTNESS_MODE, temp)) {
         ELOG("BrightnessModeCommand invalid value: %d", temp);
         return false;
     }
@@ -935,14 +936,14 @@ ChargeModeCommand::ChargeModeCommand(CommandType commandType, const Json::Value&
 void ChargeModeCommand::RunGet()
 {
     Json::Value result;
-    result["ChargeMode"] = SharedData<uint8_t>::GetData(BATTERY_STATUS);
+    result["ChargeMode"] = SharedData<uint8_t>::GetData(SharedDataType::BATTERY_STATUS);
     SetCommandResult("result", result);
     ILOG("Get chargeMode run finished");
 }
 
 void ChargeModeCommand::RunSet()
 {
-    SharedData<uint8_t>::SetData(BATTERY_STATUS, static_cast<uint8_t>(atoi(args["ChargeMode"].asString().data())));
+    SharedData<uint8_t>::SetData(SharedDataType::BATTERY_STATUS, static_cast<uint8_t>(atoi(args["ChargeMode"].asString().data())));
     Json::Value result = true;
     SetCommandResult("result", result);
     ILOG("Set chargeMode run finished, the value is: %s", args["ChargeMode"].asString().c_str());
@@ -959,7 +960,7 @@ bool ChargeModeCommand::IsSetArgValid() const
         return false;
     }
     uint8_t temp = ToUint8(args["ChargeMode"].asString());
-    if (!SharedData<uint8_t>::IsValid(BATTERY_STATUS, temp)) {
+    if (!SharedData<uint8_t>::IsValid(SharedDataType::BATTERY_STATUS, temp)) {
         ELOG("ChargeModeCommand invalid value: %d", temp);
         return false;
     }
@@ -974,14 +975,15 @@ BrightnessCommand::BrightnessCommand(CommandType commandType, const Json::Value&
 void BrightnessCommand::RunGet()
 {
     Json::Value result;
-    result["Brightness"] = SharedData<uint8_t>::GetData(BRIGHTNESS_VALUE);
+    result["Brightness"] = SharedData<uint8_t>::GetData(SharedDataType::BRIGHTNESS_VALUE);
     SetCommandResult("result", result);
     ILOG("Get brightness run finished");
 }
 
 void BrightnessCommand::RunSet()
 {
-    SharedData<uint8_t>::SetData(BRIGHTNESS_VALUE, static_cast<uint8_t>(atoi(args["Brightness"].asString().data())));
+    SharedData<uint8_t>::SetData(SharedDataType::BRIGHTNESS_VALUE,
+                                 static_cast<uint8_t>(atoi(args["Brightness"].asString().data())));
     Json::Value result = true;
     SetCommandResult("result", result);
     ILOG("Set brightness run finished, the value is: %s", args["Brightness"].asString().c_str());
@@ -998,7 +1000,7 @@ bool BrightnessCommand::IsSetArgValid() const
         return false;
     }
     uint8_t temp = ToUint8(args["Brightness"].asString());
-    if (!SharedData<uint8_t>::IsValid(BRIGHTNESS_VALUE, temp)) {
+    if (!SharedData<uint8_t>::IsValid(SharedDataType::BRIGHTNESS_VALUE, temp)) {
         ELOG("BrightnessCommand invalid value: ", temp);
         return false;
     }
@@ -1013,14 +1015,14 @@ HeartRateCommand::HeartRateCommand(CommandType commandType, const Json::Value& a
 void HeartRateCommand::RunGet()
 {
     Json::Value result;
-    result["HeartRate"] = SharedData<uint8_t>::GetData(HEARTBEAT_VALUE);
+    result["HeartRate"] = SharedData<uint8_t>::GetData(SharedDataType::HEARTBEAT_VALUE);
     SetCommandResult("result", result);
     ILOG("Get heartRate run finished");
 }
 
 void HeartRateCommand::RunSet()
 {
-    SharedData<uint8_t>::SetData(HEARTBEAT_VALUE, static_cast<uint8_t>(atoi(args["HeartRate"].asString().data())));
+    SharedData<uint8_t>::SetData(SharedDataType::HEARTBEAT_VALUE, static_cast<uint8_t>(atoi(args["HeartRate"].asString().data())));
     Json::Value result = true;
     SetCommandResult("result", result);
     ILOG("Set heartRate run finished, the value is: %s", args["HeartRate"].asString().c_str());
@@ -1041,7 +1043,7 @@ bool HeartRateCommand::IsSetArgValid() const
         return false;
     }
     uint8_t temp = ToUint8(args["HeartRate"].asString());
-    if (!SharedData<uint8_t>::IsValid(HEARTBEAT_VALUE, temp)) {
+    if (!SharedData<uint8_t>::IsValid(SharedDataType::HEARTBEAT_VALUE, temp)) {
         ELOG("HeartRateCommand invalid value: %d", temp);
         return false;
     }
@@ -1056,14 +1058,14 @@ StepCountCommand::StepCountCommand(CommandType commandType, const Json::Value& a
 void StepCountCommand::RunGet()
 {
     Json::Value result;
-    result["StepCount"] = SharedData<uint32_t>::GetData(SUMSTEP_VALUE);
+    result["StepCount"] = SharedData<uint32_t>::GetData(SharedDataType::SUMSTEP_VALUE);
     SetCommandResult("result", result);
     ILOG("Get stepCount run finished");
 }
 
 void StepCountCommand::RunSet()
 {
-    SharedData<uint32_t>::SetData(SUMSTEP_VALUE, static_cast<uint32_t>(atoi(args["StepCount"].asString().data())));
+    SharedData<uint32_t>::SetData(SharedDataType::SUMSTEP_VALUE, static_cast<uint32_t>(atoi(args["StepCount"].asString().data())));
     Json::Value result = true;
     SetCommandResult("result", result);
     ILOG("Set stepCount run finished, the value is: %s", args["StepCount"].asString().c_str());
@@ -1081,7 +1083,7 @@ bool StepCountCommand::IsSetArgValid() const
     }
 
     uint32_t temp = ToUint8(args["StepCount"].asString());
-    if (!SharedData<uint32_t>::IsValid(SUMSTEP_VALUE, temp)) {
+    if (!SharedData<uint32_t>::IsValid(SharedDataType::SUMSTEP_VALUE, temp)) {
         ELOG("StepCountCommand invalid value: %d", temp);
         return false;
     }
