@@ -44,7 +44,7 @@ public:
     bool IsCardDisplay() const;
     std::string GetConfigPath() const;
     std::string GetProjectID() const;
-    enum ScreenMode { DYNAMIC = 0, STATIC = 1};
+    enum class ScreenMode { DYNAMIC = 0, STATIC = 1};
     CommandParser::ScreenMode GetScreenMode() const;
     std::string GetConfigChanges() const;
     std::string GetAppResourcePath() const;
@@ -63,7 +63,7 @@ private:
     std::map<std::string, std::vector<std::string>> argsMap;
     std::map<std::string, uint32_t> regsArgsCountMap;
     std::map<std::string, std::string> regsHelpMap;
-    static CommandParser* instance;
+    static CommandParser* example;
     const std::vector<std::string> supportedDevices = {
         "liteWearable",
         "smartVision",
