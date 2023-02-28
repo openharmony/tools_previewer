@@ -21,20 +21,20 @@ using namespace OHOS::ACELite;
 
 uint32_t SensorImpl::GetBarometer(void)
 {
-    return SharedData<uint32_t>::GetData(PRESSURE_VALUE);
+    return SharedData<uint32_t>::GetData(SharedDataType::PRESSURE_VALUE);
 }
 
 uint32_t SensorImpl::GetSteps()
 {
-    return SharedData<uint32_t>::GetData(SUMSTEP_VALUE);
+    return SharedData<uint32_t>::GetData(SharedDataType::SUMSTEP_VALUE);
 }
 
 uint32_t SensorImpl::GetHeartRate()
 {
-    return SharedData<uint8_t>::GetData(HEARTBEAT_VALUE);
+    return SharedData<uint8_t>::GetData(SharedDataType::HEARTBEAT_VALUE);
 }
 
 bool SensorImpl::GetOnBodyState()
 {
-    return SharedData<bool>::GetData(WEARING_STATE);
+    return SharedData<bool>::GetData(SharedDataType::WEARING_STATE);
 }

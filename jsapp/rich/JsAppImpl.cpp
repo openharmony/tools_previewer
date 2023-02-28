@@ -135,8 +135,8 @@ void JsAppImpl::SetJsAppArgs(OHOS::Ace::Platform::AceRunArgs& args)
     SetAceVersionArgs(args, aceVersion);
     SetDeviceScreenDensity(atoi(screenDensity.c_str()),
                            CommandParser::GetInstance().GetDeviceType());
-    SetLanguage(args, SharedData<string>::GetData(LAN));
-    SetRegion(args, SharedData<string>::GetData(REGION));
+    SetLanguage(args, SharedData<string>::GetData(SharedDataType::LAN));
+    SetRegion(args, SharedData<string>::GetData(SharedDataType::REGION));
     SetScript(args, "");
     SetSystemResourcesPath(args);
     SetAppResourcesPath(args, CommandParser::GetInstance().GetAppResourcePath());
@@ -479,8 +479,8 @@ void JsAppImpl::ParseSystemParams(OHOS::Ace::Platform::AceRunArgs& args, Json::V
                                CommandParser::GetInstance().GetDeviceType());
         AdaptDeviceType(args, CommandParser::GetInstance().GetDeviceType(),
                         VirtualScreenImpl::GetInstance().GetOrignalWidth());
-        SetLanguage(args, SharedData<string>::GetData(LAN));
-        SetRegion(args, SharedData<string>::GetData(REGION));
+        SetLanguage(args, SharedData<string>::GetData(SharedDataType::LAN));
+        SetRegion(args, SharedData<string>::GetData(SharedDataType::REGION));
     } else {
         SetDeviceWidth(args, paramObj["width"].asInt());
         SetDeviceHeight(args, paramObj["height"].asInt());

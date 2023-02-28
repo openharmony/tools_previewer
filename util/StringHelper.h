@@ -13,6 +13,9 @@
  * limitations under the License.
  */
 
+#ifndef STRINGHELPER_H
+#define STRINGHELPER_H
+
 #pragma once
 #include <string>
 
@@ -85,3 +88,5 @@ public:
     static std::string StringToUtf8(const std::string& str);
     static std::string Utf8ToString(const std::string& str);
 };
+
+#endif // STRINGHELPER_H
