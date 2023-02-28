@@ -21,12 +21,12 @@
 #include "PreviewerEngineLog.h"
 #include "TraceTool.h"
 
-static CommandLineFactory::CommandTypeMap CommandLineFactory::typeMap = CommandLineFactory::CommandTypeMap();
+CommandLineFactory::CommandTypeMap CommandLineFactory::typeMap = CommandLineFactory::CommandTypeMap();
 CommandLineFactory::CommandLineFactory() {}
 
 using namespace std;
 
-static void CommandLineFactory::InitCommandMap()
+void CommandLineFactory::InitCommandMap()
 {
     CommandParser& cmdParser = CommandParser::GetInstance();
     string deviceType = cmdParser.GetDeviceType();

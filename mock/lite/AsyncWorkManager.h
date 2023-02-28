@@ -26,7 +26,7 @@
 class AsyncWorkManager {
 public:
     static AsyncWorkManager& GetInstance();
-    void AppendAsyncWork(OHOS::ACELite::AsyncWorkHandler work, unsigned char* arg);
+    void AppendAsyncWork(OHOS::ACELite::AsyncWorkHandler work, void* arg);
     void ExecAllAsyncWork();
     void ClearAllAsyncWork();
 

@@ -52,7 +52,8 @@ void VirtualScreenImpl::StartTimer()
                           GetInstance().loadDocTempBuffer + GetInstance().lengthTemp,
                           GetInstance().loadDocCopyBuffer);
             }
-            VirtualScreenImpl::GetInstance().protocolVersion = GetInstance().ProtocolVersion::LOADDOC;
+            VirtualScreenImpl::GetInstance().protocolVersion =
+                static_cast<uint16_t>(VirtualScreen::ProtocolVersion::LOADDOC);
             GetInstance().bufferSize = GetInstance().lengthTemp + GetInstance().headSize;
             GetInstance().wholeBuffer = new uint8_t[LWS_PRE + GetInstance().bufferSize];
             GetInstance().screenBuffer = GetInstance().wholeBuffer + LWS_PRE;
@@ -66,7 +67,7 @@ void VirtualScreenImpl::StartTimer()
     }
 }
 
-bool VirtualScreenImpl::LoadDocCallback(const unsigned char* data,
+bool VirtualScreenImpl::LoadDocCallback(const void* data,
                                         const size_t length,
                                         const int32_t width,
                                         const int32_t height)
@@ -99,7 +100,7 @@ bool VirtualScreenImpl::LoadDocCallback(const unsigned char* data,
     return true;
 }
 
-bool VirtualScreenImpl::CallBack(const unsigned char* data, const size_t length,
+bool VirtualScreenImpl::CallBack(const void* data, const size_t length,
                                  const int32_t width, const int32_t height)
 {
     if (VirtualScreenImpl::GetInstance().GetLoadDocFlag() < VirtualScreen::LoadDocType::FINISHED) {
@@ -179,7 +180,7 @@ VirtualScreenImpl::~VirtualScreenImpl()
     }
 }
 
-void VirtualScreenImpl::Send(const unsigned char* data, int32_t retWidth, int32_t retHeight)
+void VirtualScreenImpl::Send(const void* data, int32_t retWidth, int32_t retHeight)
 {
     if (CommandParser::GetInstance().GetScreenMode() == CommandParser::ScreenMode::STATIC
         && VirtualScreen::isOutOfSeconds) {
@@ -221,7 +222,7 @@ void VirtualScreenImpl::Send(const unsigned char* data, int32_t retWidth, int32_
     FreeJpgMemory();
 }
 
-bool VirtualScreenImpl::SendPixmap(const unsigned char* data, size_t length, int32_t retWidth, int32_t retHeight)
+bool VirtualScreenImpl::SendPixmap(const void* data, size_t length, int32_t retWidth, int32_t retHeight)
 {
     if (data == nullptr) {
         ELOG("render callback data is null.");
@@ -294,12 +295,4 @@ void VirtualScreenImpl::FreeJpgMemory()
         delete [] VirtualScreenImpl::GetInstance().loadDocCopyBuffer;
         VirtualScreenImpl::GetInstance().loadDocCopyBuffer = nullptr;
     }
-}
-
-inline void VirtualScreenImpl::WriteBuffer(const T data)
-{
-    T dataToSend = EndianUtil::ToNetworkEndian<T>(data);
-    unsigned char* startPos = reinterpret_cast<unsigned char*>(&dataToSend);
-    std::copy(startPos, startPos + sizeof(dataToSend), screenBuffer + currentPos);
-    currentPos += sizeof(dataToSend);
 }

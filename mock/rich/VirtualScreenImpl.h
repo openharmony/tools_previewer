@@ -24,9 +24,9 @@ public:
     VirtualScreenImpl& operator=(const VirtualScreenImpl&) = delete;
     static VirtualScreenImpl& GetInstance();
     static void StartTimer();
-    static bool LoadDocCallback(const unsigned char* data, const size_t length,
+    static bool LoadDocCallback(const void* data, const size_t length,
                                 const int32_t width, const int32_t height);
-    static bool CallBack(const unsigned char *data, const size_t length, const int32_t width, const int32_t height);
+    static bool CallBack(const void* data, const size_t length, const int32_t width, const int32_t height);
     static bool PageCallBack(const std::string currentRouterPath);
     static void FastPreviewCallBack(const std::string& jsonStr);
     void InitAll(std::string pipeName, std::string pipePort);
@@ -34,11 +34,17 @@ public:
 private:
     VirtualScreenImpl();
     ~VirtualScreenImpl();
-    void Send(const unsigned char* data, int32_t retWidth, int32_t retHeight);
-    bool SendPixmap(const unsigned char* data, size_t length, int32_t retWidth, int32_t retHeight);
+    void Send(const void* data, int32_t retWidth, int32_t retHeight);
+    bool SendPixmap(const void* data, size_t length, int32_t retWidth, int32_t retHeight);
     void FreeJpgMemory();
     template<class T, class = typename std::enable_if<std::is_integral<T>::value>::type>
-    void WriteBuffer(const T data);
+    void WriteBuffer(const T data)
+    {
+        T dataToSend = EndianUtil::ToNetworkEndian<T>(data);
+        unsigned char* startPos = reinterpret_cast<unsigned char*>(&dataToSend);
+        std::copy(startPos, startPos + sizeof(dataToSend), screenBuffer + currentPos);
+        currentPos += sizeof(dataToSend);
+    }
 
     bool isFirstSend;
     bool isFirstRender;

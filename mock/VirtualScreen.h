@@ -105,7 +105,7 @@ protected:
     const size_t headReservedSize = 20;         // The reserved length of the packet header is 20 bytes.
     const uint32_t headStart = 0x12345678;      // Buffer header starts with magic value 0x12345678
     const int32_t frameCountPeriod = 60 * 1000; // Frame count per minute
-    uint16_t protocolVersion = VirtualScreen::ProtocolVersion::LOADNORMAL;
+    uint16_t protocolVersion = static_cast<uint16_t>(VirtualScreen::ProtocolVersion::LOADNORMAL);
     bool isWebSocketConfiged;
     std::string currentRouter;
     std::string fastPreviewMsg;
