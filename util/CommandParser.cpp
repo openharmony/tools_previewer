@@ -23,7 +23,7 @@
 #include "TraceTool.h"
 
 using namespace std;
-CommandParser* CommandParser::instance = nullptr;
+CommandParser* CommandParser::example = nullptr;
 CommandParser::CommandParser()
     : isSendJSHeap(true),
       orignalResolutionWidth(0),
@@ -532,8 +532,8 @@ bool CommandParser::IsCardValid()
         return false;
     }
 
-    std::string deviceType = GetDeviceType();
-    auto iter = find(cardDisplayDevices.begin(), cardDisplayDevices.end(), deviceType);
+    std::string devicetype = GetDeviceType();
+    auto iter = find(cardDisplayDevices.begin(), cardDisplayDevices.end(), devicetype);
     if (iter != cardDisplayDevices.end() && card == "true") {
         isCardDisplay = true;
     }
