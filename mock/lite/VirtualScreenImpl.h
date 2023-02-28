@@ -26,7 +26,7 @@
 
 class VirtualScreenImpl : public OHOS::SoftEngine, public VirtualScreen {
 public:
-    enum MouseStatus { INDEV_STATE_RELEASE = 0, INDEV_STATE_PRESS };
+    enum class MouseStatus { INDEV_STATE_RELEASE = 0, INDEV_STATE_PRESS };
 
     static VirtualScreenImpl& GetInstance();
     static void CheckBufferSend();
