@@ -22,7 +22,6 @@ uint32_t PublicMethods::Ulltoa(uintptr_t value, int8_t (&rstStr)[MAX_ITOA_BIT])
     const int32_t RADIX_HEXADECIMAL = 16;
     const int32_t dividendLength = 10;
 
-
     auto remainder = value;
     int8_t strSpace[MAX_ITOA_BIT] = {0};
     int8_t* curPoint = strSpace;

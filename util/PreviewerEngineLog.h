@@ -16,11 +16,6 @@
 #ifndef DEBUGLOG_H
 #define DEBUGLOG_H
 
-#include <chrono>
-#include <sstream>
-#include <cstdarg>
-#include <string>
-
 #define DLOG(...) PrintLog("DEBUG", __FILE__, __FUNCTION__, __LINE__, ##__VA_ARGS__)
 #define ILOG(...) PrintLog("INFO", __FILE__, __FUNCTION__, __LINE__, ##__VA_ARGS__)
 #define WLOG(...) PrintLog("WARN", __FILE__, __FUNCTION__, __LINE__, ##__VA_ARGS__)
