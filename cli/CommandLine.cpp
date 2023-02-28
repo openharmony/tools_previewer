@@ -943,7 +943,8 @@ void ChargeModeCommand::RunGet()
 
 void ChargeModeCommand::RunSet()
 {
-    SharedData<uint8_t>::SetData(SharedDataType::BATTERY_STATUS, static_cast<uint8_t>(atoi(args["ChargeMode"].asString().data())));
+    SharedData<uint8_t>::SetData(SharedDataType::BATTERY_STATUS,
+                                 static_cast<uint8_t>(atoi(args["ChargeMode"].asString().data())));
     Json::Value result = true;
     SetCommandResult("result", result);
     ILOG("Set chargeMode run finished, the value is: %s", args["ChargeMode"].asString().c_str());
@@ -1022,7 +1023,8 @@ void HeartRateCommand::RunGet()
 
 void HeartRateCommand::RunSet()
 {
-    SharedData<uint8_t>::SetData(SharedDataType::HEARTBEAT_VALUE, static_cast<uint8_t>(atoi(args["HeartRate"].asString().data())));
+    SharedData<uint8_t>::SetData(SharedDataType::HEARTBEAT_VALUE,
+                                 static_cast<uint8_t>(atoi(args["HeartRate"].asString().data())));
     Json::Value result = true;
     SetCommandResult("result", result);
     ILOG("Set heartRate run finished, the value is: %s", args["HeartRate"].asString().c_str());
@@ -1065,7 +1067,8 @@ void StepCountCommand::RunGet()
 
 void StepCountCommand::RunSet()
 {
-    SharedData<uint32_t>::SetData(SharedDataType::SUMSTEP_VALUE, static_cast<uint32_t>(atoi(args["StepCount"].asString().data())));
+    SharedData<uint32_t>::SetData(SharedDataType::SUMSTEP_VALUE,
+                                  static_cast<uint32_t>(atoi(args["StepCount"].asString().data())));
     Json::Value result = true;
     SetCommandResult("result", result);
     ILOG("Set stepCount run finished, the value is: %s", args["StepCount"].asString().c_str());
