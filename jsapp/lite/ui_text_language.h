@@ -766,7 +766,6 @@ enum UITextLanguageTextId : uint16_t {
     T_IDS_ALT_BAR_TEXT_INFORMATION = 591,
     T_HEALTH_CALO_2_ID = 592,
     T_HEALTH_PRESSURE_ID = 593,
-    
 }; // UITextLanguageTextId
 } // namespace OHOS
 #endif // UI_TEXT_LANGUAGE_H
