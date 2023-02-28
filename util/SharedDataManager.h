@@ -18,7 +18,6 @@
 
 #include <mutex>
 #include <set>
-#include <string>
 
 enum class BrightnessMode { MANUAL = 0, AUTO, BRIGHTNESSMODE_MAX };
 
