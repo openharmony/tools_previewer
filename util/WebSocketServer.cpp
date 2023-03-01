@@ -13,10 +13,10 @@
  * limitations under the License.
  */
 
+#include <thread>
 #include "CommandLineInterface.h"
 #include "PreviewerEngineLog.h"
 #include "WebSocketServer.h"
-#include <thread>
 using namespace std;
 
 lws* WebSocketServer::webSocket = nullptr;
@@ -96,7 +96,9 @@ void WebSocketServer::sigint_handler(int sig)
 
 void WebSocketServer::StartWebsocketListening()
 {
-    signal(SIGINT, sigint_handler);
+    if (signal(SIGINT, sigint_handler) == SIG_ERR) {
+        return;
+    }
     ILOG("Begin to start websocket listening!");
     struct lws_context_creation_info contextInfo = {0};
     contextInfo.port = serverPort;

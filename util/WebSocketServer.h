@@ -17,7 +17,7 @@
 #define WEBSOCKETSERVER_H
 
 #include <thread>
-#include <signal.h>
+#include <csignal>
 #include <mutex>
 #include "libwebsockets.h"
 
@@ -34,7 +34,7 @@ public:
     void StartWebsocketListening();
     void Run();
     size_t WriteData(unsigned char* data, size_t length);
-    enum WebSocketState { INIT = -1, UNWRITEABLE = 0, WRITEABLE = 1 };
+    enum class WebSocketState { INIT = -1, UNWRITEABLE = 0, WRITEABLE = 1 };
     static WebSocketState webSocketWritable;
     static uint8_t* firstImageBuffer;
     static uint64_t firstImagebufferSize;

@@ -28,7 +28,9 @@ using namespace std;
 
 void CrashHandler::InitExceptionHandler()
 {
-    signal(SIGSEGV, ApplicationCrashHandler);
+    if (signal(SIGSEGV, ApplicationCrashHandler) == SIG_ERR) {
+        return;
+    }
 }
 
 void CrashHandler::ApplicationCrashHandler(int signal)
