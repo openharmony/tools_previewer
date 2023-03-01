@@ -126,14 +126,14 @@ static void InitSharedData()
 {
     CommandParser& parser = CommandParser::GetInstance();
     if (parser.IsSet("l")) {
-        SharedData<string>(LANGUAGE, parser.Value("l"));
+        SharedData<string>(SharedDataType::LANGUAGE, parser.Value("l"));
     } else {
-        SharedData<string>(LANGUAGE, "zh_CN");
+        SharedData<string>(SharedDataType::LANGUAGE, "zh_CN");
     }
-    string lanInfo = SharedData<string>::GetData(LANGUAGE);
-    SharedData<string>(LAN, lanInfo.substr(0, lanInfo.find("_")));
-    SharedData<string>(REGION, lanInfo.substr(lanInfo.find("_") + 1, lanInfo.length() - 1));
-    ILOG("Start language is : %s", SharedData<string>::GetData(LANGUAGE).c_str());
+    string lanInfo = SharedData<string>::GetData(SharedDataType::LANGUAGE);
+    SharedData<string>(SharedDataType::LAN, lanInfo.substr(0, lanInfo.find("_")));
+    SharedData<string>(SharedDataType::REGION, lanInfo.substr(lanInfo.find("_") + 1, lanInfo.length() - 1));
+    ILOG("Start language is : %s", SharedData<string>::GetData(SharedDataType::LANGUAGE).c_str());
 }
 
 int main(int argc, char* argv[])

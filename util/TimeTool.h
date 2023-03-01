@@ -13,28 +13,21 @@
  * limitations under the License.
  */
 
-#include "sensor_impl.h"
+#ifndef TIMETOOL_H
+#define TIMETOOL_H
 
-#include "SharedData.h"
+#include <chrono>
+#include <string>
 
-using namespace OHOS::ACELite;
+class TimeTool {
+public:
+    static std::string GetFormatTime();
+    static std::string GetTraceFormatTime();
 
-uint32_t SensorImpl::GetBarometer(void)
-{
-    return SharedData<uint32_t>::GetData(SharedDataType::PRESSURE_VALUE);
-}
+private:
+    static std::string FormateTimeNow();
+    static std::string FixedTime(int32_t time, int32_t width);
+    static std::pair<tm, int64_t> GetCurrentTime();
+};
 
-uint32_t SensorImpl::GetSteps()
-{
-    return SharedData<uint32_t>::GetData(SharedDataType::SUMSTEP_VALUE);
-}
-
-uint32_t SensorImpl::GetHeartRate()
-{
-    return SharedData<uint8_t>::GetData(SharedDataType::HEARTBEAT_VALUE);
-}
-
-bool SensorImpl::GetOnBodyState()
-{
-    return SharedData<bool>::GetData(SharedDataType::WEARING_STATE);
-}
+#endif // TIMETOOL_H

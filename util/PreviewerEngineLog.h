@@ -13,28 +13,16 @@
  * limitations under the License.
  */
 
-#include "sensor_impl.h"
+#ifndef DEBUGLOG_H
+#define DEBUGLOG_H
 
-#include "SharedData.h"
+#define DLOG(...) PrintLog("DEBUG", __FILE__, __FUNCTION__, __LINE__, ##__VA_ARGS__)
+#define ILOG(...) PrintLog("INFO", __FILE__, __FUNCTION__, __LINE__, ##__VA_ARGS__)
+#define WLOG(...) PrintLog("WARN", __FILE__, __FUNCTION__, __LINE__, ##__VA_ARGS__)
+#define ELOG(...) PrintLog("ERROR", __FILE__, __FUNCTION__, __LINE__, ##__VA_ARGS__)
+#define FLOG(...) PrintLog("FATAL", __FILE__, __FUNCTION__, __LINE__, ##__VA_ARGS__)
 
-using namespace OHOS::ACELite;
+void PrintLog(const char* level, const char* file, const char* func, int line,
+              const char* fmt, ...);
 
-uint32_t SensorImpl::GetBarometer(void)
-{
-    return SharedData<uint32_t>::GetData(SharedDataType::PRESSURE_VALUE);
-}
-
-uint32_t SensorImpl::GetSteps()
-{
-    return SharedData<uint32_t>::GetData(SharedDataType::SUMSTEP_VALUE);
-}
-
-uint32_t SensorImpl::GetHeartRate()
-{
-    return SharedData<uint8_t>::GetData(SharedDataType::HEARTBEAT_VALUE);
-}
-
-bool SensorImpl::GetOnBodyState()
-{
-    return SharedData<bool>::GetData(SharedDataType::WEARING_STATE);
-}
+#endif // DEBUGLOG_H
