@@ -97,6 +97,7 @@ void WebSocketServer::sigint_handler(int sig)
 void WebSocketServer::StartWebsocketListening()
 {
     if (signal(SIGINT, sigint_handler) == SIG_ERR) {
+        ELOG("StartWebsocketListening failed");
         return;
     }
     ILOG("Begin to start websocket listening!");
