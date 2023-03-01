@@ -55,8 +55,8 @@ std::string StringHelper::Utf8ToString(const std::string& str)
         return str;
     }
     wchar_t* pwBuf = new wchar_t[wLenAdd];
-    int doubleLen = wLenAdd * doubles;
-    if (EOK != memset_s(pwBuf, sizeof(wLenAdd) * double, 0, doubleLen)) {
+    int doubleLen = sizeof(pwBuf) * doubles;
+    if (EOK != memset_s(pwBuf, doubleLen, 0, doubleLen)) {
         delete []pwBuf;
         ELOG("pwBuf memset_s failed.");
         return str;
