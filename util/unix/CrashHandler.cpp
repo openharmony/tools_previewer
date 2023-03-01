@@ -29,6 +29,7 @@ using namespace std;
 void CrashHandler::InitExceptionHandler()
 {
     if (signal(SIGSEGV, ApplicationCrashHandler) == SIG_ERR) {
+        ELOG("InitExceptionHandler failed");
         return;
     }
 }
