@@ -13,20 +13,19 @@
  * limitations under the License.
  */
 
-#ifndef TIMETOOL_H
-#define TIMETOOL_H
+#include "ClipboardHelper.h"
+#include "ClipboardX11.h"
 
-#include <string>
+using namespace std;
 
-class TimeTool {
-public:
-    static std::string GetFormatTime();
-    static std::string GetTraceFormatTime();
+void ClipboardHelper::SetClipboardData(const std::string& data)
+{
+    ClipboardX11 clipboard;
+    clipboard.SetClipboardData(data);
+}
 
-private:
-    static std::string FormateTimeNow();
-    static std::string FixedTime(int32_t time, int32_t width);
-    static std::pair<tm, int64_t> GetCurrentTime();
-};
-
-#endif // TIMETOOL_H
+const string ClipboardHelper::GetClipboardData()
+{
+    ClipboardX11 clipboard;
+    return clipboard.GetClipboardData();
+}
