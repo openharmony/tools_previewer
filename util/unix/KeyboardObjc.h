@@ -13,20 +13,14 @@
  * limitations under the License.
  */
 
-#ifndef TIMETOOL_H
-#define TIMETOOL_H
+#ifndef KEYBOARDOBJC_H
+#define KEYBOARDOBJC_H
 
 #include <string>
 
-class TimeTool {
+class KeyboardObjc {
 public:
-    static std::string GetFormatTime();
-    static std::string GetTraceFormatTime();
-
-private:
-    static std::string FormateTimeNow();
-    static std::string FixedTime(int32_t time, int32_t width);
-    static std::pair<tm, int64_t> GetCurrentTime();
+    static short GetKeyStateByKeyName(const std::string keyName);
 };
 
-#endif // TIMETOOL_H
+#endif

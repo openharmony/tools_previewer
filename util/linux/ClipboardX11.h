@@ -13,20 +13,25 @@
  * limitations under the License.
  */
 
-#ifndef TIMETOOL_H
-#define TIMETOOL_H
+#ifndef CLIPBOARDX11_H
+#define CLIPBOARDX11_H
 
 #include <string>
+#include <X11/Xlib.h>
 
-class TimeTool {
+class ClipboardX11 {
 public:
-    static std::string GetFormatTime();
-    static std::string GetTraceFormatTime();
-
+    void SetClipboardData(const std::string& str);
+    const std::string GetClipboardData();
+    void SetCopyData(const Atom& selection, const std::string& text, const int size);
+    std::string GetPasteType(const Atom& atom);
 private:
-    static std::string FormateTimeNow();
-    static std::string FixedTime(int32_t time, int32_t width);
-    static std::pair<tm, int64_t> GetCurrentTime();
+    Display* display;
+    Window window;
+    Atom targets_atom, text_atom, UTF8, XA_ATOM = 4, XA_STRING = 31;
+    const int nFormateProp32 = 32;
+    const int nFormateProp8 = 8;
+    const int nEvenNumber = 2;
 };
 
-#endif // TIMETOOL_H
+#endif

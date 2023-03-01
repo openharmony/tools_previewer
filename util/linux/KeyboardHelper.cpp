@@ -13,20 +13,22 @@
  * limitations under the License.
  */
 
-#ifndef TIMETOOL_H
-#define TIMETOOL_H
+#include "KeyboardHelper.h"
+#include <X11/XKBlib.h>
 
-#include <string>
-
-class TimeTool {
-public:
-    static std::string GetFormatTime();
-    static std::string GetTraceFormatTime();
-
-private:
-    static std::string FormateTimeNow();
-    static std::string FixedTime(int32_t time, int32_t width);
-    static std::pair<tm, int64_t> GetCurrentTime();
-};
-
-#endif // TIMETOOL_H
+short KeyboardHelper::GetKeyStateByKeyName(const std::string keyName)
+{
+    std::string name;
+    if (keyName == "CapsLock") {
+        name = "Caps Lock";
+    } else if (keyName == "NumLock") {
+        name = "Num Lock";
+    } else {
+        return -1;
+    }
+    Bool state;
+    Display* display = XOpenDisplay((char*)0);
+    Atom capsLock = XInternAtom(display, name.c_str(), False);
+    XkbGetNamedIndicator(display, capsLock, NULL, &state, NULL, NULL);
+    return state ? 1 : 0;
+}
