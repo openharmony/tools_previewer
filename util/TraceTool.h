@@ -13,20 +13,28 @@
  * limitations under the License.
  */
 
-#ifndef TIMETOOL_H
-#define TIMETOOL_H
+#ifndef TRACETOOL_H
+#define TRACETOOL_H
 
-#include <string>
+#include <memory>
 
-class TimeTool {
+#include "LocalSocket.h"
+#include "json.h"
+
+class TraceTool {
 public:
-    static std::string GetFormatTime();
-    static std::string GetTraceFormatTime();
+    static TraceTool& GetInstance();
+    static void SendTraceData(const Json::Value&);
+    void InitPipe();
+    void HandleTrace(const std::string msg) const;
 
 private:
-    static std::string FormateTimeNow();
-    static std::string FixedTime(int32_t time, int32_t width);
-    static std::pair<tm, int64_t> GetCurrentTime();
+    TraceTool();
+    ~TraceTool();
+    std::unique_ptr<LocalSocket> socket;
+    Json::Value GetBaseInfo() const;
+    std::string GetTracePipeName() const;
+    bool isReady;
 };
 
-#endif // TIMETOOL_H
+#endif // TRACETOOL_H
