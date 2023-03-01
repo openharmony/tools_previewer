@@ -92,10 +92,10 @@ static void InitLiteWearable(UIFont* font, const string fontPath)
              string(fontPath + "font.bin").data());
         FLOG("InitFontEngine SetFontPath failed. bitmap fontPath: %s", string(fontPath + "font.bin").data());
     }
-    if (SharedData<string>::GetData(LANGUAGE) == "zh-CN") {
+    if (SharedData<string>::GetData(SharedDataType::LANGUAGE) == "zh-CN") {
         font->SetCurrentLangId(LANGUAGE_CH);
     }
-    if (SharedData<string>::GetData(LANGUAGE) == "en-US") {
+    if (SharedData<string>::GetData(SharedDataType::LANGUAGE) == "en-US") {
         font->SetCurrentLangId(LANGUAGE_GB);
     }
 }
@@ -201,7 +201,7 @@ void JsAppImpl::Interrupt()
 void JsAppImpl::ThreadCallBack()
 {
     OHOS::GraphicStartUp::Init();
-    GLOBAL_ConfigLanguage(SharedData<string>::GetData(LANGUAGE).data());
+    GLOBAL_ConfigLanguage(SharedData<string>::GetData(SharedDataType::LANGUAGE).data());
     InitHalScreen();
     InitFontEngine();
     VirtualScreenImpl::GetInstance().InitAll(pipeName, pipePort);
@@ -209,7 +209,7 @@ void JsAppImpl::ThreadCallBack()
     InitTimer();
 
     thread::id curThreadId = this_thread::get_id();
-    SharedData<string>::AppendNotify(LANGUAGE, TimerTaskHandler::CheckLanguageChanged, curThreadId);
+    SharedData<string>::AppendNotify(SharedDataType::LANGUAGE, TimerTaskHandler::CheckLanguageChanged, curThreadId);
 
     CppTimerManager& manager = CppTimerManager::GetTimerManager();
     while (!isInterrupt) {

@@ -13,28 +13,16 @@
  * limitations under the License.
  */
 
-#include "sensor_impl.h"
+#ifndef LOCALDATE_H
+#define LOCALDATE_H
 
-#include "SharedData.h"
+#include <ctime>
 
-using namespace OHOS::ACELite;
+class LocalDate {
+public:
+    LocalDate();
+    virtual ~LocalDate();
+    static void GmTimeSafe(tm& utcTime, const time_t& time);
+};
 
-uint32_t SensorImpl::GetBarometer(void)
-{
-    return SharedData<uint32_t>::GetData(SharedDataType::PRESSURE_VALUE);
-}
-
-uint32_t SensorImpl::GetSteps()
-{
-    return SharedData<uint32_t>::GetData(SharedDataType::SUMSTEP_VALUE);
-}
-
-uint32_t SensorImpl::GetHeartRate()
-{
-    return SharedData<uint8_t>::GetData(SharedDataType::HEARTBEAT_VALUE);
-}
-
-bool SensorImpl::GetOnBodyState()
-{
-    return SharedData<bool>::GetData(SharedDataType::WEARING_STATE);
-}
+#endif // LOCALDATE_H

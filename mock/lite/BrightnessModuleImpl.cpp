@@ -23,7 +23,7 @@ using namespace OHOS::ACELite;
 
 int32_t BrightnessImpl::SetValueImpl(uint8_t value)
 {
-    if (!SharedData<uint8_t>::SetData(BRIGHTNESS_VALUE, value)) {
+    if (!SharedData<uint8_t>::SetData(SharedDataType::BRIGHTNESS_VALUE, value)) {
         return EC_API_INVALID_PARAM;
     }
     ILOG("Set screen brightness value: %d", value);
@@ -32,14 +32,14 @@ int32_t BrightnessImpl::SetValueImpl(uint8_t value)
 
 int32_t BrightnessImpl::GetValueImpl(uint8_t& value)
 {
-    value = SharedData<uint8_t>::GetData(BRIGHTNESS_VALUE);
+    value = SharedData<uint8_t>::GetData(SharedDataType::BRIGHTNESS_VALUE);
     ILOG("Get screen brightness value: %d", value);
     return 0;
 }
 
 int32_t BrightnessImpl::SetModeImpl(uint8_t mode)
 {
-    if (!SharedData<uint8_t>::SetData(BRIGHTNESS_MODE, mode)) {
+    if (!SharedData<uint8_t>::SetData(SharedDataType::BRIGHTNESS_MODE, mode)) {
         return EC_API_INVALID_PARAM;
     }
     ILOG("Set screen brightness mode: %d", mode);
@@ -48,14 +48,14 @@ int32_t BrightnessImpl::SetModeImpl(uint8_t mode)
 
 int32_t BrightnessImpl::GetModeImpl(uint8_t& mode)
 {
-    mode = SharedData<uint8_t>::GetData(BRIGHTNESS_MODE);
+    mode = SharedData<uint8_t>::GetData(SharedDataType::BRIGHTNESS_MODE);
     ILOG("Get screen brightness mode: %d", mode);
     return 0;
 }
 
 void BrightnessImpl::SetKeepScreenOnImpl(bool keepScreenOn)
 {
-    SharedData<bool>::SetData(KEEP_SCREEN_ON, keepScreenOn);
+    SharedData<bool>::SetData(SharedDataType::KEEP_SCREEN_ON, keepScreenOn);
     ILOG("Set screen keep on: %d", keepScreenOn);
 }
 

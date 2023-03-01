@@ -13,28 +13,20 @@
  * limitations under the License.
  */
 
-#include "sensor_impl.h"
+#ifndef MODELCONFIG_H
+#define MODELCONFIG_H
 
-#include "SharedData.h"
+#include <cstdint>
+#include <string>
 
-using namespace OHOS::ACELite;
+struct ModelConfig final {
+public:
+    std::string deviceType;
+    std::string modelName;
+    std::string brandName;
+    std::string manufactureName;
+    std::string productName;
+    int screenDensity;
+};
 
-uint32_t SensorImpl::GetBarometer(void)
-{
-    return SharedData<uint32_t>::GetData(SharedDataType::PRESSURE_VALUE);
-}
-
-uint32_t SensorImpl::GetSteps()
-{
-    return SharedData<uint32_t>::GetData(SharedDataType::SUMSTEP_VALUE);
-}
-
-uint32_t SensorImpl::GetHeartRate()
-{
-    return SharedData<uint8_t>::GetData(SharedDataType::HEARTBEAT_VALUE);
-}
-
-bool SensorImpl::GetOnBodyState()
-{
-    return SharedData<bool>::GetData(SharedDataType::WEARING_STATE);
-}
+#endif // MODELCONFIG_H

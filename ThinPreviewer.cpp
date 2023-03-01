@@ -101,26 +101,28 @@ static void DataChangeCheck()
 static void InitSharedData()
 {
     // The brightness ranges from 1 to 255. The default value is 255.
-    SharedData<uint8_t>(BRIGHTNESS_VALUE, 255, 1, 255);
-    SharedData<uint8_t>(BRIGHTNESS_MODE, MANUAL, MANUAL, AUTO);
-    SharedData<bool>(KEEP_SCREEN_ON, true);
-    SharedData<uint8_t>(BATTERY_STATUS, NOCHARGE, NOCHARGE, CHARGING);
+    SharedData<uint8_t>(SharedDataType::BRIGHTNESS_VALUE, 255, 1, 255);
+    SharedData<uint8_t>(SharedDataType::BRIGHTNESS_MODE, (uint8_t)BrightnessMode::MANUAL,
+                        (uint8_t)BrightnessMode::MANUAL, (uint8_t)BrightnessMode::AUTO);
+    SharedData<bool>(SharedDataType::KEEP_SCREEN_ON, true);
+    SharedData<uint8_t>(SharedDataType::BATTERY_STATUS, (uint8_t)ChargeState::NOCHARGE,
+                        (uint8_t)ChargeState::NOCHARGE, (uint8_t)ChargeState::CHARGING);
     // Battery level range: 0.0–1.0; default: 1.0
-    SharedData<double>(BATTERY_LEVEL, 1.0, 0.0, 1.0);
+    SharedData<double>(SharedDataType::BATTERY_LEVEL, 1.0, 0.0, 1.0);
     // Heart rate range: 0 to 255. The default value is 80.
-    SharedData<uint8_t>(HEARTBEAT_VALUE, 80, 0, 255);
+    SharedData<uint8_t>(SharedDataType::HEARTBEAT_VALUE, 80, 0, 255);
     // The value ranges from 0 to 999999. The default value is 0.
-    SharedData<uint32_t>(SUMSTEP_VALUE, 0, 0, 999999);
+    SharedData<uint32_t>(SharedDataType::SUMSTEP_VALUE, 0, 0, 999999);
     // The volume ranges from 0.0 to 1.0. The default value is 1.0.
-    SharedData<double>(VOLUME_VALUE, 1.0, 0.0, 1.0);
+    SharedData<double>(SharedDataType::VOLUME_VALUE, 1.0, 0.0, 1.0);
     // The atmospheric pressure ranges from 0 to 999900. The default value is 101325.
-    SharedData<uint32_t>(PRESSURE_VALUE, 101325, 0, 999900);
-    SharedData<bool>(WEARING_STATE, true);
-    SharedData<string>(LANGUAGE, "zh-CN");
+    SharedData<uint32_t>(SharedDataType::PRESSURE_VALUE, 101325, 0, 999900);
+    SharedData<bool>(SharedDataType::WEARING_STATE, true);
+    SharedData<string>(SharedDataType::LANGUAGE, "zh-CN");
     // The value ranges from 180 to 180. The default value is 0.
-    SharedData<double>(LONGITUDE, 0, -180, 180);
+    SharedData<double>(SharedDataType::LONGITUDE, 0, -180, 180);
     // The value ranges from -90 to 90. The default value is 0.
-    SharedData<double>(LATITUDE, 0, -90, 90);
+    SharedData<double>(SharedDataType::LATITUDE, 0, -90, 90);
 }
 
 static void SendJsHeapData()
@@ -179,7 +181,8 @@ int main(int argc, char* argv[])
 
     // Registering and monitoring the changes of the brightness and volume
     thread::id curThreadId = this_thread::get_id();
-    SharedData<uint8_t>::AppendNotify(BRIGHTNESS_VALUE, TimerTaskHandler::CheckBrightnessValueChanged, curThreadId);
+    SharedData<uint8_t>::AppendNotify(SharedDataType::BRIGHTNESS_VALUE,
+                                      TimerTaskHandler::CheckBrightnessValueChanged, curThreadId);
 
     while (!Interrupter::IsInterrupt()) {
         CommandLineInterface::GetInstance().ProcessCommand();

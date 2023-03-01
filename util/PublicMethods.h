@@ -13,28 +13,23 @@
  * limitations under the License.
  */
 
-#include "sensor_impl.h"
+#ifndef PUBLICMETHODS_H
+#define PUBLICMETHODS_H
 
-#include "SharedData.h"
+#include <string>
 
-using namespace OHOS::ACELite;
+#ifdef _WIN32
+#include <windows.h>
+#endif // _WIN32
 
-uint32_t SensorImpl::GetBarometer(void)
-{
-    return SharedData<uint32_t>::GetData(SharedDataType::PRESSURE_VALUE);
-}
+class PublicMethods final {
+public:
+    static const int32_t MAX_ITOA_BIT = 65;
+    PublicMethods() = default;
+    virtual ~PublicMethods() = default;
+    PublicMethods& operator=(const PublicMethods&) = delete;
+    PublicMethods(const PublicMethods&) = delete;
+    static uint32_t Ulltoa(uintptr_t value, int8_t (&rstStr)[MAX_ITOA_BIT]);
+};
 
-uint32_t SensorImpl::GetSteps()
-{
-    return SharedData<uint32_t>::GetData(SharedDataType::SUMSTEP_VALUE);
-}
-
-uint32_t SensorImpl::GetHeartRate()
-{
-    return SharedData<uint8_t>::GetData(SharedDataType::HEARTBEAT_VALUE);
-}
-
-bool SensorImpl::GetOnBodyState()
-{
-    return SharedData<bool>::GetData(SharedDataType::WEARING_STATE);
-}
+#endif // LOCALSOCKET_H

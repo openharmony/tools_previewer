@@ -13,28 +13,24 @@
  * limitations under the License.
  */
 
-#include "sensor_impl.h"
+#include "SharedDataManager.h"
 
-#include "SharedData.h"
+std::set<SharedDataManager::Checker> SharedDataManager::checkers;
+std::mutex SharedDataManager::mutex;
 
-using namespace OHOS::ACELite;
-
-uint32_t SensorImpl::GetBarometer(void)
+void SharedDataManager::AddChecker(const Checker checker)
 {
-    return SharedData<uint32_t>::GetData(SharedDataType::PRESSURE_VALUE);
+    mutex.lock();
+    checkers.insert(checker);
+    mutex.unlock();
 }
 
-uint32_t SensorImpl::GetSteps()
+void SharedDataManager::CheckTick()
 {
-    return SharedData<uint32_t>::GetData(SharedDataType::SUMSTEP_VALUE);
-}
-
-uint32_t SensorImpl::GetHeartRate()
-{
-    return SharedData<uint8_t>::GetData(SharedDataType::HEARTBEAT_VALUE);
-}
-
-bool SensorImpl::GetOnBodyState()
-{
-    return SharedData<bool>::GetData(SharedDataType::WEARING_STATE);
+    mutex.lock();
+    auto tempCheckers = checkers;
+    mutex.unlock();
+    for (auto checker : tempCheckers) {
+        checker();
+    }
 }

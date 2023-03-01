@@ -111,8 +111,8 @@ float VirtualLocation::GetAccuracy() const
 
 bool VirtualLocation::IsPostionChanged()
 {
-    double longitude = SharedData<double>::GetData(LONGITUDE);
-    double latitude = SharedData<double>::GetData(LATITUDE);
+    double longitude = SharedData<double>::GetData(SharedDataType::LONGITUDE);
+    double latitude = SharedData<double>::GetData(SharedDataType::LATITUDE);
     if (std::abs(longitude - longitudeChecked) < pow(PRECISION_BASE_NUMBER, -SharedDataManager::POSITIONPRECISION) &&
         std::abs(latitude - latitudeChecked) < pow(PRECISION_BASE_NUMBER, -SharedDataManager::POSITIONPRECISION)) {
         return false;
