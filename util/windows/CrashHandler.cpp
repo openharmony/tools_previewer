@@ -57,7 +57,7 @@ void CrashHandler::RecordCallStack(const CONTEXT *context)
 
     while (true) {
         if (!StackWalk64(imageType, hProcess, hThread, &sf, &crashContext, NULL,
-                        SymFunctionTableAccess64, SymGetModuleBase64, NULL)) {
+                         SymFunctionTableAccess64, SymGetModuleBase64, NULL)) {
             break;
         }
         if (sf.AddrFrame.Offset == 0) {
