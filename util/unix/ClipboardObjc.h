@@ -13,20 +13,15 @@
  * limitations under the License.
  */
 
-#ifndef TIMETOOL_H
-#define TIMETOOL_H
+#ifndef CLIPBOARDOBJC_H
+#define CLIPBOARDOBJC_H
 
 #include <string>
 
-class TimeTool {
+class ClipboardObjc {
 public:
-    static std::string GetFormatTime();
-    static std::string GetTraceFormatTime();
-
-private:
-    static std::string FormateTimeNow();
-    static std::string FixedTime(int32_t time, int32_t width);
-    static std::pair<tm, int64_t> GetCurrentTime();
+    static void SetClipboardData(const std::string& data);
+    static const std::string GetClipboardData();
 };
 
-#endif // TIMETOOL_H
+#endif

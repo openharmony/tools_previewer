@@ -13,20 +13,12 @@
  * limitations under the License.
  */
 
-#ifndef TIMETOOL_H
-#define TIMETOOL_H
+#include "LocalDate.h"
 
-#include <string>
+LocalDate::LocalDate() {}
+LocalDate::~LocalDate() {}
 
-class TimeTool {
-public:
-    static std::string GetFormatTime();
-    static std::string GetTraceFormatTime();
-
-private:
-    static std::string FormateTimeNow();
-    static std::string FixedTime(int32_t time, int32_t width);
-    static std::pair<tm, int64_t> GetCurrentTime();
+void LocalDate::GmTimeSafe(tm& utcTime, const time_t& time)
+{
+    gmtime_r(&time, &utcTime);
 };
-
-#endif // TIMETOOL_H
