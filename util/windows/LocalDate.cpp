@@ -20,5 +20,7 @@ LocalDate::~LocalDate() {}
 
 void LocalDate::GmTimeSafe(tm& utcTime, const time_t& time)
 {
-    gmtime_s(&utcTime, &time);
+    if (gmtime_s(&utcTime, &time)) {
+        return;
+    }
 };
