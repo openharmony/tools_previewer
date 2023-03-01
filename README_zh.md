@@ -10,7 +10,7 @@
 通过调用ArkUI框架接口，实现页面预览功能。支持在Windows、Linux、MacOS上运行ArkTS及JS应用，并输出页面预览图片。
 
 **图 1**  预览器组件结构<a name="fig2606133765017"></a>  
-![](figures/预览器组件结构图.png "预览器组件结构")
+![](figures/预览器组件结构图.PNG "预览器组件结构")
 
 
 ## 目录<a name="section1791423143211"></a>
