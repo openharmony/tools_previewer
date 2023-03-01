@@ -39,7 +39,7 @@ const string ClipboardX11::GetClipboardData()
     int ret = DefaultScreen(display);
     window = XCreateSimpleWindow(display, RootWindow(display, ret), 0, 0, 1, 1, 0,
                                  BlackPixel(display, ret), WhitePixel(display, ret));
-    string retStr;
+    string retStr; // NOLINT
     UTF8 = XInternAtom(display, "UTF8_STRING", True);
     if (UTF8 != None) retStr = GetPasteType(UTF8);
     if (retStr.empty()) retStr = GetPasteType(XA_STRING);
