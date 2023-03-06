@@ -26,7 +26,11 @@ uint8_t* WebSocketServer::firstImageBuffer = nullptr;
 uint64_t WebSocketServer::firstImagebufferSize = 0;
 int8_t* WebSocketServer::receivedMessage = nullptr;
 
-WebSocketServer::WebSocketServer() : serverThread(nullptr), serverPort(0) {}
+WebSocketServer::WebSocketServer() : serverThread(nullptr), serverPort(0)
+{
+    protocols[0] = {"ws", WebSocketServer::ProtocolCallback, 0, MAX_PAYLOAD_SIZE};
+    protocols[1] = {NULL, NULL, 0, 0};
+}
 
 WebSocketServer::~WebSocketServer() {}
 
@@ -40,15 +44,6 @@ void WebSocketServer::SetServerPort(int port)
 {
     serverPort = port;
 }
-
-struct lws_protocols protocols[] = {
-    {
-        "ws", WebSocketServer::ProtocolCallback, 0, MAX_PAYLOAD_SIZE
-    },
-    {
-        NULL, NULL, 0, 0
-    }
-};
 
 int WebSocketServer::ProtocolCallback(struct lws* wsi,
                                       enum lws_callback_reasons reason,
@@ -96,7 +91,8 @@ void WebSocketServer::sigint_handler(int sig)
 
 void WebSocketServer::StartWebsocketListening()
 {
-    if (signal(SIGINT, sigint_handler) == SIG_ERR) {
+    const auto sig = signal(SIGINT, sigint_handler);
+    if (sig == SIG_ERR) {
         ELOG("StartWebsocketListening failed");
         return;
     }
