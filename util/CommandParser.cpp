@@ -52,8 +52,8 @@ CommandParser::CommandParser()
     Register("-s", 1, "Local socket name <socket-name> for command line interface.");
     Register("-v", 0, "Print the periviewer engine version.");
     Register("-h", 0, "Print the usage help.");
-    Register("-or", 2, "Original resolution <width> <height>");
-    Register("-cr", 2, "Compression resolution <width> <height>");
+    Register("-or", 2, "Original resolution <width> <height>"); // 2 arguments
+    Register("-cr", 2, "Compression resolution <width> <height>"); // 2 arguments
     Register("-f", 1, "config path <path>");
     Register("-hs", 1, "JS Heap <size>");
     Register("-hf", 1, "JS Send Heap <flag>");
