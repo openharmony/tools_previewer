@@ -26,7 +26,8 @@ uint8_t* WebSocketServer::firstImageBuffer = nullptr;
 uint64_t WebSocketServer::firstImagebufferSize = 0;
 int8_t* WebSocketServer::receivedMessage = nullptr;
 
-WebSocketServer::WebSocketServer() : serverThread(nullptr), serverPort(0) {
+WebSocketServer::WebSocketServer() : serverThread(nullptr), serverPort(0)
+{
     protocols[0] = {"ws", WebSocketServer::ProtocolCallback, 0, MAX_PAYLOAD_SIZE};
     protocols[1] = {NULL, NULL, 0, 0};
 }
