@@ -21,9 +21,6 @@
 #include <mutex>
 #include "libwebsockets.h"
 
-constexpr int MAX_PAYLOAD_SIZE = 6400000;
-constexpr int WEBSOCKET_SERVER_TIMEOUT = 1000;
-
 class WebSocketServer {
 public:
     WebSocketServer& operator=(const WebSocketServer&) = delete;
@@ -51,6 +48,9 @@ private:
     static lws* webSocket;
     static bool interrupted;
     static int8_t* receivedMessage;
+    static const int MAX_PAYLOAD_SIZE = 6400000;
+    static const int WEBSOCKET_SERVER_TIMEOUT = 1000;
+    struct lws_protocols protocols[2];
 };
 
 #endif // WEBSOCKETSERVER_H
