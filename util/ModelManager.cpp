@@ -21,7 +21,7 @@
 using namespace std;
 
 vector<ModelConfig> ModelManager::configList = { // NOLINT
-    {"liteWearable", "VID-B19", "HUAWEI", "HUAWEI", "VID-B19", 2},
+    {"liteWearable", "***", "***", "***", "***", 2},
     {"smartVision", "***", "***", "***", "***", 2},
 };
 
