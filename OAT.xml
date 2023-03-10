@@ -58,6 +58,7 @@ Note:If the text contains special characters, please escape them according to th
         <filefilterlist>
             <filefilter name="binaryFileTypePolicyFilter" desc="二进制文件校验策略的过滤条件" >
                 <filteritem type="filepath" name="figures/预览器组件架构图.PNG" desc="自研的二进制图片"/>
+                <filteritem type="filepath" name="figures/Previewer-Component-Architecture.PNG" desc="自研的二进制图片"/>
             </filefilter>
         </filefilterlist>
     </oatconfig>
