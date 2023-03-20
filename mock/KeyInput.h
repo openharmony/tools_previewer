@@ -18,11 +18,13 @@
 
 #include <cstdint>
 #include <vector>
+#include <string>
 
 class KeyInput {
 public:
     virtual void SetKeyEvent(const int32_t keyCodeVal, const int32_t keyActionVal,
-                             const std::vector<int32_t> pressedCodesVal) {};
+                             const std::vector<int32_t> pressedCodesVal,
+                             const std::string keyStrVal) {};
     virtual void SetCodePoint(const unsigned int codePointVal) {};
     virtual void DispatchOsInputMethodEvent() const {};
     virtual void DispatchOsKeyEvent() const {};
@@ -33,6 +35,7 @@ protected:
     unsigned int codePoint; // unicode for IME
     int32_t keyCode;
     int32_t keyAction;
+    std::string keyString;
 };
 
 #endif // KEYINPUT_H

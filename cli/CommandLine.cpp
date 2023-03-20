@@ -1254,7 +1254,8 @@ bool KeyPressCommand::IsKeyArgsValid() const
     if (!args.isMember("keyCode") || !args["keyCode"].isInt() || !args["keyAction"].isInt() ||
         !args.isMember("keyAction") || !args["keyAction"].isInt() ||
         !args.isMember("pressedCodes") || !args["pressedCodes"].isArray() ||
-        args["pressedCodes"].size() < 1) {
+        args["pressedCodes"].size() < 1 || !args.isMember("keyString") ||
+        !args["keyString"].isString()) {
         ELOG("Param keyEvent's value is invalid.");
         return false;
     }
@@ -1308,7 +1309,8 @@ void KeyPressCommand::RunAction()
         for (unsigned int i = 0; i < pressedCodes.size(); i++) {
             pressedCodesVec.push_back(pressedCodes[i].asInt());
         }
-        KeyInputImpl::GetInstance().SetKeyEvent(keyCode, keyAction, pressedCodesVec);
+        string keyString = args["keyString"].asString();
+        KeyInputImpl::GetInstance().SetKeyEvent(keyCode, keyAction, pressedCodesVec, keyString);
         KeyInputImpl::GetInstance().DispatchOsKeyEvent();
     }
     SetCommandResult("result", true);
