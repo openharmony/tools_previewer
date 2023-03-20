@@ -34,7 +34,8 @@ void KeyInputImpl::DispatchOsKeyEvent() const
 }
 
 void KeyInputImpl::SetKeyEvent(const int32_t keyCodeVal, const int32_t keyActionVal,
-                               const std::vector<int32_t> pressedCodesVal)
+                               const std::vector<int32_t> pressedCodesVal,
+                               const std::string keyStrVal)
 {
 }
 
