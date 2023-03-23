@@ -70,11 +70,12 @@ void KeyInputImpl::DispatchOsKeyEvent() const
     keyEvent.action = KeyAction(keyAction);
     keyEvent.pressedCodes = pressedCodes;
     keyEvent.timeStamp = chrono::high_resolution_clock::now();
+    keyEvent.key = keyString.c_str();
     Platform::EventDispatcher::GetInstance().DispatchKeyEvent(keyEvent);
 }
 
 void KeyInputImpl::SetKeyEvent(const int32_t keyCodeVal, const int32_t keyActionVal,
-                               const std::vector<int32_t> pressedCodesVal)
+                               const vector<int32_t> pressedCodesVal, const string keyStrVal)
 {
     keyCode = keyCodeVal;
     keyAction = keyActionVal;
@@ -82,6 +83,7 @@ void KeyInputImpl::SetKeyEvent(const int32_t keyCodeVal, const int32_t keyAction
     for (int32_t num : pressedCodesVal) {
         pressedCodes.push_back(KeyCode(num));
     }
+    keyString = keyStrVal;
 }
 
 void KeyInputImpl::SetCodePoint(const unsigned int codePointVal)
