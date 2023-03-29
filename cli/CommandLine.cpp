@@ -1254,10 +1254,12 @@ bool KeyPressCommand::IsKeyArgsValid() const
     if (!args.isMember("keyCode") || !args["keyCode"].isInt() || !args["keyAction"].isInt() ||
         !args.isMember("keyAction") || !args["keyAction"].isInt() ||
         !args.isMember("pressedCodes") || !args["pressedCodes"].isArray() ||
-        args["pressedCodes"].size() < 1 || !args.isMember("keyString") ||
-        !args["keyString"].isString()) {
+        args["pressedCodes"].size() < 1 || (args.isMember("keyString") && !args["keyString"].isString())) {
         ELOG("Param keyEvent's value is invalid.");
         return false;
+    }
+    if (!args.isMember("keyString")) {
+        ILOG("Param keyString is lost, it will be empty string.");
     }
     if (args["keyAction"].asInt() < minActionVal || args["keyAction"].asInt() > maxActionVal) {
         ELOG("Param keyAction's value is invalid,value range %d-%d.", minActionVal, maxActionVal);
@@ -1309,7 +1311,10 @@ void KeyPressCommand::RunAction()
         for (unsigned int i = 0; i < pressedCodes.size(); i++) {
             pressedCodesVec.push_back(pressedCodes[i].asInt());
         }
-        string keyString = args["keyString"].asString();
+        string keyString = "";
+        if (args.isMember("keyString") && args["keyString"].isString()) {
+            keyString = args["keyString"].asString();
+        }
         KeyInputImpl::GetInstance().SetKeyEvent(keyCode, keyAction, pressedCodesVec, keyString);
         KeyInputImpl::GetInstance().DispatchOsKeyEvent();
     }
