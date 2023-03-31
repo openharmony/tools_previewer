@@ -14,8 +14,9 @@
 import("//build/ohos.gni")
 import("//foundation/arkui/ace_engine/ace_config.gni")
 
-prebuilt_js_api_mock_path = get_label_info(":gen_snapshot_jsmock", "target_out_dir") +
-                            "/dist/jsMockSystemPlugin.js"
+prebuilt_js_api_mock_path =
+    get_label_info(":gen_snapshot_jsmock", "target_out_dir") +
+    "/dist/jsMockSystemPlugin.js"
 
 mock_root = "//tools_previewer/automock"
 
@@ -41,7 +42,8 @@ action("gen_snapshot_jsmock") {
   use_mac = host_os == "mac"
 
   if (is_standard_system || is_cross_platform_build) {
-    node_modules = "//prebuilts/build-tools/common/automock/mock-generate/node_modules"
+    node_modules =
+        "//prebuilts/build-tools/common/automock/mock-generate/node_modules"
     if (use_mac) {
       nodejs_path =
           "//prebuilts/build-tools/common/nodejs/node-v12.18.4-darwin-x64"
@@ -63,13 +65,14 @@ action("gen_snapshot_jsmock") {
   }
 
   buildfile_jsmock = "$mock_root/build_jsmock_system_plugin.js"
+
   #buildfile_native_min = "$mock_root/build_strip_native_min.js"
 
   package_file = "$mock_root/mock-generate/package.json"
   tsconfig = "$mock_root/mock-generate/tsconfig.json"
   eslint = "$mock_root/mock-generate/.eslintrc"
   css_what = "//third_party/css-what"
-  
+
   args = [
     rebase_path(buildfile_jsmock, root_build_dir),
     rebase_path(nodejs_path, root_build_dir),
@@ -86,13 +89,11 @@ action("gen_snapshot_jsmock") {
     is_preview_engine,
   ]
 
-  inputs = [ 
+  inputs = [
     # config of compiler
     "./mock-generate/.eslintrc",
     "build_jsmock_system_plugin.js",
     "./mock-generate/tsconfig.json",
   ]
-  outputs = [
-    prebuilt_js_api_mock_path,
-  ]
+  outputs = [ prebuilt_js_api_mock_path ]
 }
