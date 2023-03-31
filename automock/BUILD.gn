@@ -18,10 +18,10 @@ prebuilt_js_api_mock_path =
     get_label_info(":gen_snapshot_jsmock", "target_out_dir") +
     "/dist/jsMockSystemPlugin.js"
 
-mock_root = "//tools_previewer/automock"
+mock_root = "."
 
 action("gen_node_modules") {
-  script = "//tools_previewer/automock/prebuild_env.sh"
+  script = "./prebuild_env.sh"
   args = []
   inputs = [
     "package.json",
