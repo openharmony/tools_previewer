@@ -33,10 +33,9 @@ case $(uname -s) in
         echo "Unsupported host platform: $(uname -s)"
         exit 1
 esac
-#设置nodejs版本
-node_js_ver=v12.18.4
+
 #nodejs文件夹名称
-node_js_name=node-${node_js_ver}-${host_platform}-x64
+node_js_name=current
 #到automock目录
 cd ${code_dir}/automock/mock-generate/
 #设置环境变量为下载的nodejs
@@ -51,7 +50,7 @@ cd ${code_dir}
 if [ -d "${code_dir}/prebuilts/build-tools/common/automock/mock-generate" ]; then
     #转义输出，不换行
     echo -e "\n"
-    echo "${code_dir}/prebuilts/build-tools/common/automock/mock-generate already exist, it will be replaced with node-${node_js_ver}"
+    echo "${code_dir}/prebuilts/build-tools/common/automock/mock-generate already exist, it will be replaced"
     #删除原目录
     /bin/rm -rf ${code_dir}/prebuilts/build-tools/common/automock/mock-generate
     echo -e "\n"
