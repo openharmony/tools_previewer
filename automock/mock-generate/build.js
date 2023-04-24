@@ -17,7 +17,7 @@ const fs = require('fs');
 const { spawnSync } = require('child_process');
 const path = require('path');
 const os = require('os');
-function compileMock() {
+function compileMock(apiInputPath) {
   const mockJsPath = path.join(__dirname, '..', './runtime/main/extend/systemplugin');
   let nodeDir = '';
   if (os.platform() === 'linux') {
@@ -28,7 +28,7 @@ function compileMock() {
   
   const bat = spawnSync(`
   ${path.join(__dirname, '..', nodeDir)} ${path.join(__dirname, '..','./node_modules/typescript/bin/tsc')} && 
-  ${path.join(__dirname, '..', nodeDir)} ${path.join(__dirname, 'dist')}/main.js && 
+  ${path.join(__dirname, '..', nodeDir)} ${path.join(__dirname, 'dist')}/main.js ${apiInputPath} && 
   ${path.join(__dirname, '..', nodeDir)} ${path.join(__dirname, '..', './node_modules/eslint/bin/eslint.js')} 
   -c .eslintrc --fix ${mockJsPath}/**/*.js`, {
     cwd: __dirname,
@@ -36,4 +36,5 @@ function compileMock() {
   });
 }
 
-compileMock();
+const apiInputPath = process.argv[2];
+compileMock(apiInputPath);
