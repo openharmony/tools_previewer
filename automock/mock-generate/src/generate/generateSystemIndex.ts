@@ -39,13 +39,13 @@ export function generateSystemIndex(): string {
     }
   });
   systemIndex += `import {mockRequireNapiFun} from './napi/index';\n`;
-  systemIndex += `export function mockSystemPlugin() {
+  systemIndex += `;(function mockSystemPlugin() {
     global.regeneratorRuntime = regeneratorRuntime
     global.systemplugin = {}
     global.ohosplugin = {}\n`;
   systemIndex += exportFunction;
   systemIndex += `mockRequireNapiFun();\n`;
-  systemIndex += '}';
+  systemIndex += '}());';
   return systemIndex;
 }
 

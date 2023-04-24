@@ -84,16 +84,16 @@ function mkdirsSync(dirname) {
   }
 }
 
-function main() {
+function main(apiInputPath) {
   let interfaceRootDir = '';
   if (os.platform() === 'linux' || os.platform() === 'darwin') {
     interfaceRootDir = __dirname.split('/out')[0];
   } else {
     interfaceRootDir = __dirname.split('\\out')[0];
   }
-  const dtsDir = path.join(interfaceRootDir, './interface/sdk-js/api');
+  const dtsDir = apiInputPath;
   const outMockJsFileDir = path.join(__dirname, '../../runtime/main/extend/systemplugin');
-  deleteOldMockJsFile(outMockJsFileDir);
+  // deleteOldMockJsFile(outMockJsFileDir);
   getAllDtsFile(dtsDir);
 
   dtsFileList.forEach(value => {
@@ -144,4 +144,5 @@ function main() {
   fs.writeFileSync(path.join(outMockJsFileDir, 'entry.js'), generateEntry());
 }
 
-main();
+const apiInputPath = process.argv[2];
+main(apiInputPath);

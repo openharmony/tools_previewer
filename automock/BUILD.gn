@@ -32,7 +32,6 @@ action("gen_node_modules") {
 
 action("gen_snapshot_jsmock") {
   script = "$mock_root/js_framework_build.sh"
-  js_framework = "//third_party/jsframework/runtime"
   js_framework_mock_generate = "$mock_root/mock-generate"
   is_mac = "false"
   is_preview_engine = "false"
@@ -42,8 +41,7 @@ action("gen_snapshot_jsmock") {
   use_mac = host_os == "mac"
 
   if (is_standard_system || is_cross_platform_build) {
-    node_modules =
-        "//prebuilts/build-tools/common/automock/mock-generate/node_modules"
+    node_modules = "//prebuilts/build-tools/common/js-framework/node_modules"
     if (use_mac) {
       nodejs_path =
           "//prebuilts/build-tools/common/nodejs/node-v12.18.4-darwin-x64"
@@ -54,7 +52,7 @@ action("gen_snapshot_jsmock") {
       is_mac = "false"
     }
   } else {
-    node_modules = "//prebuilts/ace-toolkit/automock/mock-generate/node_modules"
+    node_modules = "//prebuilts/ace-toolkit/js-framework/node_modules"
     if (use_mac) {
       nodejs_path = "//prebuilts/ace-toolkit/nodejs/node-v12.18.4-darwin-x64"
       is_mac = "true"
@@ -66,17 +64,15 @@ action("gen_snapshot_jsmock") {
 
   buildfile_jsmock = "$mock_root/build_jsmock_system_plugin.js"
 
-  #buildfile_native_min = "$mock_root/build_strip_native_min.js"
-
   package_file = "$mock_root/mock-generate/package.json"
   tsconfig = "$mock_root/mock-generate/tsconfig.json"
   eslint = "$mock_root/mock-generate/.eslintrc"
-  css_what = "//third_party/css-what"
+  babel = "$mock_root/mock-generate/.babelrc"
+  api_input_path = "//interface/sdk-js/api"
 
   args = [
     rebase_path(buildfile_jsmock, root_build_dir),
     rebase_path(nodejs_path, root_build_dir),
-    rebase_path(js_framework, root_build_dir),
     rebase_path(node_modules, root_build_dir),
     rebase_path(package_file, root_build_dir),
     rebase_path(tsconfig, root_build_dir),
@@ -84,9 +80,10 @@ action("gen_snapshot_jsmock") {
     rebase_path(target_out_dir, root_build_dir),
     is_mac,
     rebase_path("//prebuilts", root_build_dir),
-    rebase_path(css_what, root_build_dir),
+    rebase_path(api_input_path),
     rebase_path(js_framework_mock_generate, root_build_dir),
     is_preview_engine,
+    rebase_path(babel, root_build_dir),
   ]
 
   inputs = [
