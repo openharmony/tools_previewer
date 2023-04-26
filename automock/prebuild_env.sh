@@ -38,7 +38,7 @@ node_js_ver=v12.18.4
 #nodejs文件夹名称
 node_js_name=node-${node_js_ver}-${host_platform}-x64
 #到automock目录
-cd ${code_dir}/ace/automock/mock-generate/
+cd ${code_dir}/automock/mock-generate/
 #设置环境变量为下载的nodejs
 export PATH=${code_dir}/prebuilts/build-tools/common/nodejs/${node_js_name}/bin:$PATH
 #设置镜像地址
@@ -59,4 +59,4 @@ fi
 #创建新目录
 mkdir -p ${code_dir}/prebuilts/build-tools/common/automock/mock-generate
 #拷贝node_modules过去
-/bin/cp -rf ${code_dir}/ace/automock/mock-generate/node_modules ${code_dir}/prebuilts/build-tools/common/automock/mock-generate/
+/bin/cp -rf ${code_dir}/automock/mock-generate/node_modules ${code_dir}/prebuilts/build-tools/common/automock/mock-generate/

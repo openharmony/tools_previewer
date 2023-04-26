@@ -58,7 +58,7 @@ const esPlugin = eslint({
 });
 
 const configJSAPIMockInput = {
-  input: path.resolve(__dirname, 'runtime/main/extend/systemplugin/entry.js'),
+  input: path.resolve(__dirname, 'runtime/main/extend/systemplugin/index.js'),
   onwarn,
   plugins: [
     esPlugin,
