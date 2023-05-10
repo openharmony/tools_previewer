@@ -33,16 +33,14 @@ template("previewer_executable") {
     include_dirs += invoker.includes
 
     deps = [
-      "//third_party/jsoncpp:jsoncpp_static",
       "//third_party/bounds_checking_function:libsec_static",
+      "//third_party/jsoncpp:jsoncpp_static",
     ]
     deps += invoker.deps
     libs = invoker.libs
 
     if (platform == "mingw_x86_64") {
-      defines = [
-        "NOGDI"
-      ]
+      defines = [ "NOGDI" ]
       ldflags = [
         "-static",
         "-lws2_32",
@@ -134,10 +132,10 @@ previewer_executable("lite_previewer") {
     "//foundation/ace/frameworks/base/utils/",
     "./mock/lite/",
     "./jsapp/lite/",
-    "//foundation/graphic/ui/interfaces/innerkits/",
-    "//foundation/graphic/utils/interfaces/kits/",
-    "//foundation/graphic/utils/interfaces/innerkits/",
-    "//foundation/graphic/ui/frameworks/dock/",
+    "//foundation/arkui/ui_lite/interfaces/innerkits/",
+    "//foundation/graphic/graphic_utils_lite/interfaces/kits/",
+    "//foundation/graphic/graphic_utils_lite/interfaces/innerkits/",
+    "//foundation/arkui/ui_lite/frameworks/dock/",
   ]
   deps = [
     "cli:cli_lite",
