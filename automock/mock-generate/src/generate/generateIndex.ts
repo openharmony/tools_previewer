@@ -72,6 +72,9 @@ export function generateIndex(): string {
       switch (args[0]) {`;
   indexBody += caseBody;
   const endBody = `}
+      if (global.hosMockFunc !== undefined) {
+        return global.hosMockFunc(args[0]);
+      }
           }
         }`;
   indexBody += endBody;
