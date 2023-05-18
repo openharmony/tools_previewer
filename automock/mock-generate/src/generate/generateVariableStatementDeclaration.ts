@@ -22,8 +22,13 @@ import { StatementEntity } from '../declaration-node/variableStatementResolve';
  * @param statementEntity
  * @returns
  */
-export function generateVariableStatementDelcatation(statementEntity: StatementEntity): string {
-  let statementBody = `${statementEntity.statementName}: `;
+export function generateVariableStatementDelcatation(statementEntity: StatementEntity, isInnerModule: boolean): string {
+  let statementBody = ``;
+  if (isInnerModule) {
+    statementBody = `const ${statementEntity.statementName} = `;
+  } else {
+    statementBody = `${statementEntity.statementName}: `;
+  }
   let statementValue;
   if (statementEntity.typeKind === SyntaxKind.StringKeyword) {
     statementValue = `''`;
@@ -61,6 +66,10 @@ export function generateVariableStatementDelcatation(statementEntity: StatementE
     statementValue = `'[PC Preivew] unknown ${statementEntity.statementName}'`;
   }
   statementBody += statementValue;
-  statementBody += ',';
+  if (isInnerModule) {
+    statementBody += ';';
+  } else {
+    statementBody += ',';
+  }
   return statementBody;
 }
