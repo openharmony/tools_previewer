@@ -134,7 +134,7 @@ export function generateModuleDeclaration(rootName: string, moduleEntity: Module
   if (moduleEntity.variableStatements.length > 0) {
     moduleEntity.variableStatements.forEach(value => {
       value.forEach(val => {
-        moduleBody += generateVariableStatementDelcatation(val) + '\n';
+        moduleBody += generateVariableStatementDelcatation(val, false) + '\n';
       });
     });
   }
@@ -152,7 +152,7 @@ export function generateModuleDeclaration(rootName: string, moduleEntity: Module
   if (sourceFileVariableStatements.length > 0) {
     sourceFileVariableStatements.forEach(value => {
       value.forEach(val => {
-        sourceFileStatementBody += generateVariableStatementDelcatation(val);
+        sourceFileStatementBody += generateVariableStatementDelcatation(val, false);
       });
     });
   }
@@ -184,7 +184,7 @@ export function generateModuleDeclaration(rootName: string, moduleEntity: Module
  */
 function generateInnerModule(moduleEntity: ModuleBlockEntity, sourceFile: SourceFile): string {
   const moduleName = moduleEntity.moduleName;
-  let innerModuleBody = `const ${moduleName} = {`;
+  let innerModuleBody = `const ${moduleName} = ()=> {`;
 
   if (moduleEntity.typeAliasDeclarations.length > 0) {
     moduleEntity.typeAliasDeclarations.forEach(value => {
@@ -210,7 +210,7 @@ function generateInnerModule(moduleEntity: ModuleBlockEntity, sourceFile: Source
     });
   }
 
-  let functionBody = '';
+  let functionBody = 'return {';
   if (moduleEntity.functionDeclarations.size > 0) {
     moduleEntity.functionDeclarations.forEach(value => {
       functionBody += generateCommonFunction(moduleName, value, sourceFile) + '\n';
@@ -220,7 +220,7 @@ function generateInnerModule(moduleEntity: ModuleBlockEntity, sourceFile: Source
   if (moduleEntity.variableStatements.length > 0) {
     moduleEntity.variableStatements.forEach(value => {
       value.forEach(val => {
-        innerModuleBody += generateVariableStatementDelcatation(val) + '\n';
+        innerModuleBody += generateVariableStatementDelcatation(val, true) + '\n';
       });
     });
   }
@@ -234,7 +234,7 @@ function generateInnerModule(moduleEntity: ModuleBlockEntity, sourceFile: Source
   if (exportString !== '') {
     innerModuleBody += '\t' + exportString;
   }
-  innerModuleBody += '\t};';
+  innerModuleBody += '\t};}';
   return innerModuleBody;
 }
 
