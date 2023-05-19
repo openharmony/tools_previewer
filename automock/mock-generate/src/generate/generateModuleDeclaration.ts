@@ -184,7 +184,7 @@ export function generateModuleDeclaration(rootName: string, moduleEntity: Module
  */
 function generateInnerModule(moduleEntity: ModuleBlockEntity, sourceFile: SourceFile): string {
   const moduleName = moduleEntity.moduleName;
-  let innerModuleBody = `const ${moduleName} = ()=> {`;
+  let innerModuleBody = `const ${moduleName} = (()=> {`;
 
   if (moduleEntity.typeAliasDeclarations.length > 0) {
     moduleEntity.typeAliasDeclarations.forEach(value => {
@@ -234,7 +234,7 @@ function generateInnerModule(moduleEntity: ModuleBlockEntity, sourceFile: Source
   if (exportString !== '') {
     innerModuleBody += '\t' + exportString;
   }
-  innerModuleBody += '\t};}';
+  innerModuleBody += '\t};})();';
   return innerModuleBody;
 }
 
