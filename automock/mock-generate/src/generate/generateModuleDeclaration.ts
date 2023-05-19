@@ -186,6 +186,12 @@ function generateInnerModule(moduleEntity: ModuleBlockEntity, sourceFile: Source
   const moduleName = moduleEntity.moduleName;
   let innerModuleBody = `const ${moduleName} = (()=> {`;
 
+  if (moduleEntity.enumDeclarations.length > 0) {
+    moduleEntity.enumDeclarations.forEach(value => {
+      innerModuleBody += generateEnumDeclaration(moduleName, value) + '\n';
+    });
+  }
+
   if (moduleEntity.typeAliasDeclarations.length > 0) {
     moduleEntity.typeAliasDeclarations.forEach(value => {
       innerModuleBody += generateTypeAliasDeclaration(value, true) + '\n';
@@ -201,12 +207,6 @@ function generateInnerModule(moduleEntity: ModuleBlockEntity, sourceFile: Source
   if (moduleEntity.interfaceDeclarations.length > 0) {
     moduleEntity.interfaceDeclarations.forEach(value => {
       innerModuleBody += generateInterfaceDeclaration(moduleName, value, sourceFile, false, moduleEntity.interfaceDeclarations) + '\n';
-    });
-  }
-
-  if (moduleEntity.enumDeclarations.length > 0) {
-    moduleEntity.enumDeclarations.forEach(value => {
-      innerModuleBody += generateEnumDeclaration(moduleName, value) + '\n';
     });
   }
 
