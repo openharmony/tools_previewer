@@ -36,6 +36,7 @@ export function getVariableStatementDeclaration(variableStatement: VariableState
     }
     if (value.initializer !== undefined) {
       initializer = sourceFile.text.substring(value.initializer.pos, value.initializer.end);
+      typeKind = value.initializer.kind;
     }
     if (value.type !== undefined) {
       typeName = sourceFile.text.substring(value.type.pos, value.type.end);
