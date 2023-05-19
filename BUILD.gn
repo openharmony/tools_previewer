@@ -109,19 +109,13 @@ previewer_executable("rich_previewer") {
   ]
   libs = []
   deps = [
+    "$ace_root/adapter/preview/build:libace",
     "cli:cli_rich",
     "jsapp:jsapp_rich",
     "mock:mock_rich",
     "util:util_rich",
     "//third_party/libwebsockets:websockets_static",
   ]
-  if (platform == "mingw_x86_64") {
-    deps += [ "$ace_root/adapter/preview/build:libace_engine_windows" ]
-  } else if (platform == "mac_arm64" || platform == "mac_x64") {
-    deps += [ "$ace_root/adapter/preview/build:libace_engine_mac" ]
-  } else if (platform == "linux_x64") {
-    deps += [ "$ace_root/adapter/preview/build:libace_engine_linux" ]
-  }
 }
 
 previewer_executable("lite_previewer") {
