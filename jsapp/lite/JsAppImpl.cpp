@@ -44,7 +44,6 @@
 #include "TraceTool.h"
 #include "VirtualScreenImpl.h"
 #include "json.h"
-#include "ui_text_language.h"
 
 using namespace OHOS;
 using namespace ACELite;
@@ -54,12 +53,12 @@ static uint8_t g_fontPsramBaseAddr[MIN_FONT_PSRAM_LENGTH];
 #if defined(LITEWEARABLE_SUPPORTED)
 static uint8_t g_shapePsramBaseAddr[MIN_SHAPING_PSRAM_LENGTH];
 #endif
-static void InitSmartVisionFont(UIFont* font, const string fontPath)
+static void InitVectorFont(UIFont* font, const string fontPath)
 {
     ProductAdapter::SetDefaultFontStyle("SourceHanSansSC-Regular.otf", JsAppImpl::FONT_SIZE_DEFAULT);
     BaseFont* currentFont = new UIFontVector();
     if (currentFont == nullptr) {
-        FLOG("InitSmartVisionFont currentFont memory allocation failed");
+        FLOG("InitVectorFont currentFont memory allocation failed");
         return;
     }
     font->SetFont(currentFont);
@@ -70,34 +69,6 @@ static void InitSmartVisionFont(UIFont* font, const string fontPath)
         FLOG("InitFontEngine SetFontPath failed. vector fontPath: %s", fontPath.data());
     }
     font->RegisterFontInfo("SourceHanSansSC-Regular.otf");
-    font->RegisterFontInfo("HYQiHei-65S.otf");
-    font->RegisterFontInfo("RobotoCondensed-Regular.ttf");
-}
-
-static void InitLiteWearable(UIFont* font, const string fontPath)
-{
-    ProductAdapter::SetDefaultFontStyle("HYQiHei-65S", JsAppImpl::FONT_SIZE_DEFAULT);
-    BitmapFontInit();
-    BaseFont* currentFont = new UIFontBitmap();
-    if (currentFont == nullptr) {
-        FLOG("InitLiteWearable currentFont memory allocation failed");
-        return;
-    }
-    font->SetFont(currentFont);
-    font->SetPsramMemory(reinterpret_cast<uintptr_t>(g_fontPsramBaseAddr), MIN_FONT_PSRAM_LENGTH);
-    int8_t retDynamic = font->SetFontPath(string(fontPath + "font.bin").data(), BaseFont::DYNAMIC_FONT);
-    int8_t retStatic = font->SetFontPath(string(fontPath + "glyphs.bin").data(), BaseFont::STATIC_FONT);
-    if ((retDynamic != 0) || (retStatic != 0)) {
-        ELOG("The bitmap font path does not exist ! bitmap fontPath : %s",
-             string(fontPath + "font.bin").data());
-        FLOG("InitFontEngine SetFontPath failed. bitmap fontPath: %s", string(fontPath + "font.bin").data());
-    }
-    if (SharedData<string>::GetData(SharedDataType::LANGUAGE) == "zh-CN") {
-        font->SetCurrentLangId(LANGUAGE_CH);
-    }
-    if (SharedData<string>::GetData(SharedDataType::LANGUAGE) == "en-US") {
-        font->SetCurrentLangId(LANGUAGE_GB);
-    }
 }
 
 static void InitFontEngine()
@@ -110,35 +81,24 @@ static void InitFontEngine()
     std::string deviceType = CommandParser::GetInstance().GetDeviceType();
     std::string separator = FileSystem::GetSeparator();
     std::string fontPath = FileSystem::GetApplicationPath() + separator + ".." + separator + "config" + separator;
-    if (deviceType == "smartVision") {
-        InitSmartVisionFont(font, fontPath);
-    }
-    if (deviceType == "liteWearable") {
-        InitLiteWearable(font, fontPath);
-    }
+    InitVectorFont(font, fontPath);
 
-#if defined(LITEWEARABLE_SUPPORTED)
-    UITextShaping* pShaping = UITextShaping::GetInstance();
-    int8_t ret = pShaping->SetPsramMemory(reinterpret_cast<uintptr_t>(g_shapePsramBaseAddr), MIN_SHAPING_PSRAM_LENGTH);
-    if (ret != INVALID_RET_VALUE) {
-        int32_t fp = 0;
-        string fileName = fontPath + "line_cj.brk";
+    int32_t fp = 0;
+    string fileName = fontPath + "line_cj.brk";
 #ifdef _WIN32
-        fp = open(fileName.c_str(), O_RDONLY | O_BINARY);
+    fp = open(fileName.c_str(), O_RDONLY | O_BINARY);
 #else
-        fp = open(fileName.c_str(), O_RDONLY);
+    fp = open(fileName.c_str(), O_RDONLY);
 #endif
-        if (fp < 0) {
-            ELOG("Open font path failed.");
-            return;
-        }
-        uint32_t lineBrkSize = lseek(fp, 0, SEEK_END);
-        lseek(fp, 0, SEEK_SET);
-        UILineBreakEngine& lbEngine = UILineBreakEngine::GetInstance();
-        lbEngine.SetRuleBinInfo(fp, 0, lineBrkSize);
-        lbEngine.Init();
+    if (fp < 0) {
+        ELOG("Open font path failed.");
+        return;
     }
-#endif
+    uint32_t lineBrkSize = lseek(fp, 0, SEEK_END);
+    lseek(fp, 0, SEEK_SET);
+    UILineBreakEngine& lbEngine = UILineBreakEngine::GetInstance();
+    lbEngine.SetRuleBinInfo(fp, 0, lineBrkSize);
+    lbEngine.Init();
 }
 
 static void InitHalScreen()

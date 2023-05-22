@@ -41,12 +41,12 @@ ohos_static_library("jsapp_rich") {
 }
 
 ohos_static_library("jsapp_lite") {
+  defines = [ "ENABLE_ICU" ]
   configs = [ ":jsapp_config" ]
   sources = [
     "JsApp.cpp",
     "lite/JsAppImpl.cpp",
     "lite/TimerTaskHandler.cpp",
-    "lite/ui_text_language.cpp",
   ]
   include_dirs = [
     ".",
