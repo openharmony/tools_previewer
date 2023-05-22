@@ -156,16 +156,14 @@ config("myconfig") {
 }
 
 # copy liteWearable config dir
-ohos_copy("previewer_copy_lite_configdir") {
-  if (platform == "mingw_x86_64") {
-    sources = [ "//prebuilts/previewer/windows/previewer/liteWearable/config" ]
-  } else if (platform == "mac_arm64" || platform == "mac_x64") {
-    sources = [ "//prebuilts/previewer/darwin/previewer/liteWearable/config" ]
-  } else if (platform == "linux_x64") {
-    sources = [ "//prebuilts/previewer/windows/previewer/liteWearable/config" ]
-  }
-  outputs =
-      [ target_out_dir + "/previewer/liteWearable" + "/{{source_file_part}}" ]
-  module_source_dir = target_out_dir + "/previewer/liteWearable/"
+ohos_copy("copy_previewer_fonts_lite") {
+  sources = [
+    "//foundation/arkui/ui_lite/tools/qt/simulator/font/SourceHanSansSC-Regular.otf",
+    "//foundation/arkui/ui_lite/tools/qt/simulator/font/font.bin",
+    "//foundation/arkui/ui_lite/tools/qt/simulator/font/line_cj.brk",
+  ]
+  outputs = [ target_out_dir + "/previewer/liteWearable/config/" +
+              "/{{source_file_part}}" ]
+  module_source_dir = target_out_dir + "/previewer/liteWearable/config/"
   module_install_name = ""
 }
