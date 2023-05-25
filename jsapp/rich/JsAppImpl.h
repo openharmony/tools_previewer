@@ -85,6 +85,7 @@ private:
     void SetOnRender(OHOS::Ace::Platform::AceRunArgs& args) const;
     void SetOnRouterChange(OHOS::Ace::Platform::AceRunArgs& args) const;
     void SetOnError(OHOS::Ace::Platform::AceRunArgs& args) const;
+    void SetComponentModeEnabled(OHOS::Ace::Platform::AceRunArgs& args, bool isComponentMode) const;
     void AssignValueForWidthAndHeight(const int32_t origWidth, const int32_t origHeight,
                                       const int32_t compWidth, const int32_t compHeight);
     void AdaptDeviceType(OHOS::Ace::Platform::AceRunArgs& args, const std::string,

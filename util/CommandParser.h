@@ -55,6 +55,7 @@ public:
     std::string GetPages() const;
     std::string GetContainerSdkPath() const;
     bool CheckParamInvalidity(std::string param, bool isNum);
+    bool IsComponentMode() const;
 
 private:
     CommandParser();
@@ -104,6 +105,7 @@ private:
     std::string containerSdkPath;
     std::string regex4Num = "^(?:0|[1-9])+(?:.[0-9]*)$";
     std::string regex4Str = "^(?:[a-zA-Z0-9-_./\\s]+)$";
+    bool isComponentMode;
 
     bool IsDebugPortValid();
     bool IsAppPathValid();
@@ -134,6 +136,7 @@ private:
     bool IsScreenDensityValid();
     bool IsConfigChangesValid();
     bool IsContainerSdkPathValid();
+    bool IsComponentModeValid();
     std::string HelpText();
     void ProcessingCommand(const std::vector<std::string>& strs);
 };
