@@ -147,6 +147,7 @@ void JsAppImpl::SetJsAppArgs(OHOS::Ace::Platform::AceRunArgs& args)
     SetOnRender(args);
     SetOnRouterChange(args);
     SetOnError(args);
+    SetComponentModeEnabled(args, CommandParser::GetInstance().IsComponentMode());
     ILOG("start abilit: %d %d %f", args.deviceWidth, args.deviceHeight, args.deviceConfig.density);
 }
 
@@ -338,6 +339,11 @@ void JsAppImpl::SetOnRouterChange(Platform::AceRunArgs& args) const
 void JsAppImpl::SetOnError(Platform::AceRunArgs& args) const
 {
     args.onError = std::move(VirtualScreenImpl::FastPreviewCallBack);
+}
+
+void JsAppImpl::SetComponentModeEnabled(Platform::AceRunArgs& args, bool isComponentMode) const
+{
+    args.isComponentMode = isComponentMode;
 }
 
 void JsAppImpl::AssignValueForWidthAndHeight(const int32_t origWidth,
