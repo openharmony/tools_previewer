@@ -77,6 +77,7 @@ CommandParser::CommandParser()
     Register("-pm", 1, "Set project model type.");
     Register("-pages", 1, "Set project's router config file path.");
     Register("-hsp", 1, "Set container sdk path.");
+    Register("-cpm", 1, "Set previewer start mode.");
 }
 
 CommandParser& CommandParser::GetInstance()
@@ -114,6 +115,7 @@ bool CommandParser::IsCommandValid()
     partRet = partRet && IsColorModeValid() && IsOrientationValid() && IsWebSocketPortValid() && IsAceVersionValid();
     partRet = partRet && IsScreenModeValid() && IsAppResourcePathValid();
     partRet = partRet && IsProjectModelValid() && IsPagesValid() && IsContainerSdkPathValid();
+    partRet = partRet && IsComponentModeValid();
     if (partRet) {
         return true;
     }
@@ -256,6 +258,11 @@ string CommandParser::GetAppName() const
 bool CommandParser::IsSendJSHeap() const
 {
     return isSendJSHeap;
+}
+
+bool CommandParser::IsComponentMode() const
+{
+    return isComponentMode;
 }
 
 bool CommandParser::IsDebugPortValid()
@@ -770,4 +777,21 @@ bool CommandParser::CheckParamInvalidity(string param, bool isNum = false)
 {
     regex reg(isNum ? regex4Num : regex4Str);
     return !regex_match(param.cbegin(), param.cend(), reg);
+}
+
+bool CommandParser::IsComponentModeValid()
+{
+    if (!IsSet("cpm")) {
+        return true;
+    }
+
+    string cpm = Value("cpm");
+    if (cpm != "true" && cpm != "false") {
+        errorInfo = string("The component mode argument unsupported.");
+        ELOG("Launch -cpm parameters abnormal!");
+        return false;
+    }
+
+    isComponentMode = cpm == "true" ? true : false;
+    return true;
 }
