@@ -536,6 +536,33 @@ void JsAppImpl::LoadDocument(const std::string filePath,
     }
 }
 
+void JsAppImpl::InitializeClipboard(OHOS::Ace::Platform::CallbackSetClipboardData cbkSetData,
+    OHOS::Ace::Platform::CallbackGetClipboardData cbkGetData) const
+{
+    ability->InitializeClipboard(cbkSetData, cbkGetData);
+}
+
+void JsAppImpl::DispatchBackPressedEvent() const
+{
+    ability->OnBackPressed();
+}
+void JsAppImpl::DispatchKeyEvent(const std::shared_ptr<OHOS::MMI::KeyEvent>& keyEvent) const
+{
+    ability->OnInputEvent(keyEvent);
+}
+void JsAppImpl::DispatchPointerEvent(const std::shared_ptr<OHOS::MMI::PointerEvent>& pointerEvent) const
+{
+    ability->OnInputEvent(pointerEvent);
+}
+void JsAppImpl::DispatchAxisEvent(const std::shared_ptr<OHOS::MMI::AxisEvent>& axisEvent) const
+{
+    ability->OnInputEvent(axisEvent);
+}
+void JsAppImpl::DispatchInputMethodEvent(const unsigned int code_point) const
+{
+    ability->OnInputMethodEvent(code_point);
+}
+
 string JsAppImpl::GetDeviceTypeName(const OHOS::Ace::DeviceType type) const
 {
     switch (type) {
