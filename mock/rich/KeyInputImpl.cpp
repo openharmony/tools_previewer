@@ -19,13 +19,10 @@
 #include "PreviewerEngineLog.h"
 #include "ClipboardHelper.h"
 #include "KeyboardHelper.h"
-#include "ace_ability.h"
-#include "event_dispatcher.h"
-#include "clipboard_proxy.h"
-#include "clipboard_proxy_impl.h"
+#include "JsAppImpl.h"
 
 using namespace std;
-using namespace OHOS::Ace;
+using namespace OHOS::MMI;
 
 KeyInputImpl::KeyInputImpl() : KeyInput(), pressedCodes(0)
 {
@@ -45,33 +42,26 @@ void KeyInputImpl::SetDelegate()
     auto callbackGetClipboardData = []() {
         return ClipboardHelper::GetClipboardData();
     };
-    auto callbackGetCapsLockStatus = []() {
-        return KeyboardHelper::GetKeyStateByKeyName("CapsLock");
-    };
-    auto callbackGetNumLockStatus = []() {
-        return KeyboardHelper::GetKeyStateByKeyName("NumLock");
-    };
-    Platform::EventDispatcher::GetInstance().RegisterCallbackGetCapsLockStatus(callbackGetCapsLockStatus);
-    Platform::EventDispatcher::GetInstance().RegisterCallbackGetNumLockStatus(callbackGetNumLockStatus);
-    ClipboardProxy::GetInstance()->SetDelegate(
-        std::make_unique<Platform::ClipboardProxyImpl>(callbackSetClipboardData, callbackGetClipboardData));
+    JsAppImpl::GetInstance().InitializeClipboard(callbackSetClipboardData, callbackGetClipboardData);
     ILOG("Bind key event callback function to ace successed.");
 }
 
 void KeyInputImpl::DispatchOsInputMethodEvent() const
 {
-    Platform::EventDispatcher::GetInstance().DispatchInputMethodEvent(codePoint);
+    JsAppImpl::GetInstance().DispatchInputMethodEvent(codePoint);
 }
 
 void KeyInputImpl::DispatchOsKeyEvent() const
 {
-    KeyEvent keyEvent;
-    keyEvent.code = KeyCode(keyCode);
-    keyEvent.action = KeyAction(keyAction);
-    keyEvent.pressedCodes = pressedCodes;
-    keyEvent.timeStamp = chrono::high_resolution_clock::now();
-    keyEvent.key = keyString.c_str();
-    Platform::EventDispatcher::GetInstance().DispatchKeyEvent(keyEvent);
+    auto keyEvent = std::make_shared<OHOS::MMI::KeyEvent>();
+    keyEvent->code = KeyCode(keyCode);
+    keyEvent->action = KeyAction(keyAction);
+    keyEvent->pressedCodes = pressedCodes;
+    keyEvent->timeStamp = chrono::high_resolution_clock::now();
+    keyEvent->key = keyString.c_str();
+    keyEvent->enableCapsLock_ = KeyboardHelper::GetKeyStateByKeyName("CapsLock");
+    keyEvent->enableNumLock_ = KeyboardHelper::GetKeyStateByKeyName("NumLock");
+    JsAppImpl::GetInstance().DispatchKeyEvent(keyEvent);
 }
 
 void KeyInputImpl::SetKeyEvent(const int32_t keyCodeVal, const int32_t keyActionVal,
