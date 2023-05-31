@@ -68,7 +68,7 @@ ohos_static_library("mock_lite") {
     "//base/global/i18n_lite/interfaces/kits/js/builtin:nativeapi_locale_simulator",
     "//base/global/resource_management_lite/frameworks/resmgr_lite:global_resmgr_simulator",
     "//base/powermgr/powermgr_lite/interfaces/kits/battery/js/builtin:libnativeapi_battery_simulator",
-    "//base/startup/syspara_lite/simulator:sysparam_simulator",
+    "//base/startup/init/simulator:sysparam_simulator",
     "//commonlibrary/utils_lite/js/builtin/simulator:ace_kit_common_simulator",
     "//commonlibrary/utils_lite/js/builtin/simulator:ace_kit_deviceinfo_simulator",
     "//commonlibrary/utils_lite/js/builtin/simulator:ace_kit_file_simulator",
