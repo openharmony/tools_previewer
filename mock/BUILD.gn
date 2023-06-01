@@ -25,6 +25,8 @@ ohos_static_library("mock_rich") {
     ".",
     "../util/",
     "../cli/",
+    "../jsapp/rich",
+    "../jsapp",
   ]
   include_dirs += os_include_dirs
 

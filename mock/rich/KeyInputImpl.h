@@ -17,7 +17,7 @@
 #define KEYINPUTIMPL_H
 
 #include "KeyInput.h"
-#include "key_event.h"
+#include "adapter/preview/external/multimodalinput/key_event.h"
 
 class KeyInputImpl : public KeyInput {
 public:
@@ -32,7 +32,7 @@ public:
 private:
     KeyInputImpl();
     virtual ~KeyInputImpl() {};
-    std::vector<OHOS::Ace::KeyCode> pressedCodes;
+    std::vector<OHOS::MMI::KeyCode> pressedCodes;
 };
 
 #endif // KEYINPUTIMPL_H

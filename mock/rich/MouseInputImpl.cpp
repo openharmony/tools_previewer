@@ -19,14 +19,11 @@
 #include <vector>
 #include <chrono>
 
-#include "ace_ability.h"
-#include "event_dispatcher.h"
-
 #include "PreviewerEngineLog.h"
 
 using namespace std;
 
-using namespace OHOS::Ace;
+using namespace OHOS::MMI;
 
 MouseInputImpl::MouseInputImpl()
 {
@@ -52,27 +49,23 @@ TouchType MouseInputImpl::ConvertToOsType(MouseInput::MouseStatus status) const
 }
 void MouseInputImpl::DispatchOsTouchEvent() const
 {
-    TouchEvent touchEvent;
-    touchEvent.time = std::chrono::high_resolution_clock::now();
-    touchEvent.id = 1;
-    touchEvent.x = mouseXPosition;
-    touchEvent.y = mouseYPosition;
-    touchEvent.type = ConvertToOsType(mouseStatus);
-    touchEvent.size = sizeof (TouchEvent);
+    auto pointerEvent = std::make_shared<PointerEvent>();
+    pointerEvent->time = std::chrono::high_resolution_clock::now();
+    pointerEvent->id = 1;
+    pointerEvent->x = mouseXPosition;
+    pointerEvent->y = mouseYPosition;
+    pointerEvent->type = ConvertToOsType(mouseStatus);
+    pointerEvent->size = sizeof (PointerEvent);
     ILOG("MouseInputImpl::DispatchEvent x: %f y:%f", mouseXPosition, mouseYPosition);
     ILOG("current thread: %d", this_thread::get_id());
-    if (!Platform::EventDispatcher::GetInstance().DispatchTouchEvent(touchEvent)) {
-        ILOG("MouseInputImpl::DispatchEvent failed, x: %f y:%f", mouseXPosition, mouseYPosition);
-    }
+    JsAppImpl::GetInstance().DispatchPointerEvent(pointerEvent);
 }
 
 void MouseInputImpl::DispatchOsBackEvent() const
 {
     ILOG("DispatchBackPressedEvent run.");
     ILOG("current thread: %d", this_thread::get_id());
-    if (!Platform::EventDispatcher::GetInstance().DispatchBackPressedEvent()) {
-        ELOG("DispatchBackPressedEvent failed.");
-    }
+    JsAppImpl::GetInstance().DispatchBackPressedEvent();
 }
 
 MouseInputImpl& MouseInputImpl::GetInstance()

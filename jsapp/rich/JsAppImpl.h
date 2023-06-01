@@ -54,6 +54,14 @@ public:
     bool MemoryRefresh(const std::string memoryRefreshArgs) const override;
     void LoadDocument(const std::string, const std::string, const Json::Value) override;
 
+    void InitializeClipboard(OHOS::Ace::Platform::CallbackSetClipboardData cbkSetData,
+        OHOS::Ace::Platform::CallbackGetClipboardData cbkGetData) const;
+    void DispatchBackPressedEvent() const;
+    void DispatchKeyEvent(const std::shared_ptr<OHOS::MMI::KeyEvent>& keyEvent) const;
+    void DispatchPointerEvent(const std::shared_ptr<OHOS::MMI::PointerEvent>& pointerEvent) const;
+    void DispatchAxisEvent(const std::shared_ptr<OHOS::MMI::AxisEvent>& axisEvent) const;
+    void DispatchInputMethodEvent(const unsigned int code_point) const;
+
 protected:
     void SetJsAppArgs(OHOS::Ace::Platform::AceRunArgs& args);
     void RunJsApp();
