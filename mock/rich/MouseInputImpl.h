@@ -16,8 +16,7 @@
 #ifndef MOUSEINPUTIMPL_H
 #define MOUSEINPUTIMPL_H
 
-#include "touch_event.h"
-
+#include "JsAppImpl.h"
 #include "MouseInput.h"
 
 class MouseInputImpl : public MouseInput {
@@ -30,7 +29,7 @@ public:
 private:
     MouseInputImpl();
     virtual ~MouseInputImpl() {}
-    OHOS::Ace::TouchType ConvertToOsType(MouseStatus status) const;
+    OHOS::MMI::TouchType ConvertToOsType(MouseStatus status) const;
 };
 
 #endif // MOUSEINPUTIMPL_H
