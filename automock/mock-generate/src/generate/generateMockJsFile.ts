@@ -179,11 +179,13 @@ export function generateImportDeclaration(importEntity: ImportElementEntity, sou
   }
   const testPath = importPath.replace(/"/g, '').replace(/'/g, '').split('/');
   if (getAllFileNameList().has(testPath[testPath.length - 1]) || testPath[testPath.length - 1] === 'ohos_application_want') {
-    const tmpImportPath = importPath.replace(/'/g, '').replace(/"/g, '');
+    let tmpImportPath = importPath.replace(/'/g, '').replace(/"/g, '');
     if (!tmpImportPath.startsWith('./') && !tmpImportPath.startsWith('../')) {
       importPath = `'./${tmpImportPath}'`;
     }
-    if (sourceFileName === 'tagSession' && importPath === `'./basic'` || sourceFileName === 'notificationContent' && importPath === `'./ohos_multimedia_image'`) {
+    tmpImportPath = importPath.replace(/'/g, '').replace(/"/g, '');
+    if (sourceFileName === 'tagSession' && tmpImportPath === './basic' || sourceFileName === 'notificationContent' &&
+    tmpImportPath === './ohos_multimedia_image') {
       importPath = `'.${importPath.replace(/'/g, '')}'`;
     }
 
@@ -194,8 +196,9 @@ export function generateImportDeclaration(importEntity: ImportElementEntity, sou
     if (importElements.trimRight().trimEnd() === '{ image }') {
       importElements = '{ mockImage as image }';
     }
-    if (sourceFileName === 'AbilityContext' && importPath === `'../ohos_application_Ability'` || 
-      sourceFileName === 'Context' && importPath === `"./ApplicationContext"`) {
+    tmpImportPath = importPath.replace(/'/g, '').replace(/"/g, '');
+    if (sourceFileName === 'AbilityContext' && tmpImportPath === '../ohos_application_Ability' ||
+      sourceFileName === 'Context' && tmpImportPath === './ApplicationContext') {
       return '';
     }
     collectAllLegalImports(importElements);

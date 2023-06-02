@@ -66,7 +66,7 @@ export function generatePropertySignatureDeclaration(rootName: string, propertyS
       propertySignatureBody = `${propertySignature.propertyName}: true,`;
     } else if (propertySignature.kind === SyntaxKind.UnionType) {
       const unionFirstElement = propertySignature.propertyTypeName.split('|')[0].trimStart().trimEnd();
-      if (unionFirstElement.startsWith('"')) {
+      if (unionFirstElement.startsWith('"') || unionFirstElement.startsWith("'")) {
         propertySignatureBody = `${propertySignature.propertyName}: ${unionFirstElement},`;
       } else if (unionFirstElement === 'string') {
         propertySignatureBody = `${propertySignature.propertyName}: '[PC Preview] unknown ${propertySignature.propertyName}',`;
