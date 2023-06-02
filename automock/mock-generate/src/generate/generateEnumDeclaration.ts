@@ -35,7 +35,7 @@ export function generateEnumDeclaration(rootName: string, enumDeclaration: EnumE
     if (member.enumKind === SyntaxKind.TypeReference) {
       enumBody += `${member.enumValueName}: new ${member.enumValue},\n`;
     } else if (member.enumKind === SyntaxKind.NumericLiteral) {
-      enumBody += `${member.enumValueName}: ${member.enumValue.replace(/"/g, '')},\n`;
+      enumBody += `${member.enumValueName}: ${member.enumValue.replace(/"/g, '').replace(/'/g, '')},\n`;
     } else if (member.enumKind === SyntaxKind.StringLiteral) {
       enumBody += `${member.enumValueName}: ${member.enumValue},\n`;
     } else {
