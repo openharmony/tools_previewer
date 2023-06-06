@@ -47,9 +47,13 @@ export function generatePropertySignatureDeclaration(rootName: string, propertyS
         propertySignatureBody = `${propertySignature.propertyName}: '[PC Preview] unknown ${propertySignature.propertyName}',`;
       } else {
         if (propertySignature.propertyTypeName.includes('<')) {
-          const preSplit = propertySignature.propertyTypeName.split('<');
-          const genericArg = preSplit[preSplit.length - 1].split('>')[0];
-          propertySignatureBody = `${propertySignature.propertyName}: ${genericArg},`;
+          if (propertySignature.propertyTypeName.startsWith('AsyncCallback')) {
+            propertySignatureBody = `${propertySignature.propertyName}: ()=>{},`;
+          } else {
+            const preSplit = propertySignature.propertyTypeName.split('<');
+            const genericArg = preSplit[preSplit.length - 1].split('>')[0];
+            propertySignatureBody = `${propertySignature.propertyName}: ${genericArg},`;
+          }
         } else {
           if (propertyTypeWhiteList(propertySignature.propertyTypeName) === propertySignature.propertyTypeName) {
             propertySignatureBody = `${propertySignature.propertyName}: ${getTheRealReferenceFromImport(sourceFile, propertySignature.propertyTypeName)},`;
