@@ -13,86 +13,144 @@
  * limitations under the License.
  */
 
-const fs = require('fs');
+import fs from 'fs';
+import path from 'path';
+import os from 'os';
+import { createSourceFile, ScriptTarget } from 'typescript';
+import { collectAllFileName, getAllClassDeclaration } from './common/commonUtils';
+import { getSourceFileAssembly } from './declaration-node/sourceFileElementsAssemply';
+import { generateEntry } from './generate/generateEntry';
+import { generateIndex } from './generate/generateIndex';
+import { generateSourceFileElements } from './generate/generateMockJsFile';
+import { generateSystemIndex } from './generate/generateSystemIndex';
 
-const path = require('path');
+const dtsFileList: Array<string> = [];
 
-const rollup = require('rollup');
-
-const resolve = require('rollup-plugin-node-resolve');
-
-const commonjs = require('rollup-plugin-commonjs');
-
-const json = require('rollup-plugin-json');
-
-const babel = require('rollup-plugin-babel');
-
-const typescript = require('rollup-plugin-typescript2');
-
-const { uglify } = require('rollup-plugin-uglify');
-
-const {
-  eslint
-} = require('rollup-plugin-eslint');
-
-const frameworkBanner = `var global=this; var process={env:{}}; ` + `var setTimeout=global.setTimeout;\n`;
-
-const frameworkBannerForJSAPIMock = `var global=globalThis;`;
-
-const onwarn = warning => {
-  // Silence circular dependency warning
-  if (warning.code === 'CIRCULAR_DEPENDENCY') {
-    return;
+/**
+ * get all api .d.ts file path
+ * @param dir
+ * @returns
+ */
+function getAllDtsFile(dir: string): Array<string> {
+  const arr = fs.readdirSync(dir);
+  if (!dir.toString().includes('node_modules') && !dir.toString().includes('\\@internal\\component\\')) {
+    arr.forEach(value => {
+      const fullPath = path.join(dir, value);
+      const stats = fs.statSync(fullPath);
+      if (stats.isDirectory()) {
+        getAllDtsFile(fullPath);
+      } else {
+        dtsFileList.push(fullPath);
+      }
+    });
   }
-  console.warn(`(!) ${warning.message}`);
-};
+  return dtsFileList;
+}
 
-const tsPlugin = typescript({
-  tsconfig: path.resolve(__dirname, 'tsconfig.json'),
-  check: true
-});
-
-const esPlugin = eslint({
-  include: ['**/*.ts'],
-  exclude: ['node_modules/**', 'lib/**']
-});
-
-const configJSAPIMockInput = {
-  input: path.resolve(__dirname, 'runtime/main/extend/systemplugin/index.js'),
-  onwarn,
-  plugins: [
-    esPlugin,
-    tsPlugin,
-    json(),
-    resolve(),
-    commonjs(),
-    babel({
-      exclude: 'node_moduels/**'
-    })
-  ]
-};
-
-const configJSAPIMockOutput = {
-  file: path.resolve(__dirname, 'dist/jsMockSystemPlugin.js'),
-  format: 'umd',
-  banner: frameworkBannerForJSAPIMock
-};
-
-rollup.rollup(configJSAPIMockInput).then(bundle => {
-  bundle.write(configJSAPIMockOutput).then(() => {
-    countSize(configJSAPIMockOutput.file);
-  });
-});
-
-function countSize(filePath) {
-  const file = path.relative(__dirname, filePath);
-  fs.stat(filePath, function (error, stats) {
-    if (error) {
-      console.error('file size is wrong');
+/**
+ * delete the old mock file befor generate new mock file
+ * @param outDir
+ */
+ function deleteOldMockJsFile(outDir: string) {
+  const arr = fs.readdirSync(outDir);
+  arr.forEach(value => {
+    const currPath = path.join(outDir, value);
+    const stas = fs.statSync(currPath);
+    if (stas.isDirectory()) {
+      deleteOldMockJsFile(currPath);
     } else {
-      const size = (stats.size / 1024).toFixed(2) + 'KB';
-      console.log(`generate snapshot file: ${file}...\nthe snapshot file size: ${size}...`);
+      fs.unlink(currPath, function(err) {
+        if (err) {
+          console.log(err);
+        }
+      });
     }
   });
 }
 
+/**
+ * mkdir
+ * @param dirname
+ * @returns
+ */
+function mkdirsSync(dirname) {
+  if (fs.existsSync(dirname)) {
+    return true;
+  } else {
+    if (mkdirsSync(path.dirname(dirname))) {
+      fs.mkdirSync(dirname);
+      return true;
+    }
+  }
+}
+
+function main(apiInputPath) {
+  let interfaceRootDir = '';
+  console.log('japiInputPath:' + apiInputPath);
+  if (os.platform() === 'linux' || os.platform() === 'darwin') {
+    interfaceRootDir = __dirname.split('/out')[0];
+  } else {
+    interfaceRootDir = __dirname.split('\\out')[0];
+  }
+  const dtsDir = apiInputPath;
+  console.log('js file path:' + dtsDir);
+  const outMockJsFileDir = path.join(__dirname, '..\\..\\runtime\\main\\extend\\systemplugin');
+  console.log('js file path:' + outMockJsFileDir);
+  deleteOldMockJsFile(outMockJsFileDir);
+  getAllDtsFile(dtsDir);
+
+  dtsFileList.forEach(value => {
+    collectAllFileName(value);
+    if (value.endsWith('.d.ts') || value.endsWith('.d.ets')) {
+      const code = fs.readFileSync(value);
+      const sourceFile = createSourceFile('', code.toString(), ScriptTarget.Latest);
+      getAllClassDeclaration(sourceFile);
+    }
+  });
+
+  dtsFileList.forEach(value => {
+    if (value.endsWith('.d.ts') || value.endsWith('.d.ets')) {
+      const code = fs.readFileSync(value);
+      const sourceFile = createSourceFile('', code.toString(), ScriptTarget.Latest);
+      let fileName: string;
+      if (value.endsWith('.d.ts')) {
+        fileName = path.basename(value).split('.d.ts')[0];
+      } else if (value.endsWith('.d.ets')) {
+        fileName = path.basename(value).split('.d.ets')[0];
+      }
+      let outputFileName = '';
+      if (fileName.includes('@')) {
+        outputFileName = fileName.split('@')[1].replace(/\./g, '_');
+      } else {
+        outputFileName = fileName;
+      }
+
+      let tmpOutputMockJsFileDir = outMockJsFileDir;
+      if (!outputFileName.startsWith('system_')) {
+        tmpOutputMockJsFileDir = path.join(outMockJsFileDir, 'napi');
+      }
+      let dirName = '';
+      if (os.platform() === 'linux' || os.platform() === 'darwin') {
+        dirName = path.join(tmpOutputMockJsFileDir, path.dirname(value).split('/api')[1]);
+      } else {
+        dirName = path.join(tmpOutputMockJsFileDir, path.dirname(value).split('\\api')[1]);
+      }
+      if (!fs.existsSync(dirName)) {
+        mkdirsSync(dirName);
+      }
+      const sourceFileEntity = getSourceFileAssembly(sourceFile, fileName);
+      const filePath = path.join(dirName, outputFileName + '.js');
+      fs.writeFileSync(filePath, '');
+      fs.appendFileSync(path.join(filePath), generateSourceFileElements('', sourceFileEntity, sourceFile, outputFileName));
+    }
+  });
+  if (!fs.existsSync(path.join(outMockJsFileDir, 'napi'))) {
+    mkdirsSync(path.join(outMockJsFileDir, 'napi'));
+  }
+  fs.writeFileSync(path.join(outMockJsFileDir, 'napi', 'index.js'), generateIndex());
+  fs.writeFileSync(path.join(outMockJsFileDir, 'index.js'), generateSystemIndex());
+  fs.writeFileSync(path.join(outMockJsFileDir, 'entry.js'), generateEntry());
+}
+
+const apiInputPath = process.argv[2];
+main(apiInputPath);
