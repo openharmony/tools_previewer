@@ -98,7 +98,7 @@ function main(apiInputPath) {
 
   dtsFileList.forEach(value => {
     collectAllFileName(value);
-    if (value.endsWith('.d.ts')) {
+    if (value.endsWith('.d.ts') || value.endsWith('.d.ets')) {
       const code = fs.readFileSync(value);
       const sourceFile = createSourceFile('', code.toString(), ScriptTarget.Latest);
       getAllClassDeclaration(sourceFile);
@@ -106,10 +106,15 @@ function main(apiInputPath) {
   });
 
   dtsFileList.forEach(value => {
-    if (value.endsWith('.d.ts')) {
+    if (value.endsWith('.d.ts') || value.endsWith('.d.ets')) {
       const code = fs.readFileSync(value);
       const sourceFile = createSourceFile('', code.toString(), ScriptTarget.Latest);
-      const fileName = path.basename(value).split('.d.ts')[0];
+      let fileName: string;
+      if (value.endsWith('.d.ts')) {
+        fileName = path.basename(value).split('.d.ts')[0];
+      } else if (value.endsWith('.d.ets')) {
+        fileName = path.basename(value).split('.d.ets')[0];
+      }
       let outputFileName = '';
       if (fileName.includes('@')) {
         outputFileName = fileName.split('@')[1].replace(/\./g, '_');

@@ -152,7 +152,7 @@ export function generateImportDeclaration(importEntity: ImportElementEntity, sou
   let importPathName = '';
   const importPathSplit = importEntity.importPath.split('/');
   let fileName = importPathSplit[importPathSplit.length - 1];
-  if (fileName.endsWith('.d.ts')) {
+  if (fileName.endsWith('.d.ts') || fileName.endsWith('.d.ets')) {
     fileName = fileName.split('.d.')[0];
   }
   if (fileName.includes('@')) {
