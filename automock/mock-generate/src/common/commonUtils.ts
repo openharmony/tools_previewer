@@ -52,7 +52,14 @@ export function getAllFileNameList(): Set<string> {
  * collect all file name
  */
 export function collectAllFileName(filePath: string) {
-  const fileName = path.basename(filePath).split('.d.ts')[0];
+  const fullFileName = path.basename(filePath);
+  let fileName = '';
+  if (fullFileName.endsWith('d.ts')) {
+    fileName = fullFileName.split('.d.ts')[0];
+  } else if (fullFileName.endsWith('d.ets')) {
+    fileName = fullFileName.split('.d.ets')[0]
+  }
+
   let outputFileName = '';
   if (fileName.includes('@')) {
     outputFileName = fileName.split('@')[1].replace(/\./g, '_');

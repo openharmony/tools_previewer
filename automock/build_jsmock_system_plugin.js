@@ -75,6 +75,7 @@ const configJSAPIMockInput = {
 const configJSAPIMockOutput = {
   file: path.resolve(__dirname, 'dist/jsMockSystemPlugin.js'),
   format: 'umd',
+  treeshake: false,
   banner: frameworkBannerForJSAPIMock
 };
 
