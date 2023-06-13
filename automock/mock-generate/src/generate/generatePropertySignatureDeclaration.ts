@@ -86,6 +86,8 @@ export function generatePropertySignatureDeclaration(rootName: string, propertyS
           element = `'[PC Preview] unknown ${propertySignature.propertyName}'`;
         } else if (element === 'WebGLActiveInfo') {
           element = `{size: '[PC Preview] unknown GLint', type: 0, name: '[PC Preview] unknown name'}`;
+        } else if (element.startsWith('Array')) {
+          element = '[]';
         } else if (propertyTypeWhiteList(unionFirstElement) === unionFirstElement) {
           element = getTheRealReferenceFromImport(sourceFile, unionFirstElement);
         }
