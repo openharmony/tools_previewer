@@ -57,7 +57,7 @@ export function collectAllFileName(filePath: string) {
   if (fullFileName.endsWith('d.ts')) {
     fileName = fullFileName.split('.d.ts')[0];
   } else if (fullFileName.endsWith('d.ets')) {
-    fileName = fullFileName.split('.d.ets')[0]
+    fileName = fullFileName.split('.d.ets')[0];
   }
 
   let outputFileName = '';
