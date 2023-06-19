@@ -40,26 +40,12 @@ action("gen_snapshot_jsmock") {
   }
   use_mac = host_os == "mac"
 
-  if (is_standard_system || is_cross_platform_build) {
-    node_modules = "//prebuilts/build-tools/common/js-framework/node_modules"
-    if (use_mac) {
-      nodejs_path =
-          "//prebuilts/build-tools/common/nodejs/node-v12.18.4-darwin-x64"
-      is_mac = "true"
-    } else {
-      nodejs_path =
-          "//prebuilts/build-tools/common/nodejs/node-v12.18.4-linux-x64"
-      is_mac = "false"
-    }
+  node_modules = "//prebuilts/build-tools/common/js-framework/node_modules"
+  nodejs_path = "//prebuilts/build-tools/common/nodejs/current"
+  if (use_mac) {
+    is_mac = "true"
   } else {
-    node_modules = "//prebuilts/ace-toolkit/js-framework/node_modules"
-    if (use_mac) {
-      nodejs_path = "//prebuilts/ace-toolkit/nodejs/node-v12.18.4-darwin-x64"
-      is_mac = "true"
-    } else {
-      nodejs_path = "//prebuilts/ace-toolkit/nodejs/node-v12.18.4-linux-x64"
-      is_mac = "false"
-    }
+    is_mac = "false"
   }
 
   buildfile_jsmock = "$mock_root/build_jsmock_system_plugin.js"

@@ -54,21 +54,21 @@ cp -f ${13} $7
 if [ -d "$prebuilts_path" ]; then
   echo "prebuilts exists"
   # address problme of parallzing compile
-  rm -rf "$7/node-v12.18.4-linux-x64"
-  rm -rf "$7/node-v12.18.4-darwin-x64"
-  cp -r $2 $7
+  rm -rf "$7/current"
+  link_path=$(realpath $2)
+  ln -s $link_path "$7/current"
   cd $7
   if [ "${8}" == 'true' ];then
     if [ "${12}" == 'true' ];then
-      ./node-v12.18.4-darwin-x64/bin/node ./mock-generate/build.js ${10}
+      ./current/bin/node ./mock-generate/build.js ${10}
     fi
-    ./node-v12.18.4-darwin-x64/bin/node build_jsmock_system_plugin.js || exit 1 &
+    ./current/bin/node build_jsmock_system_plugin.js || exit 1 &
     wait
   else
     if [ "${12}" == 'true' ];then
-      ./node-v12.18.4-linux-x64/bin/node ./mock-generate/build.js ${10}
+      ./current/bin/node ./mock-generate/build.js ${10}
     fi
-    ./node-v12.18.4-linux-x64/bin/node build_jsmock_system_plugin.js || exit 1 &
+    ./current/bin/node build_jsmock_system_plugin.js || exit 1 &
     wait
   fi
 else
@@ -78,9 +78,9 @@ fi
 # after running, remove dependency file
 rm -rf ./node_modules
 if [ "${8}" == 'true' ];then
-  rm -rf ./node-v12.18.4-darwin-x64
+  rm -rf ./current
 else
-  rm -rf ./node-v12.18.4-linux-x64
+  rm -rf ./current
 fi
 rm -rf ./runtime
 rm -rf ./tsconfig.json
