@@ -72,7 +72,8 @@ private:
         "tv",
         "phone",
         "tablet",
-        "car"
+        "car",
+        "2in1"
     };
     const std::vector<std::string> cardDisplayDevices = {"phone", "tablet", "wearable", "car", "tv"};
     const std::vector<std::string> projectModels = {"FA", "Stage"};

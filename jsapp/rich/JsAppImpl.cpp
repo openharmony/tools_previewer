@@ -211,6 +211,13 @@ void JsAppImpl::AdaptDeviceType(Platform::AceRunArgs& args, const std::string ty
         args.deviceConfig.density = args.deviceWidth / adaptWidthCar;
         return;
     }
+    if (type == "2in1") {
+        args.deviceConfig.deviceType = DeviceType::PHONE;
+        double density = screenDendity > 0 ? screenDendity : phoneScreenDensity;
+        double adaptWidthPhone = realDeviceWidth * BASE_SCREEN_DENSITY / density;
+        args.deviceConfig.density = args.deviceWidth / adaptWidthPhone;
+        return;
+    }
     ELOG("DeviceType not supported : %s", type.c_str());
     return;
 }
