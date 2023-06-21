@@ -190,7 +190,7 @@ void JsAppImpl::AdaptDeviceType(Platform::AceRunArgs& args, const std::string ty
         args.deviceConfig.density = args.deviceWidth / adaptWidthTv;
         return;
     }
-    if (type == "phone") {
+    if (type == "phone" || type == "2in1" || type == "default") {
         args.deviceConfig.deviceType = DeviceType::PHONE;
         double density = screenDendity > 0 ? screenDendity : phoneScreenDensity;
         double adaptWidthPhone = realDeviceWidth * BASE_SCREEN_DENSITY / density;
@@ -429,7 +429,7 @@ void JsAppImpl::SetDeviceScreenDensity(const int32_t screenDensity, const std::s
         tvScreenDensity = screenDensity;
         return;
     }
-    if (type == "phone" && screenDensity != 0) {
+    if ((type == "phone" || type == "2in1" || type == "default") && screenDensity != 0) {
         phoneScreenDensity = screenDensity;
         return;
     }

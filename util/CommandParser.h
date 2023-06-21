@@ -72,9 +72,11 @@ private:
         "tv",
         "phone",
         "tablet",
-        "car"
+        "car",
+        "2in1",
+        "default"
     };
-    const std::vector<std::string> cardDisplayDevices = {"phone", "tablet", "wearable", "car", "tv"};
+    const std::vector<std::string> cardDisplayDevices = {"phone", "tablet", "wearable", "car", "tv", "2in1", "default"};
     const std::vector<std::string> projectModels = {"FA", "Stage"};
     const int MIN_PORT = 1024;
     const int MAX_PORT = 65535;
