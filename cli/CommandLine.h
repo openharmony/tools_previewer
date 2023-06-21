@@ -51,7 +51,7 @@ protected:
         "id_ID", "it_IT", "ja_JP", "kk_KZ", "ms_MY", "nl_NL", "no_NO", "pl_PL", "pt_BR", "pt_PT",
         "ro_RO", "ru_RU", "sr_RS", "sv_SE", "th_TH", "tr_TR", "ug_CN", "uk_UA", "vi_VN"
     };
-    const std::vector<std::string> LoadDocDevs = {"phone", "tablet", "wearable", "car", "tv"};
+    const std::vector<std::string> LoadDocDevs = {"phone", "tablet", "wearable", "car", "tv", "2in1", "default"};
     const int maxWidth = 3000;
     const int minWidth = 50;
     const int maxDpi = 640;
