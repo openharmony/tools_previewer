@@ -18,7 +18,7 @@ config("myconfig") {
   cflags = [ "-std=c++17" ]
 }
 
-ohos_static_library("mock_rich") {
+ohos_source_set("mock_rich") {
   cflags = [ "-std=c++17" ]
 
   include_dirs = [
@@ -31,11 +31,11 @@ ohos_static_library("mock_rich") {
   include_dirs += os_include_dirs
 
   deps = [
+    "../jsapp:jsapp_rich",
     "../util:util_rich",
     "//third_party/libjpeg-turbo:turbojpeg_static",
     "//third_party/libwebsockets:websockets_static",
   ]
-
   sources = [
     "KeyInput.cpp",
     "LanguageManager.cpp",
@@ -56,9 +56,11 @@ ohos_static_library("mock_rich") {
     "./rich/",
     "//third_party/jsoncpp/include/json/",
   ]
+  part_name = "previewer"
+  subsystem_name = "ide"
 }
 
-ohos_static_library("mock_lite") {
+ohos_source_set("mock_lite") {
   configs = [ ":myconfig" ]
   include_dirs = [
     ".",
@@ -113,4 +115,6 @@ ohos_static_library("mock_lite") {
     "//foundation/graphic/graphic_utils_lite/interfaces/kits/",
     "//foundation/graphic/graphic_utils_lite/interfaces/innerkits/",
   ]
+  part_name = "previewer"
+  subsystem_name = "ide"
 }

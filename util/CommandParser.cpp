@@ -43,7 +43,11 @@ CommandParser::CommandParser()
       appResourcePath(""),
       projectModel("FA"),
       pages("main_pages"),
-      containerSdkPath("")
+      containerSdkPath(""),
+      isComponentMode(false),
+      bundleName(""),
+      moduleName(""),
+      abilityPath("")
 {
     Register("-j", 1, "Launch the js app in <directory>.");
     Register("-n", 1, "Set the js app name show on <window title>.");
@@ -78,6 +82,9 @@ CommandParser::CommandParser()
     Register("-pages", 1, "Set project's router config file path.");
     Register("-hsp", 1, "Set container sdk path.");
     Register("-cpm", 1, "Set previewer start mode.");
+    Register("-bdn", 1, "Set bundleName for debug.");
+    Register("-mdn", 1, "Set moduleName for debug.");
+    Register("-abp", 1, "Set abilityPath for debug.");
 }
 
 CommandParser& CommandParser::GetInstance()
@@ -115,7 +122,7 @@ bool CommandParser::IsCommandValid()
     partRet = partRet && IsColorModeValid() && IsOrientationValid() && IsWebSocketPortValid() && IsAceVersionValid();
     partRet = partRet && IsScreenModeValid() && IsAppResourcePathValid();
     partRet = partRet && IsProjectModelValid() && IsPagesValid() && IsContainerSdkPathValid();
-    partRet = partRet && IsComponentModeValid();
+    partRet = partRet && IsComponentModeValid() && IsAbilityPathValid();
     if (partRet) {
         return true;
     }
@@ -263,6 +270,21 @@ bool CommandParser::IsSendJSHeap() const
 bool CommandParser::IsComponentMode() const
 {
     return isComponentMode;
+}
+
+string CommandParser::GetBundleName() const
+{
+    return bundleName;
+}
+
+string CommandParser::GetModuleName() const
+{
+    return moduleName;
+}
+
+string CommandParser::GetAbilityPath() const
+{
+    return abilityPath;
 }
 
 bool CommandParser::IsDebugPortValid()
@@ -793,5 +815,24 @@ bool CommandParser::IsComponentModeValid()
     }
 
     isComponentMode = cpm == "true" ? true : false;
+    return true;
+}
+
+bool CommandParser::IsAbilityPathValid()
+{
+    if (!IsSet("d")) {
+        return true;
+    }
+    if (!IsSet("abp")) {
+        errorInfo = "Launch -d parameters without -abp parameters.";
+        return false;
+    }
+    string path = Value("abp");
+    if (path.empty()) {
+        errorInfo = string("The ability path is empty.");
+        ELOG("Launch -abp parameters abnormal!");
+        return false;
+    }
+    abilityPath = path;
     return true;
 }
