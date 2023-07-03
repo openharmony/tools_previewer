@@ -32,5 +32,6 @@ os_include_dirs = [
   "$flutter_root/engine/ace_adapter/flutter/shell/platform/glfw/public",
   "$ace_root/frameworks/core/common/clipboard",
   "$ace_root/adapter/preview/entrance/clipboard",
+  "$ace_root/interfaces/inner_api/ace",
   "//foundation/graphic/graphic_2d/rosen/modules/platform/utils",
 ]
