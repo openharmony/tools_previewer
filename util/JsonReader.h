@@ -24,6 +24,17 @@ class JsonReader {
 public:
     static std::string ReadFile(const std::string path);
     static Json::Value ParseJsonData(const std::string jsonStr);
+
+    static std::string GetString(const Json::Value& val, const std::string& key,
+                                const std::string& defaultVal = "");
+    static bool GetBool(const Json::Value& val, const std::string& key, const bool defaultVal = false);
+    static int32_t GetInt(const Json::Value& val, const std::string& key, const int32_t defaultVal = 0);
+    static uint32_t GetUInt(const Json::Value& val, const std::string& key, const uint32_t defaultVal = 0);
+    static int64_t GetInt64(const Json::Value& val, const std::string& key, const int64_t defaultVal = 0);
+    static double GetDouble(const Json::Value& val, const std::string& key, const double defaultVal = 0.0);
+    static std::unique_ptr<Json::Value> GetObject(const Json::Value& val, const std::string& key);
+    static int32_t GetArraySize(const Json::Value& val);
+    static std::unique_ptr<Json::Value> GetArray(const Json::Value& val, const std::string& key);
 };
 
 #endif // JSONREADER_H
