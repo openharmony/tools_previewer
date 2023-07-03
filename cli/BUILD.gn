@@ -17,7 +17,7 @@ config("cli_config") {
   defines = [ "NOGDI" ]
   cflags = [ "-std=c++17" ]
 }
-ohos_static_library("cli_lite") {
+ohos_source_set("cli_lite") {
   configs = [ ":cli_config" ]
   sources = [
     "CommandLine.cpp",
@@ -54,9 +54,11 @@ ohos_static_library("cli_lite") {
   ]
 
   cflags = [ "-Wno-deprecated-declarations" ]
+  part_name = "previewer"
+  subsystem_name = "ide"
 }
 
-ohos_static_library("cli_rich") {
+ohos_source_set("cli_rich") {
   configs = [ ":cli_config" ]
   sources = [
     "CommandLine.cpp",
@@ -78,11 +80,12 @@ ohos_static_library("cli_rich") {
     "../jsapp/rich/",
     "//third_party/jsoncpp/include/json/",
   ]
-
   include_dirs += [
     "../mock/",
     "../mock/rich/",
   ]
 
   include_dirs += os_include_dirs
+  part_name = "previewer"
+  subsystem_name = "ide"
 }

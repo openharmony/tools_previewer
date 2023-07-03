@@ -26,10 +26,26 @@
 #include "device_config.h"
 #include "device_type.h"
 
+
+namespace OHOS {
+namespace Previewer {
+    struct PreviewerWindowModel;
+}
+namespace Rosen {
+    class GlfwRenderContext;
+}
+#if defined(__APPLE__) || defined(_WIN32)
+namespace AbilityRuntime {
+    class Simulator;
+    struct Options;
+}
+#endif
+}
+
 class JsAppImpl : public JsApp {
 public:
-    JsAppImpl();
-    ~JsAppImpl() {}
+    JsAppImpl() noexcept;
+    ~JsAppImpl();
     JsAppImpl& operator=(const JsAppImpl&) = delete;
     JsAppImpl(const JsAppImpl&) = delete;
 
@@ -54,8 +70,6 @@ public:
     bool MemoryRefresh(const std::string memoryRefreshArgs) const override;
     void LoadDocument(const std::string, const std::string, const Json::Value) override;
 
-    void InitializeClipboard(OHOS::Ace::Platform::CallbackSetClipboardData cbkSetData,
-        OHOS::Ace::Platform::CallbackGetClipboardData cbkGetData) const;
     void DispatchBackPressedEvent() const;
     void DispatchKeyEvent(const std::shared_ptr<OHOS::MMI::KeyEvent>& keyEvent) const;
     void DispatchPointerEvent(const std::shared_ptr<OHOS::MMI::PointerEvent>& pointerEvent) const;
@@ -65,6 +79,8 @@ public:
 protected:
     void SetJsAppArgs(OHOS::Ace::Platform::AceRunArgs& args);
     void RunJsApp();
+    void RunNormalAbility();
+    void RunDebugAbility();
     double watchScreenDensity = 320;  // Watch Screen Density
     double phoneScreenDensity = 480;  // Phone Screen Density
     double tvScreenDensity = 320;     // TV Screen Density
@@ -102,6 +118,7 @@ private:
     void SetSystemParams(OHOS::Ace::Platform::SystemParams& args, Json::Value paramObj);
     void SetDeviceScreenDensity(const int32_t screenDensity, const std::string type);
     std::string GetDeviceTypeName(const OHOS::Ace::DeviceType) const;
+    void InitGlfwEnv();
     const double BASE_SCREEN_DENSITY = 160; // Device Baseline Screen Density
     std::unique_ptr<OHOS::Ace::Platform::AceAbility> ability;
     std::atomic<bool> isStop;
@@ -110,6 +127,58 @@ private:
     int32_t orignalWidth = 0;
     int32_t orignalHeight = 0;
     OHOS::Ace::Platform::AceRunArgs aceRunArgs;
+    std::shared_ptr<OHOS::Rosen::GlfwRenderContext> glfwRenderContext;
+#if defined(__APPLE__) || defined(_WIN32)
+    std::unique_ptr<OHOS::AbilityRuntime::Simulator> simulator;
+    int64_t debugAbilityId = -1;
+    void SetSimulatorParams(OHOS::AbilityRuntime::Options& options);
+
+    std::shared_ptr<OHOS::Previewer::PreviewerWindowModel> windowModel;
+    void SetWindowParams() const;
+    template<typename T>
+    T SetDevice(const OHOS::Ace::DeviceType& deviceType) const
+    {
+        static_assert(std::is_enum_v<T>, "T must be an enum type");
+        switch (deviceType) {
+            case OHOS::Ace::DeviceType::WATCH:
+                return T::WATCH;
+            case OHOS::Ace::DeviceType::TV:
+                return T::TV;
+            case OHOS::Ace::DeviceType::CAR:
+                return T::CAR;
+            case OHOS::Ace::DeviceType::TABLET:
+                return T::TABLET;
+            case OHOS::Ace::DeviceType::PHONE:
+                return T::PHONE;
+            default:
+                return T::UNKNOWN;
+        }
+    }
+    template<typename T>
+    T SetColorMode(const OHOS::Ace::ColorMode& colorMode) const
+    {
+        static_assert(std::is_enum_v<T>, "T must be an enum type");
+        if (colorMode == OHOS::Ace::ColorMode::LIGHT) {
+            return T::LIGHT;
+        } else if (colorMode == OHOS::Ace::ColorMode::DARK) {
+            return T::DARK;
+        } else {
+            return T::COLOR_MODE_UNDEFINED;
+        }
+    }
+    template<typename T>
+    T SetOrientation(const OHOS::Ace::DeviceOrientation& orientation) const
+    {
+        static_assert(std::is_enum_v<T>, "T must be an enum type");
+        if (orientation == OHOS::Ace::DeviceOrientation::PORTRAIT) {
+            return T::PORTRAIT;
+        } else if (orientation == OHOS::Ace::DeviceOrientation::LANDSCAPE) {
+            return T::LANDSCAPE;
+        } else {
+            return T::ORIENTATION_UNDEFINED;
+        }
+    }
+#endif
 };
 
 #endif // JSAPPIMPL_H

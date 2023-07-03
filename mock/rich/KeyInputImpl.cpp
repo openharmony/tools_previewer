@@ -34,18 +34,6 @@ KeyInputImpl& KeyInputImpl::GetInstance()
     return instance;
 }
 
-void KeyInputImpl::SetDelegate()
-{
-    auto callbackSetClipboardData = [](const std::string& data) {
-        ClipboardHelper::SetClipboardData(data);
-    };
-    auto callbackGetClipboardData = []() {
-        return ClipboardHelper::GetClipboardData();
-    };
-    JsAppImpl::GetInstance().InitializeClipboard(callbackSetClipboardData, callbackGetClipboardData);
-    ILOG("Bind key event callback function to ace successed.");
-}
-
 void KeyInputImpl::DispatchOsInputMethodEvent() const
 {
     JsAppImpl::GetInstance().DispatchInputMethodEvent(codePoint);
