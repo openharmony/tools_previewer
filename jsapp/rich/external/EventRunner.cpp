@@ -16,20 +16,20 @@
 #include "EventRunner.h"
 
 namespace OHOS::AppExecFwk {
-std::shared_ptr<EventRunner> EventRunner::Current()
+EventRunner& EventRunner::Current()
 {
-    static std::shared_ptr<EventRunner> mainRunner =
-        std::make_shared<EventRunner>(std::this_thread::get_id());
+    static EventRunner mainRunner;
     return mainRunner;
 }
 
-EventRunner::EventRunner(std::thread::id mainThreadId) : threadId(mainThreadId)
-{
-}
-
-std::shared_ptr<EventRunner> EventRunner::GetMainEventRunner()
+EventRunner& EventRunner::GetMainEventRunner()
 {
     return Current();
+}
+
+void EventRunner::SetMainThreadId(std::thread::id id)
+{
+    threadId = id;
 }
 
 std::thread::id EventRunner::GetThreadId()
