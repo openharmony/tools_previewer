@@ -22,12 +22,32 @@
 #include "SharedData.h"
 #include "TraceTool.h"
 #include "VirtualScreenImpl.h"
-#include "KeyInputImpl.h"
+#include "external/EventHandler.h"
+#include "viewport_config.h"
+#include "glfw_render_context.h"
+#include "window_model.h"
+#if defined(__APPLE__) || defined(_WIN32)
+#include "options.h"
+#include "simulator.h"
+#endif
 
 using namespace std;
 using namespace OHOS::Ace;
 
-JsAppImpl::JsAppImpl() : ability(nullptr), isStop(false) {}
+JsAppImpl::JsAppImpl() noexcept : ability(nullptr), isStop(false)
+{
+#if defined(__APPLE__) || defined(_WIN32)
+    windowModel = std::make_shared<OHOS::Previewer::PreviewerWindowModel>();
+#endif
+}
+
+JsAppImpl::~JsAppImpl()
+{
+    if (glfwRenderContext != nullptr) {
+        glfwRenderContext->DestroyWindow();
+        glfwRenderContext->Terminate();
+    }
+}
 
 JsAppImpl& JsAppImpl::GetInstance()
 {
@@ -40,17 +60,30 @@ void JsAppImpl::Start()
     VirtualScreenImpl::GetInstance().InitVirtualScreen();
     VirtualScreenImpl::GetInstance().InitAll(pipeName, pipePort);
     isFinished = false;
+    ILOG("Start run js app");
+    OHOS::AppExecFwk::EventHandler::Current().SetMainThreadId(std::this_thread::get_id());
+    RunJsApp();
+    ILOG("Js app run finished");
     while (!isStop) {
-        ILOG("Start run js app");
-        RunJsApp();
-        ILOG("Js app run finished");
+        // Execute all tasks in the main thread
+        OHOS::AppExecFwk::EventHandler::Current().Run();
+        glfwRenderContext->PollEvents();
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
     }
     isFinished = true;
 }
 
 void JsAppImpl::Restart()
 {
-    Platform::AceAbility::Stop();
+    if (isDebug && debugServerPort) {
+#if defined(__APPLE__) || defined(_WIN32)
+        if (simulator) {
+            simulator->TerminateAbility(debugAbilityId);
+        }
+#endif
+    } else {
+        ability = nullptr;
+    }
 }
 
 std::string JsAppImpl::GetJSONTree()
@@ -80,6 +113,7 @@ void JsAppImpl::OrientationChanged(std::string commandOrientation)
     aceRunArgs.deviceWidth = height;
     aceRunArgs.deviceHeight = width;
     VirtualScreenImpl::GetInstance().WidthAndHeightReverse();
+
     AdaptDeviceType(aceRunArgs, CommandParser::GetInstance().GetDeviceType(),
                     VirtualScreenImpl::GetInstance().GetOrignalWidth());
     AssignValueForWidthAndHeight(VirtualScreenImpl::GetInstance().GetOrignalWidth(),
@@ -96,6 +130,7 @@ void JsAppImpl::OrientationChanged(std::string commandOrientation)
     ILOG("OrientationChanged: %s %d %d %f", orientation.c_str(), aceRunArgs.deviceWidth,
          aceRunArgs.deviceHeight, aceRunArgs.deviceConfig.density);
     if (ability != nullptr) {
+        glfwRenderContext->SetWindowSize(width, height);
         ability->SurfaceChanged(aceRunArgs.deviceConfig.orientation, aceRunArgs.deviceConfig.density,
                                 aceRunArgs.deviceWidth, aceRunArgs.deviceHeight);
     }
@@ -117,7 +152,15 @@ void JsAppImpl::ColorModeChanged(const std::string commandColorMode)
 void JsAppImpl::Interrupt()
 {
     isStop = true;
-    Platform::AceAbility::Stop();
+    if (isDebug && debugServerPort) {
+#if defined(__APPLE__) || defined(_WIN32)
+        if (simulator) {
+            simulator->TerminateAbility(debugAbilityId);
+        }
+#endif
+    } else {
+        ability = nullptr;
+    }
 }
 
 void JsAppImpl::SetJsAppArgs(OHOS::Ace::Platform::AceRunArgs& args)
@@ -153,25 +196,131 @@ void JsAppImpl::SetJsAppArgs(OHOS::Ace::Platform::AceRunArgs& args)
 
 void JsAppImpl::RunJsApp()
 {
-    KeyInputImpl::GetInstance().SetDelegate();
+    ILOG("RunJsApp 1");
     AssignValueForWidthAndHeight(VirtualScreenImpl::GetInstance().GetOrignalWidth(),
                                  VirtualScreenImpl::GetInstance().GetOrignalHeight(),
                                  VirtualScreenImpl::GetInstance().GetCompressionWidth(),
                                  VirtualScreenImpl::GetInstance().GetCompressionHeight());
     SetJsAppArgs(aceRunArgs);
+    InitGlfwEnv();
+    if (isDebug && debugServerPort) {
+        RunDebugAbility(); // for debug preview
+    } else {
+        RunNormalAbility(); // for normal preview
+    }
+}
+
+void JsAppImpl::RunNormalAbility()
+{
     if (ability != nullptr) {
         ability.reset();
     }
-    ILOG("Launch Js App");
     TraceTool::GetInstance().HandleTrace("Launch Js App");
     ability = Platform::AceAbility::CreateInstance(aceRunArgs);
     if (ability == nullptr) {
         ELOG("JsApp::Run ability create failed.");
         return;
     }
+    OHOS::Rosen::WMError errCode;
+    OHOS::sptr<OHOS::Rosen::WindowOption> sp = nullptr;
+    auto window = OHOS::Rosen::Window::Create("previewer", sp, nullptr, errCode);
+    window->CreateSurfaceNode("preview_surface", aceRunArgs.onRender);
+    ability->SetWindow(window);
     ability->InitEnv();
-    ability->Start();
 }
+
+#if defined(__APPLE__) || defined(_WIN32)
+void JsAppImpl::RunDebugAbility()
+{
+    // init window params
+    SetWindowParams();
+    OHOS::Previewer::PreviewerWindow::GetInstance().SetWindowParams(*windowModel);
+    // start ability
+    OHOS::AbilityRuntime::Options options;
+    SetSimulatorParams(options);
+    simulator = OHOS::AbilityRuntime::Simulator::Create(options);
+    if (!simulator) {
+        ELOG("JsApp::Run simulator create failed.");
+        return;
+    }
+    std::string abilitySrcPath = CommandParser::GetInstance().GetAbilityPath();
+    debugAbilityId = simulator->StartAbility(abilitySrcPath, [](int64_t abilityId) {});
+    if (debugAbilityId < 0) {
+        ELOG("JsApp::Run ability start failed. abilitySrcPath:%s", abilitySrcPath.c_str());
+        return;
+    }
+    // set onRender callback
+    OHOS::Rosen::Window* window = OHOS::Previewer::PreviewerWindow::GetInstance().GetWindowObject();
+    if (!window) {
+        ELOG("JsApp::Run get window failed.");
+        return;
+    }
+    window->CreateSurfaceNode(options.moduleName, std::move(VirtualScreenImpl::CallBack));
+}
+
+
+void JsAppImpl::SetSimulatorParams(OHOS::AbilityRuntime::Options& options)
+{
+    const string path = CommandParser::GetInstance().GetAppResourcePath() +
+                        FileSystem::GetSeparator() + "module.json";
+    GetModuleJsonInfo(path);
+    options.bundleName = OHOS::Ide::StageContext::GetInstance().GetAppInfo().bundleName;
+    options.moduleName = OHOS::Ide::StageContext::GetInstance().GetHapModuleInfo().moduleName;
+    options.modulePath = aceRunArgs.assetPath + FileSystem::GetSeparator() + "modules.abc";
+    options.resourcePath = CommandParser::GetInstance().GetAppResourcePath() +
+                                FileSystem::GetSeparator() + "resources.index";
+    options.debugPort = debugServerPort;
+    options.assetPath = aceRunArgs.assetPath;
+    options.systemResourcePath = aceRunArgs.systemResourcesPath;
+    options.appResourcePath = aceRunArgs.appResourcesPath;
+    options.containerSdkPath = aceRunArgs.containerSdkPath;
+    options.url = aceRunArgs.url;
+    options.language = aceRunArgs.language;
+    options.region = aceRunArgs.region;
+    options.script = aceRunArgs.script;
+    options.themeId = aceRunArgs.themeId;
+    options.deviceWidth = aceRunArgs.deviceWidth;
+    options.deviceHeight = aceRunArgs.deviceHeight;
+    options.isRound = aceRunArgs.isRound;
+    options.onRouterChange = aceRunArgs.onRouterChange;
+    OHOS::AbilityRuntime::DeviceConfig deviceCfg;
+    deviceCfg.deviceType = SetDevice<OHOS::AbilityRuntime::DeviceType>(aceRunArgs.deviceConfig.deviceType);
+    deviceCfg.orientation = SetOrientation<OHOS::AbilityRuntime::DeviceOrientation>(
+        aceRunArgs.deviceConfig.orientation);
+    deviceCfg.colorMode = SetColorMode<OHOS::AbilityRuntime::ColorMode>(aceRunArgs.deviceConfig.colorMode);
+    deviceCfg.density = aceRunArgs.deviceConfig.density;
+    options.deviceConfig = deviceCfg;
+    options.compatibleVersion = OHOS::Ide::StageContext::GetInstance().GetAppInfo().minAPIVersion;
+    options.installationFree =
+        OHOS::Ide::StageContext::GetInstance().GetAppInfo().bundleType == "atomicService" ? true : false;
+    options.labelId = OHOS::Ide::StageContext::GetInstance().GetHapModuleInfo().labelId;
+    options.compileMode = OHOS::Ide::StageContext::GetInstance().GetHapModuleInfo().compileMode;
+    options.pageProfile = OHOS::Ide::StageContext::GetInstance().GetHapModuleInfo().pageProfile;
+    options.targetVersion = OHOS::Ide::StageContext::GetInstance().GetAppInfo().targetAPIVersion;
+    options.releaseType = OHOS::Ide::StageContext::GetInstance().GetAppInfo().apiReleaseType;
+    options.enablePartialUpdate = OHOS::Ide::StageContext::GetInstance().GetHapModuleInfo().isPartialUpdate;
+    ILOG("setted bundleName:%s moduleName:%s", options.bundleName.c_str(), options.moduleName.c_str());
+}
+
+void JsAppImpl::SetWindowParams() const
+{
+    windowModel->isRound = aceRunArgs.isRound;
+    windowModel->originWidth = aceRunArgs.deviceWidth;
+    windowModel->originHeight = aceRunArgs.deviceHeight;
+    windowModel->compressWidth = aceRunArgs.deviceWidth;
+    windowModel->compressHeight = aceRunArgs.deviceHeight;
+    windowModel->density = aceRunArgs.deviceConfig.density;
+    windowModel->deviceType = SetDevice<OHOS::Previewer::DeviceType>(aceRunArgs.deviceConfig.deviceType);
+    windowModel->orientation = SetOrientation<OHOS::Previewer::Orientation>(aceRunArgs.deviceConfig.orientation);
+    windowModel->colorMode = SetColorMode<OHOS::Previewer::ColorMode>(aceRunArgs.deviceConfig.colorMode);
+}
+#else
+    void JsAppImpl::RunDebugAbility()
+    {
+        ELOG("JsApp::Run ability start failed.Linux is not supported.");
+        return;
+    }
+#endif
 
 void JsAppImpl::AdaptDeviceType(Platform::AceRunArgs& args, const std::string type,
                                 const int32_t realDeviceWidth, double screenDendity) const
@@ -388,9 +537,29 @@ void JsAppImpl::ResolutionChanged(int32_t changedOriginWidth,
 
     ILOG("ResolutionChanged: %s %d %d %f", orientation.c_str(), aceRunArgs.deviceWidth,
          aceRunArgs.deviceHeight, aceRunArgs.deviceConfig.density);
-    if (ability != nullptr) {
-        ability->SurfaceChanged(aceRunArgs.deviceConfig.orientation, aceRunArgs.deviceConfig.density,
-                                aceRunArgs.deviceWidth, aceRunArgs.deviceHeight);
+    if (isDebug && debugServerPort) {
+#if defined(__APPLE__) || defined(_WIN32)
+        SetWindowParams();
+        OHOS::Ace::ViewportConfig config;
+        config.SetSize(windowModel->originWidth, windowModel->originHeight);
+        config.SetPosition(0, 0);
+        config.SetOrientation(static_cast<int32_t>(
+            OHOS::Previewer::PreviewerWindow::TransOrientation(windowModel->orientation)));
+        config.SetDensity(windowModel->density);
+        OHOS::Rosen::Window* window = OHOS::Previewer::PreviewerWindow::GetInstance().GetWindowObject();
+        if (!window) {
+            ELOG("JsApp::Run get window failed.");
+            return;
+        }
+        glfwRenderContext->SetWindowSize(width, height);
+        window->SetViewportConfig(config);
+#endif
+    } else {
+        if (ability != nullptr) {
+            glfwRenderContext->SetWindowSize(width, height);
+            ability->SurfaceChanged(aceRunArgs.deviceConfig.orientation, aceRunArgs.deviceConfig.density,
+                                    aceRunArgs.deviceWidth, aceRunArgs.deviceHeight);
+        }
     }
 }
 
@@ -538,14 +707,9 @@ void JsAppImpl::LoadDocument(const std::string filePath,
              ((params.colorMode == ColorMode::DARK) ? "dark" : "light"),
              ((params.orientation == DeviceOrientation::LANDSCAPE) ? "landscape" : "portrait"),
              GetDeviceTypeName(params.deviceType).c_str());
+        glfwRenderContext->SetWindowSize(width, height);
         ability->LoadDocument(filePath, componentName, params);
     }
-}
-
-void JsAppImpl::InitializeClipboard(OHOS::Ace::Platform::CallbackSetClipboardData cbkSetData,
-    OHOS::Ace::Platform::CallbackGetClipboardData cbkGetData) const
-{
-    ability->InitializeClipboard(cbkSetData, cbkGetData);
 }
 
 void JsAppImpl::DispatchBackPressedEvent() const
@@ -554,11 +718,33 @@ void JsAppImpl::DispatchBackPressedEvent() const
 }
 void JsAppImpl::DispatchKeyEvent(const std::shared_ptr<OHOS::MMI::KeyEvent>& keyEvent) const
 {
-    ability->OnInputEvent(keyEvent);
+    if (isDebug && debugServerPort) {
+#if defined(__APPLE__) || defined(_WIN32)
+        OHOS::Rosen::Window* window = OHOS::Previewer::PreviewerWindow::GetInstance().GetWindowObject();
+        if (!window) {
+            ELOG("JsApp::Run get window failed.");
+            return;
+        }
+        window->ConsumeKeyEvent(keyEvent);
+#endif
+    } else {
+        ability->OnInputEvent(keyEvent);
+    }
 }
 void JsAppImpl::DispatchPointerEvent(const std::shared_ptr<OHOS::MMI::PointerEvent>& pointerEvent) const
 {
-    ability->OnInputEvent(pointerEvent);
+    if (isDebug && debugServerPort) {
+#if defined(__APPLE__) || defined(_WIN32)
+        OHOS::Rosen::Window* window = OHOS::Previewer::PreviewerWindow::GetInstance().GetWindowObject();
+        if (!window) {
+            ELOG("JsApp::Run get window failed.");
+            return;
+        }
+        window->ConsumePointerEvent(pointerEvent);
+#endif
+    } else {
+        ability->OnInputEvent(pointerEvent);
+    }
 }
 void JsAppImpl::DispatchAxisEvent(const std::shared_ptr<OHOS::MMI::AxisEvent>& axisEvent) const
 {
@@ -585,4 +771,14 @@ string JsAppImpl::GetDeviceTypeName(const OHOS::Ace::DeviceType type) const
         default:
             return "";
     }
+}
+
+void JsAppImpl::InitGlfwEnv()
+{
+    glfwRenderContext = OHOS::Rosen::GlfwRenderContext::GetGlobal();
+    if (!glfwRenderContext->Init()) {
+        ELOG("Could not create window: InitGlfwEnv failed.");
+        return;
+    }
+    glfwRenderContext->CreateGlfwWindow(aceRunArgs.deviceWidth, aceRunArgs.deviceHeight, false);
 }

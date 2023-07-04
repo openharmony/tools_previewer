@@ -42,7 +42,7 @@ Json::Value JsonReader::ParseJsonData(const string jsonStr)
         ELOG("JsonReader: CharReader memory allocation failed.");
         return val;
     }
-    std::unique_ptr<Json::CharReader> reader(charReader);
+    unique_ptr<Json::CharReader> reader(charReader);
     if (reader.get() == nullptr) {
         ELOG("JsonReader: CharReader get null.");
         return val;
@@ -52,4 +52,85 @@ Json::Value JsonReader::ParseJsonData(const string jsonStr)
         ELOG("JsonReader: Failed to parse the json data, errors: %s", message.c_str());
     }
     return val;
+}
+
+string JsonReader::GetString(const Json::Value& val, const string& key, const string& defaultVal)
+{
+    if (val && val.isMember(key) && val[key].isString()) {
+        return val[key].asString();
+    }
+    ELOG("JsonReader: GetString failed, key is: %s.", key.c_str());
+    return defaultVal;
+}
+
+bool JsonReader::GetBool(const Json::Value& val, const string& key, const bool defaultVal)
+{
+    if (val && val.isMember(key) && val[key].isBool()) {
+        return val[key].asBool();
+    }
+    ELOG("JsonReader: GetBool failed, key is: %s.", key.c_str());
+    return defaultVal;
+}
+
+int32_t JsonReader::GetInt(const Json::Value& val, const string& key, const int32_t defaultVal)
+{
+    if (val && val.isMember(key) && val[key].isInt()) {
+        return val[key].asInt();
+    }
+    ELOG("JsonReader: GetInt failed, key is: %s.", key.c_str());
+    return defaultVal;
+}
+
+uint32_t JsonReader::GetUInt(const Json::Value& val, const string& key, const uint32_t defaultVal)
+{
+    if (val && val.isMember(key) && val[key].isUInt()) {
+        return val[key].asUInt();
+    }
+    ELOG("JsonReader: GetUInt failed, key is: %s.", key.c_str());
+    return defaultVal;
+}
+
+int64_t JsonReader::GetInt64(const Json::Value& val, const string& key, const int64_t defaultVal)
+{
+    if (val && val.isMember(key) && val[key].isInt64()) {
+        return val[key].asInt64();
+    }
+    ELOG("JsonReader: GetInt64 failed, key is: %s.", key.c_str());
+    return defaultVal;
+}
+
+double JsonReader::GetDouble(const Json::Value& val, const string& key, const double defaultVal)
+{
+    if (val && val.isMember(key) && val[key].isDouble()) {
+        return val[key].asDouble();
+    }
+    ELOG("JsonReader: GetDouble failed, key is: %s.", key.c_str());
+    return defaultVal;
+}
+
+unique_ptr<Json::Value> JsonReader::GetObject(const Json::Value& val, const string& key)
+{
+    if (val && val.isMember(key) && val[key].isObject()) {
+        return make_unique<Json::Value>(val[key]);
+    }
+    ELOG("JsonReader: GetObject failed, key is: %s.", key.c_str());
+    return make_unique<Json::Value>();
+}
+
+int32_t JsonReader::GetArraySize(const Json::Value& val)
+{
+    if (val && val.isArray()) {
+        return val.size();
+    }
+    ELOG("JsonReader: GetArraySize failed.");
+    return 0;
+}
+
+unique_ptr<Json::Value> JsonReader::GetArray(const Json::Value& val, const string& key)
+{
+    if (val && val.isMember(key) && val[key].isArray()) {
+        return make_unique<Json::Value>(val[key]);
+    }
+    ELOG("JsonReader: GetArraySize failed, key is: %s.", key.c_str());
+    return make_unique<Json::Value>();
 }

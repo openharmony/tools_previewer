@@ -16,7 +16,7 @@ import("./gn/config.gni")
 
 template("previewer_executable") {
   ohos_executable(target_name) {
-    subsystem_name = "previewer"
+    subsystem_name = "ide"
     part_name = invoker.part_name
     output_name = invoker.output_name
     sources = invoker.src
@@ -27,11 +27,11 @@ template("previewer_executable") {
       "./mock/",
       "./jsapp/",
       "//third_party/jsoncpp/include/json/",
-      "//commonlibrary/c_utils/base/include/",
     ]
 
     include_dirs += invoker.includes
-
+    external_deps = []
+    external_deps += invoker.external_deps
     deps = [
       "//third_party/bounds_checking_function:libsec_static",
       "//third_party/jsoncpp:jsoncpp_static",
@@ -79,27 +79,8 @@ group("lite_ace_previewer") {
   }
 }
 
-previewer_executable("WearablePreview") {
-  part_name = "watch"
-  output_name = "Previewer"
-  src = [ "RichPreviewer.cpp" ]
-  includes = os_include_dirs
-  includes += [
-    "./mock/rich/",
-    "./jsapp/rich/",
-  ]
-  libs = []
-  deps = [
-    "cli:cli_rich",
-    "jsapp:jsapp_rich",
-    "mock:mock_rich",
-    "util:util_rich",
-    "//third_party/libwebsockets:websockets_static",
-  ]
-}
-
 previewer_executable("rich_previewer") {
-  part_name = "tv"
+  part_name = "previewer"
   output_name = "Previewer"
   src = [ "RichPreviewer.cpp" ]
   includes = os_include_dirs
@@ -108,8 +89,8 @@ previewer_executable("rich_previewer") {
     "./jsapp/rich/",
   ]
   libs = []
+  external_deps = [ "ace_engine:libace" ]
   deps = [
-    "$ace_root/adapter/preview/build:libace",
     "cli:cli_rich",
     "jsapp:jsapp_rich",
     "mock:mock_rich",
@@ -131,6 +112,7 @@ previewer_executable("lite_previewer") {
     "//foundation/graphic/graphic_utils_lite/interfaces/innerkits/",
     "//foundation/arkui/ui_lite/frameworks/dock/",
   ]
+  external_deps = []
   deps = [
     "cli:cli_lite",
     "jsapp:jsapp_lite",
@@ -165,5 +147,30 @@ ohos_copy("copy_previewer_fonts_lite") {
   outputs = [ target_out_dir + "/previewer/liteWearable/config/" +
               "/{{source_file_part}}" ]
   module_source_dir = target_out_dir + "/previewer/liteWearable/config/"
+  module_install_name = ""
+}
+
+# copy ide dynamic lib
+ohos_copy("copy_ide_library") {
+  if (platform == "mingw_x86_64") {
+    suffix = ".dll"
+  } else if (platform == "mac_arm64" || platform == "mac_x64") {
+    suffix = ".dylib"
+  } else if (platform == "linux_x64") {
+    suffix = ".so"
+  }
+  deps = []
+  sources = []
+
+  deps += [ "util:ide_util" ]
+  out_path = get_label_info("util:ide_util", "root_out_dir")
+  sources += [ out_path + "/ide/previewer/libide_util" + suffix ]
+
+  deps += [ "jsapp/rich/external:ide_extension" ]
+  out_path = get_label_info("jsapp/rich/external:ide_extension", "root_out_dir")
+  sources += [ out_path + "/ide/previewer/libide_extension" + suffix ]
+
+  outputs = [ target_out_dir + "/previewer/common/bin/{{source_file_part}}" ]
+  module_source_dir = target_out_dir + "/previewer/common/bin/"
   module_install_name = ""
 }
