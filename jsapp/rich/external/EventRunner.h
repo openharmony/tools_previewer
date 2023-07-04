@@ -24,11 +24,11 @@
 namespace OHOS::AppExecFwk {
 class EventRunner final {
 public:
-    EventRunner() = delete;
-    explicit EventRunner(std::thread::id mainThreadId);
+    EventRunner() = default;
     ~EventRunner() = default;
-    static std::shared_ptr<EventRunner> Current();
-    static std::shared_ptr<EventRunner> GetMainEventRunner();
+    static EventRunner& Current();
+    static EventRunner& GetMainEventRunner();
+    void SetMainThreadId(std::thread::id id);
     std::thread::id GetThreadId();
     bool IsCurrentRunnerThread();
     void Run();
@@ -36,6 +36,8 @@ public:
     void PushTask(const Callback &callback, std::chrono::steady_clock::time_point targetTime);
 
 private:
+    EventRunner(const EventRunner&) = delete;
+    EventRunner &operator=(const EventRunner&) = delete;
     std::thread::id threadId;
     EventQueue queue;
     std::mutex mutex;
