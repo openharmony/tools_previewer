@@ -22,10 +22,17 @@ config("jsapp_config") {
   cflags_cc = cflags
 }
 
-ohos_static_library("jsapp_rich") {
+config("jsapp_config_rich") {
+  visibility = [ ":*" ]
+
+  include_dirs = [ "rich" ]
+}
+
+ohos_source_set("jsapp_rich") {
   configs = [ ":jsapp_config" ]
   sources = [
     "JsApp.cpp",
+    "StageContext.cpp",
     "rich/JsAppImpl.cpp",
   ]
   include_dirs = [
@@ -35,16 +42,30 @@ ohos_static_library("jsapp_rich") {
     "../util/",
     "../mock/",
     "//third_party/jsoncpp/include/json/",
+    "./external/",
   ]
   include_dirs += os_include_dirs
-  deps = [ "//third_party/libwebsockets:websockets_static" ]
+  external_deps = [
+    "graphic_standard:librender_service_client",
+    "window_manager:previewer_window",
+  ]
+  deps = [
+    "rich/external:ide_extension",
+    "//third_party/libwebsockets:websockets_static",
+  ]
+  if (platform != "linux_x64") {
+    external_deps += [ "ability_runtime:ability_simulator" ]
+  }
+  part_name = "previewer"
+  subsystem_name = "ide"
 }
 
-ohos_static_library("jsapp_lite") {
+ohos_source_set("jsapp_lite") {
   defines = [ "ENABLE_ICU" ]
   configs = [ ":jsapp_config" ]
   sources = [
     "JsApp.cpp",
+    "StageContext.cpp",
     "lite/JsAppImpl.cpp",
     "lite/TimerTaskHandler.cpp",
   ]
@@ -68,4 +89,6 @@ ohos_static_library("jsapp_lite") {
     "//foundation/arkui/ace_engine_lite/frameworks/targets/simulator:ace_lite",
     "//third_party/libwebsockets:websockets_static",
   ]
+  part_name = "previewer"
+  subsystem_name = "ide"
 }

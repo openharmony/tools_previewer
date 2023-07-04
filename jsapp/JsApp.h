@@ -20,6 +20,7 @@
 #include <string>
 #include <thread>
 #include <vector>
+#include "StageContext.h"
 #include "json.h"
 
 class JsApp {
@@ -59,6 +60,7 @@ public:
 protected:
     JsApp();
     virtual ~JsApp() {};
+    void GetModuleJsonInfo(const std::string& path);
     std::string pipeName;
     std::string pipePort;
     std::string jsAppPath;

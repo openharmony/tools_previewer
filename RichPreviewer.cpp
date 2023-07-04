@@ -82,6 +82,13 @@ static void InitJsApp()
 
     InitDeviceOrientation();
 
+    if (parser.IsSet("d")) {
+        JsAppImpl::GetInstance().SetIsDebug(true);
+        if (parser.IsSet("p")) {
+            JsAppImpl::GetInstance().SetDebugServerPort(static_cast<uint16_t>(atoi(parser.Value("p").c_str())));
+        }
+    }
+
     JsAppImpl::GetInstance().Start();
 }
 
@@ -109,9 +116,11 @@ static void NotifyInspectorChanged()
 
 static void ProcessCommand()
 {
-    static CppTimer inspectorNotifytimer(NotifyInspectorChanged);
-    inspectorNotifytimer.Start(NOTIFY_INTERVAL_TIME); // Notify per second
-    CppTimerManager::GetTimerManager().AddCppTimer(inspectorNotifytimer);
+    if (!CommandParser::GetInstance().IsSet("d")) {
+        static CppTimer inspectorNotifytimer(NotifyInspectorChanged);
+        inspectorNotifytimer.Start(NOTIFY_INTERVAL_TIME); // Notify per second
+        CppTimerManager::GetTimerManager().AddCppTimer(inspectorNotifytimer);
+    }
 
     VirtualScreenImpl::GetInstance().InitFrameCountTimer();
     while (!Interrupter::IsInterrupt()) {
