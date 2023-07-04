@@ -21,10 +21,11 @@
 namespace OHOS::AppExecFwk {
 class EventHandler final {
 public:
-    EventHandler() = delete;
-    explicit EventHandler(const std::shared_ptr<EventRunner> &runner = nullptr);
+    EventHandler() = default;
     ~EventHandler() = default;
-    static std::shared_ptr<EventHandler> Current();
+    static EventHandler& Current();
+    void SetMainThreadId(std::thread::id id);
+    bool IsCurrentRunnerThread();
     /**
      * Post a task.
      *
@@ -35,7 +36,8 @@ public:
     void Run();
 
 private:
-    std::shared_ptr<EventRunner> eventRunner;
+    EventHandler(const EventHandler&) = delete;
+    EventHandler &operator=(const EventHandler&) = delete;
 };
 }
 #endif // EVENT_HANDLER_H

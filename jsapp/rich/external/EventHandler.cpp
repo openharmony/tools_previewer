@@ -16,31 +16,36 @@
 #include "EventHandler.h"
 
 namespace OHOS::AppExecFwk {
-    EventHandler::EventHandler(const std::shared_ptr<EventRunner> &runner) : eventRunner(runner)
+    EventHandler::EventHandler()
     {
     }
 
-    std::shared_ptr<EventHandler> EventHandler::Current()
+    EventHandler& EventHandler::Current()
     {
-        static std::shared_ptr<EventHandler> currentEventHandler =
-            std::make_shared<EventHandler>(EventRunner::Current());
+        static EventHandler currentEventHandler;
         return currentEventHandler;
+    }
+
+    void EventHandler::SetMainThreadId(std::thread::id id)
+    {
+        EventRunner::Current().SetMainThreadId(id);
+    }
+
+    bool EventHandler::IsCurrentRunnerThread()
+    {
+        return EventRunner::Current().IsCurrentRunnerThread();
     }
 
     bool EventHandler::PostTask(const Callback &callback, int64_t delayTime)
     {
         const std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
         std::chrono::steady_clock::time_point actualTimePoint = now + std::chrono::milliseconds(delayTime);
-        eventRunner->PushTask(callback, actualTimePoint);
+        EventRunner::Current().PushTask(callback, actualTimePoint);
         return true;
     }
 
     void EventHandler::Run()
     {
-        if (!eventRunner) {
-            printf("EventHandler's eventRunner is null.");
-            return;
-        }
-        eventRunner->Run();
+        EventRunner::Current().Run();
     }
 }
