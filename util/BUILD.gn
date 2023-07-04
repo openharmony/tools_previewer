@@ -11,8 +11,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import("//build/ohos.gni")
 import("../gn/config.gni")
-static_library("util_lite") {
+ohos_source_set("util_lite") {
   sources = [
     "CallbackQueue.cpp",
     "CommandParser.cpp",
@@ -56,12 +57,14 @@ static_library("util_lite") {
     "../cli/",
     "../mock/lite/",
     "//third_party/jsoncpp/include/json/",
-    "//third_party/bounds_checking_function/include/"
+    "//third_party/bounds_checking_function/include/",
   ]
   deps = [ "//third_party/libwebsockets:websockets_static" ]
+  part_name = "previewer"
+  subsystem_name = "ide"
 }
 
-static_library("util_rich") {
+ohos_source_set("util_rich") {
   libs = []
   sources = [
     "CallbackQueue.cpp",
@@ -84,45 +87,12 @@ static_library("util_rich") {
   if (platform == "mingw_x86_64") {
     sources += [
       "windows/CrashHandler.cpp",
-      "windows/LocalDate.cpp",
       "windows/LocalSocket.cpp",
-      "windows/ClipboardHelper.cpp",
-      "windows/KeyboardHelper.cpp",
-      "windows/StringHelper.cpp",
     ]
-  } else if (platform == "mac_arm64" || platform == "mac_x64") {
-    cflags += [ "-DNS_FORMAT_ARGUMENT(A)=" ]
+  } else {
     sources += [
       "unix/CrashHandler.cpp",
-      "unix/LocalDate.cpp",
       "unix/LocalSocket.cpp",
-      "unix/ClipboardObjc.mm",
-      "unix/ClipboardHelper.cpp",
-      "unix/KeyboardObjc.mm",
-      "unix/KeyboardHelper.cpp",
-    ]
-    if (defined(enable_gn_2021)) {
-      frameworks = [
-        "Cocoa.framework",
-        "Carbon.framework",
-      ]
-    } else {
-      libs = [
-        "Cocoa.framework",
-        "Carbon.framework",
-      ]
-    }
-  } else if (platform == "linux_x64") {
-    sources += [
-      "unix/CrashHandler.cpp",
-      "unix/LocalDate.cpp",
-      "unix/LocalSocket.cpp",
-      "linux/ClipboardX11.cpp",
-      "linux/ClipboardHelper.cpp",
-      "linux/KeyboardHelper.cpp",
-    ]
-    libs += [
-      "X11"
     ]
   }
 
@@ -133,5 +103,67 @@ static_library("util_rich") {
     "//third_party/jsoncpp/include/json/",
     "//third_party/bounds_checking_function/include/",
   ]
-  deps = [ "//third_party/libwebsockets:websockets_static" ]
+  deps = [
+    ":ide_util",
+    "//third_party/libwebsockets:websockets_static",
+  ]
+  part_name = "previewer"
+  subsystem_name = "ide"
+}
+
+ohos_shared_library("ide_util") {
+  if (is_linux || is_mac || is_mingw) {
+    libs = []
+    sources = [
+      "PreviewerEngineLog.cpp",
+      "TimeTool.cpp",
+    ]
+    cflags = [ "-std=c++17" ]
+    cflags_cc = cflags
+    if (platform == "mingw_x86_64") {
+      sources += [
+        "windows/ClipboardHelper.cpp",
+        "windows/KeyboardHelper.cpp",
+        "windows/LocalDate.cpp",
+        "windows/StringHelper.cpp",
+      ]
+    } else if (platform == "mac_arm64" || platform == "mac_x64") {
+      cflags += [ "-DNS_FORMAT_ARGUMENT(A)=" ]
+      sources += [
+        "unix/ClipboardHelper.cpp",
+        "unix/ClipboardObjc.mm",
+        "unix/KeyboardHelper.cpp",
+        "unix/KeyboardObjc.mm",
+        "unix/LocalDate.cpp",
+      ]
+      if (defined(enable_gn_2021)) {
+        frameworks = [
+          "Cocoa.framework",
+          "Carbon.framework",
+        ]
+      } else {
+        libs = [
+          "Cocoa.framework",
+          "Carbon.framework",
+        ]
+      }
+    } else if (platform == "linux_x64") {
+      sources += [
+        "linux/ClipboardHelper.cpp",
+        "linux/ClipboardX11.cpp",
+        "linux/KeyboardHelper.cpp",
+        "unix/LocalDate.cpp",
+      ]
+      libs += [ "X11" ]
+    }
+
+    include_dirs = [
+      ".",
+      "//third_party/bounds_checking_function/include/",
+    ]
+
+    deps = [ "//third_party/bounds_checking_function:libsec_shared" ]
+  }
+  part_name = "previewer"
+  subsystem_name = "ide"
 }
