@@ -16,10 +16,6 @@
 #include "EventHandler.h"
 
 namespace OHOS::AppExecFwk {
-    EventHandler::EventHandler()
-    {
-    }
-
     EventHandler& EventHandler::Current()
     {
         static EventHandler currentEventHandler;
