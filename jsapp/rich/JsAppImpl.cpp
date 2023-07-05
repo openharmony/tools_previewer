@@ -130,7 +130,7 @@ void JsAppImpl::OrientationChanged(std::string commandOrientation)
     ILOG("OrientationChanged: %s %d %d %f", orientation.c_str(), aceRunArgs.deviceWidth,
          aceRunArgs.deviceHeight, aceRunArgs.deviceConfig.density);
     if (ability != nullptr) {
-        OHOS::AppExecFwk::EventHandler::PostTask([this](){
+        OHOS::AppExecFwk::EventHandler::PostTask([this]() {
             glfwRenderContext->SetWindowSize(width, height);
         });
         ability->SurfaceChanged(aceRunArgs.deviceConfig.orientation, aceRunArgs.deviceConfig.density,
@@ -553,14 +553,14 @@ void JsAppImpl::ResolutionChanged(int32_t changedOriginWidth,
             ELOG("JsApp::Run get window failed.");
             return;
         }
-        OHOS::AppExecFwk::EventHandler::PostTask([this](){
+        OHOS::AppExecFwk::EventHandler::PostTask([this]() {
             glfwRenderContext->SetWindowSize(width, height);
         });
         window->SetViewportConfig(config);
 #endif
     } else {
         if (ability != nullptr) {
-            OHOS::AppExecFwk::EventHandler::PostTask([this](){
+            OHOS::AppExecFwk::EventHandler::PostTask([this]() {
                 glfwRenderContext->SetWindowSize(width, height);
             });
             ability->SurfaceChanged(aceRunArgs.deviceConfig.orientation, aceRunArgs.deviceConfig.density,
@@ -713,7 +713,7 @@ void JsAppImpl::LoadDocument(const std::string filePath,
              ((params.colorMode == ColorMode::DARK) ? "dark" : "light"),
              ((params.orientation == DeviceOrientation::LANDSCAPE) ? "landscape" : "portrait"),
              GetDeviceTypeName(params.deviceType).c_str());
-        OHOS::AppExecFwk::EventHandler::PostTask([this](){
+        OHOS::AppExecFwk::EventHandler::PostTask([this]() {
             glfwRenderContext->SetWindowSize(width, height);
         });
         ability->LoadDocument(filePath, componentName, params);
