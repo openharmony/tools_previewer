@@ -23,17 +23,16 @@ class EventHandler final {
 public:
     EventHandler() = default;
     ~EventHandler() = default;
-    static EventHandler& Current();
-    void SetMainThreadId(std::thread::id id);
-    bool IsCurrentRunnerThread();
+    static void SetMainThreadId(std::thread::id id);
+    static bool IsCurrentRunnerThread();
     /**
      * Post a task.
      *
      * @param callback Task callback.
      * @param delayTime Process the event after 'delayTime' milliseconds.
      */
-    bool PostTask(const Callback &callback, int64_t delayTime = 0);
-    void Run();
+    static bool PostTask(const Callback &callback, int64_t delayTime = 0);
+    static void Run();
 
 private:
     EventHandler(const EventHandler&) = delete;
