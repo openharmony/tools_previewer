@@ -61,12 +61,12 @@ void JsAppImpl::Start()
     VirtualScreenImpl::GetInstance().InitAll(pipeName, pipePort);
     isFinished = false;
     ILOG("Start run js app");
-    OHOS::AppExecFwk::EventHandler::Current().SetMainThreadId(std::this_thread::get_id());
+    OHOS::AppExecFwk::EventHandler::SetMainThreadId(std::this_thread::get_id());
     RunJsApp();
     ILOG("Js app run finished");
     while (!isStop) {
         // Execute all tasks in the main thread
-        OHOS::AppExecFwk::EventHandler::Current().Run();
+        OHOS::AppExecFwk::EventHandler::Run();
         glfwRenderContext->PollEvents();
         std::this_thread::sleep_for(std::chrono::milliseconds(1));
     }
