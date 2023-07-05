@@ -16,12 +16,6 @@
 #include "EventHandler.h"
 
 namespace OHOS::AppExecFwk {
-    EventHandler& EventHandler::Current()
-    {
-        static EventHandler currentEventHandler;
-        return currentEventHandler;
-    }
-
     void EventHandler::SetMainThreadId(std::thread::id id)
     {
         EventRunner::Current().SetMainThreadId(id);
