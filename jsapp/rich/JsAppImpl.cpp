@@ -130,7 +130,9 @@ void JsAppImpl::OrientationChanged(std::string commandOrientation)
     ILOG("OrientationChanged: %s %d %d %f", orientation.c_str(), aceRunArgs.deviceWidth,
          aceRunArgs.deviceHeight, aceRunArgs.deviceConfig.density);
     if (ability != nullptr) {
-        glfwRenderContext->SetWindowSize(width, height);
+        OHOS::AppExecFwk::EventHandler::PostTask([this](){
+            glfwRenderContext->SetWindowSize(width, height);
+        });
         ability->SurfaceChanged(aceRunArgs.deviceConfig.orientation, aceRunArgs.deviceConfig.density,
                                 aceRunArgs.deviceWidth, aceRunArgs.deviceHeight);
     }
@@ -551,12 +553,16 @@ void JsAppImpl::ResolutionChanged(int32_t changedOriginWidth,
             ELOG("JsApp::Run get window failed.");
             return;
         }
-        glfwRenderContext->SetWindowSize(width, height);
+        OHOS::AppExecFwk::EventHandler::PostTask([this](){
+            glfwRenderContext->SetWindowSize(width, height);
+        });
         window->SetViewportConfig(config);
 #endif
     } else {
         if (ability != nullptr) {
-            glfwRenderContext->SetWindowSize(width, height);
+            OHOS::AppExecFwk::EventHandler::PostTask([this](){
+                glfwRenderContext->SetWindowSize(width, height);
+            });
             ability->SurfaceChanged(aceRunArgs.deviceConfig.orientation, aceRunArgs.deviceConfig.density,
                                     aceRunArgs.deviceWidth, aceRunArgs.deviceHeight);
         }
@@ -707,7 +713,9 @@ void JsAppImpl::LoadDocument(const std::string filePath,
              ((params.colorMode == ColorMode::DARK) ? "dark" : "light"),
              ((params.orientation == DeviceOrientation::LANDSCAPE) ? "landscape" : "portrait"),
              GetDeviceTypeName(params.deviceType).c_str());
-        glfwRenderContext->SetWindowSize(width, height);
+        OHOS::AppExecFwk::EventHandler::PostTask([this](){
+            glfwRenderContext->SetWindowSize(width, height);
+        });
         ability->LoadDocument(filePath, componentName, params);
     }
 }
