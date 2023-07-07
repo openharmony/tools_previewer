@@ -25,7 +25,7 @@
             "ace_engine",
             "window_manager",
             "ability_runtime",
-            "graphic_standard"
+            "graphic_2d"
           ],
           "third_party": [
             "bounds_checking_function",
