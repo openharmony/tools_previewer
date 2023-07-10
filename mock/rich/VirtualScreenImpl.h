@@ -28,6 +28,7 @@ public:
                                 const int32_t width, const int32_t height);
     static bool CallBack(const void* data, const size_t length, const int32_t width, const int32_t height);
     static bool PageCallBack(const std::string currentRouterPath);
+    static bool LoadContentCallBack(const std::string currentRouterPath);
     static void FastPreviewCallBack(const std::string& jsonStr);
     void InitAll(std::string pipeName, std::string pipePort);
 
