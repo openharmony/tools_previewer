@@ -133,10 +133,19 @@ bool VirtualScreenImpl::CallBack(const void* data, const size_t length,
 bool VirtualScreenImpl::PageCallBack(const std::string currentRouterPath)
 {
     std::string currentRouter = currentRouterPath.substr(0, currentRouterPath.size() - 3);
-    ILOG("PageCallBack currentPage is : %s", currentRouter.c_str());
+    ILOG("PageCallback currentPage is : %s", currentRouter.c_str());
     GetInstance().SetCurrentRouter(currentRouter);
     Json::Value val;
     CommandLineInterface::GetInstance().CreatCommandToSendData("CurrentRouter", val, "get");
+    return true;
+}
+
+bool VirtualScreenImpl::LoadContentCallBack(const std::string currentRouterPath)
+{
+    ILOG("LoadContentCallback currentPage is : %s", currentRouterPath.c_str());
+    GetInstance().SetAbilityCurrentRouter(currentRouterPath);
+    Json::Value val;
+    CommandLineInterface::GetInstance().CreatCommandToSendData("LoadContent", val, "get");
     return true;
 }
 

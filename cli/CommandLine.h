@@ -269,6 +269,15 @@ protected:
     void RunGet() override;
 };
 
+class LoadContentCommand : public CommandLine {
+public:
+    LoadContentCommand(CommandType commandType, const Json::Value& arg, const LocalSocket& socket);
+    ~LoadContentCommand() override {}
+
+protected:
+    void RunGet() override;
+};
+
 class SupportedLanguagesCommand : public CommandLine {
 public:
     SupportedLanguagesCommand(CommandType commandType, const Json::Value& arg, const LocalSocket& socket);
