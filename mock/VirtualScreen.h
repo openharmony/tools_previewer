@@ -36,6 +36,9 @@ public:
     std::string GetCurrentRouter() const;
     void SetCurrentRouter(const std::string currentRouterValue);
 
+    std::string GetAbilityCurrentRouter() const;
+    void SetAbilityCurrentRouter(const std::string currentRouterValue);
+
     int32_t GetOrignalHeight() const;
     void SetOrignalHeight(const int32_t& value);
 
@@ -108,6 +111,7 @@ protected:
     uint16_t protocolVersion = static_cast<uint16_t>(VirtualScreen::ProtocolVersion::LOADNORMAL);
     bool isWebSocketConfiged;
     std::string currentRouter;
+    std::string abilityCurrentRouter;
     std::string fastPreviewMsg;
     uint8_t* jpgScreenBuffer;
     unsigned long jpgBufferSize;

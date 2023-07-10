@@ -71,6 +71,16 @@ void VirtualScreen::SetCurrentRouter(const std::string currentRouterValue)
     currentRouter = currentRouterValue;
 }
 
+std::string VirtualScreen::GetAbilityCurrentRouter() const
+{
+    return abilityCurrentRouter;
+}
+
+void VirtualScreen::SetAbilityCurrentRouter(const std::string currentRouterValue)
+{
+    abilityCurrentRouter = currentRouterValue;
+}
+
 int32_t VirtualScreen::GetOrignalWidth() const
 {
     return orignalResolutionWidth;
