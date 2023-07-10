@@ -648,6 +648,20 @@ void CurrentRouterCommand::RunGet()
     ILOG("Get CurrentRouter run finished.");
 }
 
+LoadContentCommand::LoadContentCommand(CommandType commandType, const Json::Value& arg, const LocalSocket& socket)
+    : CommandLine(commandType, arg, socket)
+{
+}
+
+void LoadContentCommand::RunGet()
+{
+    Json::Value resultContent;
+    std::string currentRouter = VirtualScreenImpl::GetInstance().GetAbilityCurrentRouter();
+    resultContent["AbilityCurrentRouter"] = currentRouter;
+    SetResultToManager("args", resultContent, "AbilityCurrentJsRouter");
+    ILOG("Get AbilityCurrentRouter run finished.");
+}
+
 LanguageCommand::LanguageCommand(CommandType commandType, const Json::Value& arg, const LocalSocket& socket)
     : CommandLine(commandType, arg, socket)
 {

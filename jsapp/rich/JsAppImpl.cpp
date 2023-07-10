@@ -75,7 +75,7 @@ void JsAppImpl::Start()
 
 void JsAppImpl::Restart()
 {
-    if (isDebug && debugServerPort) {
+    if (isDebug && debugServerPort >= 0) {
 #if defined(__APPLE__) || defined(_WIN32)
         if (simulator) {
             simulator->TerminateAbility(debugAbilityId);
@@ -154,7 +154,7 @@ void JsAppImpl::ColorModeChanged(const std::string commandColorMode)
 void JsAppImpl::Interrupt()
 {
     isStop = true;
-    if (isDebug && debugServerPort) {
+    if (isDebug && debugServerPort >= 0) {
 #if defined(__APPLE__) || defined(_WIN32)
         if (simulator) {
             simulator->TerminateAbility(debugAbilityId);
@@ -205,7 +205,7 @@ void JsAppImpl::RunJsApp()
                                  VirtualScreenImpl::GetInstance().GetCompressionHeight());
     SetJsAppArgs(aceRunArgs);
     InitGlfwEnv();
-    if (isDebug && debugServerPort) {
+    if (isDebug && debugServerPort >= 0) {
         RunDebugAbility(); // for debug preview
     } else {
         RunNormalAbility(); // for normal preview
@@ -226,6 +226,7 @@ void JsAppImpl::RunNormalAbility()
     OHOS::Rosen::WMError errCode;
     OHOS::sptr<OHOS::Rosen::WindowOption> sp = nullptr;
     auto window = OHOS::Rosen::Window::Create("previewer", sp, nullptr, errCode);
+    window->SetContentInfoCallback(std::move(VirtualScreenImpl::LoadContentCallBack));
     window->CreateSurfaceNode("preview_surface", aceRunArgs.onRender);
     ability->SetWindow(window);
     ability->InitEnv();
@@ -257,6 +258,7 @@ void JsAppImpl::RunDebugAbility()
         ELOG("JsApp::Run get window failed.");
         return;
     }
+    window->SetContentInfoCallback(std::move(VirtualScreenImpl::LoadContentCallBack));
     window->CreateSurfaceNode(options.moduleName, std::move(VirtualScreenImpl::CallBack));
 }
 
@@ -539,7 +541,7 @@ void JsAppImpl::ResolutionChanged(int32_t changedOriginWidth,
 
     ILOG("ResolutionChanged: %s %d %d %f", orientation.c_str(), aceRunArgs.deviceWidth,
          aceRunArgs.deviceHeight, aceRunArgs.deviceConfig.density);
-    if (isDebug && debugServerPort) {
+    if (isDebug && debugServerPort >= 0) {
 #if defined(__APPLE__) || defined(_WIN32)
         SetWindowParams();
         OHOS::Ace::ViewportConfig config;
@@ -726,7 +728,7 @@ void JsAppImpl::DispatchBackPressedEvent() const
 }
 void JsAppImpl::DispatchKeyEvent(const std::shared_ptr<OHOS::MMI::KeyEvent>& keyEvent) const
 {
-    if (isDebug && debugServerPort) {
+    if (isDebug && debugServerPort >= 0) {
 #if defined(__APPLE__) || defined(_WIN32)
         OHOS::Rosen::Window* window = OHOS::Previewer::PreviewerWindow::GetInstance().GetWindowObject();
         if (!window) {
@@ -741,7 +743,7 @@ void JsAppImpl::DispatchKeyEvent(const std::shared_ptr<OHOS::MMI::KeyEvent>& key
 }
 void JsAppImpl::DispatchPointerEvent(const std::shared_ptr<OHOS::MMI::PointerEvent>& pointerEvent) const
 {
-    if (isDebug && debugServerPort) {
+    if (isDebug && debugServerPort >= 0) {
 #if defined(__APPLE__) || defined(_WIN32)
         OHOS::Rosen::Window* window = OHOS::Previewer::PreviewerWindow::GetInstance().GetWindowObject();
         if (!window) {
