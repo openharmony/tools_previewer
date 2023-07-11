@@ -115,6 +115,26 @@ ohos_source_set("mock_lite") {
     "//foundation/graphic/graphic_utils_lite/interfaces/kits/",
     "//foundation/graphic/graphic_utils_lite/interfaces/innerkits/",
   ]
+
+  if (build_lite_full) {
+    deps += [
+      "//base/location/interfaces/kits/geo_lite/js/builtin:nativeapi_location_simulator",
+      "//base/sensors/sensorjs_lite/miscdevice_lite/interfaces/js/builtin:nativeapi_miscdevice",
+      "//base/sensors/sensorjs_lite/sensor_lite/interfaces/js/builtin:nativeapi_sensor",
+      "//foundation/arkui/ui_ext_lite/tools/ide:graphic_lite",
+      "//foundation/arkui/ui_ext_lite/tools/ide/brightness_lite/js/builtin:nativeapi_brightness_static",
+    ]
+    sources += [
+      "lite/GeoLocation.cpp",
+      "lite/SensorModuleImpl.cpp",
+      "lite/VibratorModuleImpl.cpp",
+      "lite/VirtualLocation.cpp",
+    ]
+    include_dirs += [
+      "//foundation/arkui/ui_ext_lite/tools/ide/brightness_lite/js/builtin/include/",
+    ]
+  }
+
   part_name = "previewer"
   subsystem_name = "ide"
 }
