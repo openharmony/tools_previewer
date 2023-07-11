@@ -69,6 +69,7 @@ static void InitVectorFont(UIFont* font, const string fontPath)
         FLOG("InitFontEngine SetFontPath failed. vector fontPath: %s", fontPath.data());
     }
     font->RegisterFontInfo("SourceHanSansSC-Regular.otf");
+    font->SetCurrentLangId(0);
 }
 
 static void InitFontEngine()
