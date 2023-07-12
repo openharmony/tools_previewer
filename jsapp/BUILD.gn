@@ -46,7 +46,7 @@ ohos_source_set("jsapp_rich") {
   ]
   include_dirs += os_include_dirs
   external_deps = [
-    "graphic_standard:librender_service_client",
+    "graphic_2d:librender_service_client",
     "window_manager:previewer_window",
   ]
   deps = [
