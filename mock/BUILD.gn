@@ -121,7 +121,6 @@ ohos_source_set("mock_lite") {
       "//base/location/interfaces/kits/geo_lite/js/builtin:nativeapi_location_simulator",
       "//base/sensors/sensorjs_lite/miscdevice_lite/interfaces/js/builtin:nativeapi_miscdevice",
       "//base/sensors/sensorjs_lite/sensor_lite/interfaces/js/builtin:nativeapi_sensor",
-      "//foundation/arkui/ui_ext_lite/tools/ide:graphic_lite",
       "//foundation/arkui/ui_ext_lite/tools/ide/brightness_lite/js/builtin:nativeapi_brightness_static",
     ]
     sources += [
