@@ -823,6 +823,9 @@ bool CommandParser::IsAbilityPathValid()
     if (!IsSet("d")) {
         return true;
     }
+    if (deviceType == "liteWearable" || deviceType == "smartVision") {
+        return true;
+    }
     if (!IsSet("abp")) {
         errorInfo = "Launch -d parameters without -abp parameters.";
         return false;
