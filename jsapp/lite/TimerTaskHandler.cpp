@@ -15,7 +15,7 @@
 
 #include "TimerTaskHandler.h"
 
-#if defined(LITEWEARABLE_SUPPORTED)
+#if defined(LITEWEARABLE_SUPPORTED) && LITEWEARABLE_SUPPORTED
 #include "CallbackManager.h"
 #endif
 
@@ -31,7 +31,7 @@
 #include "PreviewerEngineLog.h"
 #include "SharedDataManager.h"
 
-#if defined(LITEWEARABLE_SUPPORTED)
+#if defined(LITEWEARABLE_SUPPORTED) && LITEWEARABLE_SUPPORTED
 #include "VirtualLocation.h"
 #endif
 
@@ -50,7 +50,7 @@ void TimerTaskHandler::CheckDevice()
 {
     SharedDataManager::CheckTick();
 
-#if defined(LITEWEARABLE_SUPPORTED)
+#if defined(LITEWEARABLE_SUPPORTED) && LITEWEARABLE_SUPPORTED
     if (VirtualLocation::GetInstance().IsPostionChanged()) {
         VirtualLocation::GetInstance().ExecCallBack();
     }
@@ -59,7 +59,7 @@ void TimerTaskHandler::CheckDevice()
     AsyncWorkManager::GetInstance().ExecAllAsyncWork();
 }
 
-#if defined(LITEWEARABLE_SUPPORTED)
+#if defined(LITEWEARABLE_SUPPORTED) && LITEWEARABLE_SUPPORTED
 void TimerTaskHandler::CheckBarometerChanged(uint32_t value)
 {
     ILOG("CheckBarometerChanged value: %d", value);
