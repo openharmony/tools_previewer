@@ -50,9 +50,7 @@ using namespace ACELite;
 using namespace std;
 
 static uint8_t g_fontPsramBaseAddr[MIN_FONT_PSRAM_LENGTH];
-#if defined(LITEWEARABLE_SUPPORTED)
-static uint8_t g_shapePsramBaseAddr[MIN_SHAPING_PSRAM_LENGTH];
-#endif
+
 static void InitVectorFont(UIFont* font, const string fontPath)
 {
     ProductAdapter::SetDefaultFontStyle("SourceHanSansSC-Regular.otf", JsAppImpl::FONT_SIZE_DEFAULT);
@@ -170,7 +168,18 @@ void JsAppImpl::ThreadCallBack()
     InitTimer();
 
     thread::id curThreadId = this_thread::get_id();
-    SharedData<string>::AppendNotify(SharedDataType::LANGUAGE, TimerTaskHandler::CheckLanguageChanged, curThreadId);
+#if defined(LITEWEARABLE_SUPPORTED) && LITEWEARABLE_SUPPORTED
+    SharedData<uint8_t>::AppendNotify(HEARTBEAT_VALUE, TimerTaskHandler::CheckHeartRateChanged,
+        curThreadId, 50); // Duration:50 x 100 ms
+    SharedData<uint32_t>::AppendNotify(PRESSURE_VALUE, TimerTaskHandler::CheckBarometerChanged,
+        curThreadId);
+    SharedData<uint32_t>::AppendNotify(SUMSTEP_VALUE, TimerTaskHandler::CheckStepCountChanged,
+        curThreadId);
+    SharedData<bool>::AppendNotify(WEARING_STATE, TimerTaskHandler::CheckOnBodyStateChanged,
+        curThreadId);
+#endif
+    SharedData<string>::AppendNotify(SharedDataType::LANGUAGE, TimerTaskHandler::CheckLanguageChanged,
+        curThreadId);
 
     CppTimerManager& manager = CppTimerManager::GetTimerManager();
     while (!isInterrupt) {

@@ -62,6 +62,9 @@ ohos_source_set("jsapp_rich") {
 
 ohos_source_set("jsapp_lite") {
   defines = [ "ENABLE_ICU" ]
+  if (build_lite_full) {
+    defines += [ "LITEWEARABLE_SUPPORTED=1" ]
+  }
   configs = [ ":jsapp_config" ]
   sources = [
     "JsApp.cpp",
@@ -85,6 +88,12 @@ ohos_source_set("jsapp_lite") {
     "//foundation/arkui/ui_lite/frameworks/dock/",
     "//foundation/arkui/ui_lite/interfaces/innerkits/dock/",
   ]
+  if (build_lite_full) {
+    include_dirs += [
+      "//base/sensors/sensorjs_lite/interfaces/js/builtin/sensor/include/",
+      "//base/location/interfaces/kits/geo_lite/js/builtin/include/"
+    ]
+  }
   deps = [
     "//foundation/arkui/ace_engine_lite/frameworks/targets/simulator:ace_lite",
     "//third_party/libwebsockets:websockets_static",
