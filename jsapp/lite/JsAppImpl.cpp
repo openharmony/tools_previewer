@@ -169,13 +169,13 @@ void JsAppImpl::ThreadCallBack()
 
     thread::id curThreadId = this_thread::get_id();
 #if defined(LITEWEARABLE_SUPPORTED) && LITEWEARABLE_SUPPORTED
-    SharedData<uint8_t>::AppendNotify(HEARTBEAT_VALUE, TimerTaskHandler::CheckHeartRateChanged,
+    SharedData<uint8_t>::AppendNotify(SharedDataType::HEARTBEAT_VALUE, TimerTaskHandler::CheckHeartRateChanged,
         curThreadId, 50); // Duration:50 x 100 ms
-    SharedData<uint32_t>::AppendNotify(PRESSURE_VALUE, TimerTaskHandler::CheckBarometerChanged,
+    SharedData<uint32_t>::AppendNotify(SharedDataType::PRESSURE_VALUE, TimerTaskHandler::CheckBarometerChanged,
         curThreadId);
-    SharedData<uint32_t>::AppendNotify(SUMSTEP_VALUE, TimerTaskHandler::CheckStepCountChanged,
+    SharedData<uint32_t>::AppendNotify(SharedDataType::SUMSTEP_VALUE, TimerTaskHandler::CheckStepCountChanged,
         curThreadId);
-    SharedData<bool>::AppendNotify(WEARING_STATE, TimerTaskHandler::CheckOnBodyStateChanged,
+    SharedData<bool>::AppendNotify(SharedDataType::WEARING_STATE, TimerTaskHandler::CheckOnBodyStateChanged,
         curThreadId);
 #endif
     SharedData<string>::AppendNotify(SharedDataType::LANGUAGE, TimerTaskHandler::CheckLanguageChanged,
