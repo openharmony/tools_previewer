@@ -90,7 +90,7 @@ ohos_source_set("jsapp_lite") {
   ]
   if (build_lite_full) {
     include_dirs += [
-      "//base/sensors/sensorjs_lite/interfaces/js/builtin/sensor/include/",
+      "//base/sensors/sensorjs_lite/sensor_lite/interfaces/js/builtin/sensor/include/",
       "//base/location/interfaces/kits/geo_lite/js/builtin/include/",
     ]
   }
