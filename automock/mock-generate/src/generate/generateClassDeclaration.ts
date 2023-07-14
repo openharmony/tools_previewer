@@ -98,5 +98,9 @@ export function generateClassDeclaration(rootName: string, classEntity: ClassEnt
       classBody += staticMethodBody;
     }
   }
+  if (classEntity.exportModifiers.includes(SyntaxKind.DefaultKeyword))
+  {
+    classBody += `\nexport default ${className};`;
+  }
   return classBody;
 }
