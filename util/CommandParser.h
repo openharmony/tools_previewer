@@ -56,8 +56,6 @@ public:
     std::string GetContainerSdkPath() const;
     bool CheckParamInvalidity(std::string param, bool isNum);
     bool IsComponentMode() const;
-    std::string GetBundleName() const;
-    std::string GetModuleName() const;
     std::string GetAbilityPath() const;
 
 private:
@@ -111,8 +109,6 @@ private:
     std::string regex4Num = "^(?:0|[1-9])+(?:.[0-9]*)$";
     std::string regex4Str = "^(?:[a-zA-Z0-9-_./\\s]+)$";
     bool isComponentMode;
-    std::string bundleName;
-    std::string moduleName;
     std::string abilityPath;
 
     bool IsDebugPortValid();
