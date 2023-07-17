@@ -45,8 +45,6 @@ CommandParser::CommandParser()
       pages("main_pages"),
       containerSdkPath(""),
       isComponentMode(false),
-      bundleName(""),
-      moduleName(""),
       abilityPath("")
 {
     Register("-j", 1, "Launch the js app in <directory>.");
@@ -82,8 +80,6 @@ CommandParser::CommandParser()
     Register("-pages", 1, "Set project's router config file path.");
     Register("-hsp", 1, "Set container sdk path.");
     Register("-cpm", 1, "Set previewer start mode.");
-    Register("-bdn", 1, "Set bundleName for debug.");
-    Register("-mdn", 1, "Set moduleName for debug.");
     Register("-abp", 1, "Set abilityPath for debug.");
 }
 
@@ -270,16 +266,6 @@ bool CommandParser::IsSendJSHeap() const
 bool CommandParser::IsComponentMode() const
 {
     return isComponentMode;
-}
-
-string CommandParser::GetBundleName() const
-{
-    return bundleName;
-}
-
-string CommandParser::GetModuleName() const
-{
-    return moduleName;
 }
 
 string CommandParser::GetAbilityPath() const
