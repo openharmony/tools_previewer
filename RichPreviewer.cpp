@@ -180,5 +180,6 @@ int main(int argc, char* argv[])
     std::thread commandThead(ProcessCommand);
     commandThead.detach();
     InitJsApp();
+    sleep(500);
     return 0;
 }
