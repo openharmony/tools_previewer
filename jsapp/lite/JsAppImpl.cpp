@@ -167,11 +167,6 @@ JsAppImpl& JsAppImpl::GetInstance()
 
 void JsAppImpl::Start()
 {
-    if (jsThread != nullptr) {
-        delete jsThread;
-        jsThread = nullptr;
-    }
-
     isFinished = false;
     isInterrupt = false;
     jsThread = std::make_unique<std::thread>(&JsAppImpl::ThreadCallBack, &JsAppImpl::GetInstance());
