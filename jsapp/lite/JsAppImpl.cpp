@@ -174,7 +174,7 @@ void JsAppImpl::Start()
 
     isFinished = false;
     isInterrupt = false;
-    jsThread = new thread(&JsAppImpl::ThreadCallBack, &JsAppImpl::GetInstance());
+    jsThread = std::make_unique<std::thread>(&JsAppImpl::ThreadCallBack, &JsAppImpl::GetInstance());
     if (jsThread == nullptr) {
         ELOG("JsApp::Start jsThread memory allocation failed");
     }
