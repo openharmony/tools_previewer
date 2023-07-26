@@ -190,5 +190,6 @@ int main(int argc, char* argv[])
         this_thread::sleep_for(chrono::milliseconds(1));
     }
     JsAppImpl::GetInstance().Stop();
+    this_thread::sleep_for(chrono::milliseconds(500)); // 500ms wait threads finish
     return 0;
 }
