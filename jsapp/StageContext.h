@@ -17,32 +17,71 @@
 #define STAGE_CONTEXT_H
 
 #include <string>
+#include <vector>
 #include "JsonReader.h"
 
 namespace OHOS::Ide {
+struct SkillInfo {
+    std::vector<std::string> actions;
+    std::vector<std::string> entities;
+};
+
+struct AbilityInfo {
+    std::string description;
+    uint32_t descriptionId;
+    bool exported = false;
+    std::string icon;
+    uint32_t iconId = 0;
+    std::string label;
+    uint32_t labelId = 0;
+    std::string name;
+    std::vector<SkillInfo> skills;
+    std::string srcEntrty;
+    std::string startWindowBackground;
+    uint32_t startWindowBackgroundId;
+    std::string startWindowIcon;
+    uint32_t startWindowIconId;
+};
+
 struct HapModuleInfo {
+    std::vector<AbilityInfo> abilities;
     std::string compileMode;
-    std::string moduleName;
+    bool deliveryWithInstall = false;
+    std::vector<std::string> dependencies;
+    std::string description;
+    uint32_t descriptionId;
+    std::vector<std::string> deviceTypes;
+    bool installationFree = false;
+    std::string mainElement;
+    std::string name;
+    std::string pages;
+    std::string type;
+    std::string virtualMachine;
+    std::string srcEntry;
+    // from arkui
     bool isPartialUpdate = true;
     uint32_t labelId = 0;
-    std::string pageProfile;
 };
 
 struct AppInfo {
+    // form mudule.json
     std::string apiReleaseType;
     std::string bundleName;
-    std::string bundleType;
-    std::string icon;
-    std::string label;
-    std::string vendor;
-    std::string versionName;
+    std::string compileSdkType;
+    std::string compileSdkVersion;
     bool debug = false;
-    bool distributedNotificationEnabled = true;
-    uint32_t iconId;
+    std::string icon;
+    uint32_t iconId = 0;
+    std::string label;
     uint32_t labelId = 0;
     uint32_t minAPIVersion = 0;
     uint32_t targetAPIVersion = 0;
+    std::string vendor;
     uint32_t versionCode = 0;
+    std::string versionName;
+    // from arkui
+    std::string bundleType;
+    bool distributedNotificationEnabled = true;
 };
 
 class StageContext {
@@ -51,9 +90,11 @@ public:
     void ParseJsonFile(const std::string& filePath);
     void ParseAppInfo(const Json::Value& root);
     void ParseHapModuleInfo(const Json::Value& root);
+    void ParseAbilityInfo(const Json::Value& root);
+    void ParseSkillsInfo(const std::unique_ptr<Json::Value>& skillsArr, std::vector<SkillInfo>& skills);
     const AppInfo& GetAppInfo() const;
     const HapModuleInfo& GetHapModuleInfo() const;
-
+    const AbilityInfo& GetAbilityInfo(const std::string srcEntryVal) const;
 private:
     StageContext() = default;
     ~StageContext() = default;

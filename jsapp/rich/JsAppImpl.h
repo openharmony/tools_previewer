@@ -58,6 +58,8 @@ public:
     void OrientationChanged(std::string commandOrientation) override;
     void ResolutionChanged(int32_t changedOriginWidth, int32_t changedOriginHeight,
                            int32_t changedWidth, int32_t changedHeight, int32_t screenDensity) override;
+    void SetResolutionParams(int32_t changedOriginWidth, int32_t changedOriginHeight,
+                           int32_t changedWidth, int32_t changedHeight, int32_t screenDensity);
     void SetArgsColorMode(const std::string& value) override;
     void SetArgsAceVersion(const std::string& value) override;
     void SetDeviceOrentation(const std::string& value);
@@ -132,6 +134,7 @@ private:
     std::unique_ptr<OHOS::AbilityRuntime::Simulator> simulator;
     int64_t debugAbilityId = -1;
     void SetSimulatorParams(OHOS::AbilityRuntime::Options& options);
+    void UpdateConfiguration(OHOS::Ace::Platform::AceRunArgs& args);
 
     std::shared_ptr<OHOS::Previewer::PreviewerWindowModel> windowModel;
     void SetWindowParams() const;
