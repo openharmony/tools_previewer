@@ -26,6 +26,9 @@
 
 using namespace std;
 
+static void *oldBacetrace[10] = { nullptr };
+static size_t oldSize = 0;
+
 void CrashHandler::InitExceptionHandler()
 {
     if (signal(SIGSEGV, ApplicationCrashHandler) == SIG_ERR) {
@@ -36,7 +39,23 @@ void CrashHandler::InitExceptionHandler()
 
 void CrashHandler::ApplicationCrashHandler(int signal)
 {
+    // get void*'s for all entries on the stack
     const uint32_t MAX_STACK_SIZE = 128;
+    int len = 10;
+    void *array[len];
+    size_t size = backtrace(array, MAX_STACK_SIZE);
+    bool isSame = true;
+    if (oldSize == size) {
+        for (size_t i = 0; i < size; i++) {
+            if (oldBacetrace[i] != array[i]) {
+                isSame = false;
+            }
+        }
+    }
+    if (isSame) {
+        return;
+    }
+    // print crash log head
     int8_t crashBeginLog[] = "[JsEngine Crash]Engine Crash Info Begin.\n";
     write(STDERR_FILENO, crashBeginLog, sizeof(crashBeginLog) - 1);
     int8_t stackIntLog[PublicMethods::MAX_ITOA_BIT] = {0};
@@ -44,13 +63,12 @@ void CrashHandler::ApplicationCrashHandler(int signal)
     int8_t signalLog[] = "[JsEngine Crash]Error: signal : 0x";
     write(STDERR_FILENO, signalLog, sizeof(signalLog) - 1);
     write(STDERR_FILENO, stackIntLog, itoaLength);
-
-    // get void*'s for all entries on the stack
-    void *array[10];
-    size_t size = backtrace(array, MAX_STACK_SIZE);
     // print out all the frames to stdout
     backtrace_symbols_fd(array, size, STDERR_FILENO);
-
+    std::fill(oldBacetrace, oldBacetrace + len, nullptr);
+    std::copy(array, array + len, oldBacetrace);
+    oldSize = size;
+    // print crash log end
     int8_t crashEndLog[] = "\n[JsEngine Crash]Engine Crash Info End.\n";
     write(STDERR_FILENO, crashEndLog, sizeof(crashEndLog) - 1);
 }
