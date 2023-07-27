@@ -45,7 +45,7 @@ private:
     std::unique_ptr<CppTimer> deviceCheckTimer;
     std::unique_ptr<CppTimer> jsCheckTimer;
     std::unique_ptr<OHOS::ACELite::JSAbility> jsAbility;
-    std::thread* jsThread;
+    std::unique_ptr<std::thread> jsThread;
 
     void ThreadCallBack();
     void InitTimer();
