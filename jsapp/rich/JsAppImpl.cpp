@@ -32,6 +32,7 @@
 #endif
 
 using namespace std;
+using namespace OHOS;
 using namespace OHOS::Ace;
 
 JsAppImpl::JsAppImpl() noexcept : ability(nullptr), isStop(false)
@@ -262,14 +263,70 @@ void JsAppImpl::RunDebugAbility()
     window->CreateSurfaceNode(options.moduleName, std::move(VirtualScreenImpl::CallBack));
 }
 
+static void ConvertAbilityInfo(const Ide::AbilityInfo &info, AppExecFwk::AbilityInfo &abilityInfo)
+{
+    abilityInfo.name = info.name;
+    abilityInfo.iconPath = info.icon;
+    abilityInfo.labelId = info.iconId;
+    abilityInfo.label = info.label;
+    abilityInfo.labelId = info.labelId;
+    abilityInfo.srcEntrance = info.srcEntrty;
+    abilityInfo.description = info.description;
+    abilityInfo.descriptionId = info.descriptionId;
+    abilityInfo.startWindowBackground = info.startWindowBackground;
+    abilityInfo.startWindowBackgroundId = info.startWindowBackgroundId;
+    abilityInfo.startWindowIconId = info.startWindowIconId;
+    abilityInfo.startWindowIcon = info.startWindowIcon;
+}
+
+static void ConvertApplicationInfo(const Ide::AppInfo &info, AppExecFwk::ApplicationInfo &applicationInfo)
+{
+    applicationInfo.apiReleaseType = info.apiReleaseType;
+    applicationInfo.bundleName = info.bundleName;
+    applicationInfo.compileSdkType = info.compileSdkType;
+    applicationInfo.compileSdkVersion = info.compileSdkVersion;
+    applicationInfo.debug = info.debug;
+    applicationInfo.icon = info.icon;
+    applicationInfo.iconId = info.iconId;
+    applicationInfo.label = info.label;
+    applicationInfo.labelId = info.labelId;
+    applicationInfo.minCompatibleVersionCode = info.minAPIVersion;
+    applicationInfo.apiTargetVersion = info.targetAPIVersion;
+    applicationInfo.vendor = info.vendor;
+    applicationInfo.vendor = info.vendor;
+    applicationInfo.versionName = info.versionName;
+    applicationInfo.distributedNotificationEnabled = info.distributedNotificationEnabled;
+}
+
+static void ConvertHapModuleInfo(const Ide::HapModuleInfo &info, AppExecFwk::HapModuleInfo &hapModuleInfo)
+{
+    hapModuleInfo.labelId = info.labelId;
+    hapModuleInfo.virtualMachine = info.virtualMachine;
+    hapModuleInfo.pages = info.pages;
+    hapModuleInfo.name = info.name;
+    hapModuleInfo.mainElementName = info.mainElement;
+    hapModuleInfo.installationFree = info.installationFree;
+    hapModuleInfo.descriptionId = info.descriptionId;
+    hapModuleInfo.description = info.description;
+    hapModuleInfo.deliveryWithInstall = info.deliveryWithInstall;
+    hapModuleInfo.compileMode = AppExecFwk::CompileMode::ES_MODULE;
+    hapModuleInfo.deviceTypes = info.deviceTypes;
+    hapModuleInfo.srcEntrance = info.srcEntry;
+    for (auto &ability : info.abilities) {
+        AppExecFwk::AbilityInfo aInfo;
+        ConvertAbilityInfo(ability, aInfo);
+        hapModuleInfo.abilityInfos.emplace_back(aInfo);
+    }
+}
 
 void JsAppImpl::SetSimulatorParams(OHOS::AbilityRuntime::Options& options)
 {
+    std::string abilityPath = CommandParser::GetInstance().GetAbilityPath();
     const string path = CommandParser::GetInstance().GetAppResourcePath() +
                         FileSystem::GetSeparator() + "module.json";
     GetModuleJsonInfo(path);
     options.bundleName = OHOS::Ide::StageContext::GetInstance().GetAppInfo().bundleName;
-    options.moduleName = OHOS::Ide::StageContext::GetInstance().GetHapModuleInfo().moduleName;
+    options.moduleName = OHOS::Ide::StageContext::GetInstance().GetHapModuleInfo().name;
     options.modulePath = aceRunArgs.assetPath + FileSystem::GetSeparator() + "modules.abc";
     options.resourcePath = CommandParser::GetInstance().GetAppResourcePath() +
                                 FileSystem::GetSeparator() + "resources.index";
@@ -297,14 +354,46 @@ void JsAppImpl::SetSimulatorParams(OHOS::AbilityRuntime::Options& options)
     options.compatibleVersion = OHOS::Ide::StageContext::GetInstance().GetAppInfo().minAPIVersion;
     options.installationFree =
         OHOS::Ide::StageContext::GetInstance().GetAppInfo().bundleType == "atomicService" ? true : false;
-    options.labelId = OHOS::Ide::StageContext::GetInstance().GetHapModuleInfo().labelId;
+    options.labelId = OHOS::Ide::StageContext::GetInstance().GetAbilityInfo(abilityPath).labelId;
     options.compileMode = OHOS::Ide::StageContext::GetInstance().GetHapModuleInfo().compileMode;
-    options.pageProfile = OHOS::Ide::StageContext::GetInstance().GetHapModuleInfo().pageProfile;
+    options.pageProfile = OHOS::Ide::StageContext::GetInstance().GetHapModuleInfo().pages;
     options.targetVersion = OHOS::Ide::StageContext::GetInstance().GetAppInfo().targetAPIVersion;
     options.releaseType = OHOS::Ide::StageContext::GetInstance().GetAppInfo().apiReleaseType;
     options.enablePartialUpdate = OHOS::Ide::StageContext::GetInstance().GetHapModuleInfo().isPartialUpdate;
+    // new add
+    AppExecFwk::ApplicationInfo applicationInfo;
+    ConvertApplicationInfo(Ide::StageContext::GetInstance().GetAppInfo(), applicationInfo);
+    options.applicationInfo = applicationInfo;
+    AppExecFwk::HapModuleInfo hapModuleInfo;
+    ConvertHapModuleInfo(OHOS::Ide::StageContext::GetInstance().GetHapModuleInfo(), hapModuleInfo);
+    options.hapModuleInfo = hapModuleInfo;
+    AppExecFwk::AbilityInfo abilityInfo;
+    ConvertAbilityInfo(OHOS::Ide::StageContext::GetInstance().GetAbilityInfo(abilityPath), abilityInfo);
+    options.abilityInfo = abilityInfo;
+
     ILOG("setted bundleName:%s moduleName:%s", options.bundleName.c_str(), options.moduleName.c_str());
 }
+
+void JsAppImpl::UpdateConfiguration(OHOS::Ace::Platform::AceRunArgs& args)
+{
+    OHOS::AppExecFwk::Configuration configuration;
+    configuration.AddItem(OHOS::AAFwk::GlobalConfigurationKey::SYSTEM_LANGUAGE,
+        SharedData<string>::GetData(SharedDataType::LANGUAGE));
+    string colorMode = "light";
+    if (aceRunArgs.deviceConfig.colorMode == ColorMode::DARK) {
+        colorMode = "dark";
+    }
+    configuration.AddItem(OHOS::AAFwk::GlobalConfigurationKey::SYSTEM_COLORMODE, colorMode);
+    string direction = "portrait";
+    if (aceRunArgs.deviceConfig.orientation == DeviceOrientation::LANDSCAPE) {
+        orientation = "landscape";
+    }
+    configuration.AddItem(OHOS::AppExecFwk::ConfigurationInner::APPLICATION_DIRECTION, direction);
+    string density = std::to_string(aceRunArgs.deviceConfig.density);
+    configuration.AddItem(OHOS::AppExecFwk::ConfigurationInner::APPLICATION_DENSITYDPI, density);
+    simulator->UpdateConfiguration(configuration);
+}
+
 
 void JsAppImpl::SetWindowParams() const
 {
@@ -511,36 +600,10 @@ void JsAppImpl::AssignValueForWidthAndHeight(const int32_t origWidth,
     ILOG("AssignValueForWidthAndHeight: %d %d %d %d", orignalWidth, orignalHeight, width, height);
 }
 
-void JsAppImpl::ResolutionChanged(int32_t changedOriginWidth,
-                                  int32_t changedOriginHeight,
-                                  int32_t changedWidth,
-                                  int32_t changedHeight,
-                                  int32_t screenDensity)
+void JsAppImpl::ResolutionChanged(int32_t changedOriginWidth, int32_t changedOriginHeight, int32_t changedWidth,
+                                  int32_t changedHeight, int32_t screenDensity)
 {
-    SetDeviceWidth(aceRunArgs, changedWidth);
-    SetDeviceHeight(aceRunArgs, changedHeight);
-    orignalWidth = changedOriginWidth;
-    orignalHeight = changedOriginHeight;
-    VirtualScreenImpl::GetInstance().SetVirtualScreenWidthAndHeight(changedOriginWidth, changedOriginHeight,
-                                                                    changedWidth, changedHeight);
-    SetDeviceScreenDensity(screenDensity,
-                           CommandParser::GetInstance().GetDeviceType());
-    AdaptDeviceType(aceRunArgs, CommandParser::GetInstance().GetDeviceType(),
-                    VirtualScreenImpl::GetInstance().GetOrignalWidth());
-    AssignValueForWidthAndHeight(VirtualScreenImpl::GetInstance().GetOrignalWidth(),
-                                 VirtualScreenImpl::GetInstance().GetOrignalHeight(),
-                                 VirtualScreenImpl::GetInstance().GetCompressionWidth(),
-                                 VirtualScreenImpl::GetInstance().GetCompressionHeight());
-    // Runtime change device orientation
-    if (changedWidth <= changedHeight) {
-        JsAppImpl::GetInstance().SetDeviceOrentation("portrait");
-    } else {
-        JsAppImpl::GetInstance().SetDeviceOrentation("landscape");
-    }
-    SetOrientation(aceRunArgs, orientation);
-
-    ILOG("ResolutionChanged: %s %d %d %f", orientation.c_str(), aceRunArgs.deviceWidth,
-         aceRunArgs.deviceHeight, aceRunArgs.deviceConfig.density);
+    SetResolutionParams(changedOriginWidth, changedOriginHeight, changedWidth, changedHeight, screenDensity);
     if (isDebug && debugServerPort >= 0) {
 #if defined(__APPLE__) || defined(_WIN32)
         SetWindowParams();
@@ -558,6 +621,7 @@ void JsAppImpl::ResolutionChanged(int32_t changedOriginWidth,
         OHOS::AppExecFwk::EventHandler::PostTask([this]() {
             glfwRenderContext->SetWindowSize(width, height);
         });
+        UpdateConfiguration(aceRunArgs);
         window->SetViewportConfig(config);
 #endif
     } else {
@@ -569,6 +633,33 @@ void JsAppImpl::ResolutionChanged(int32_t changedOriginWidth,
                                     aceRunArgs.deviceWidth, aceRunArgs.deviceHeight);
         }
     }
+}
+
+void JsAppImpl::SetResolutionParams(int32_t changedOriginWidth, int32_t changedOriginHeight, int32_t changedWidth,
+    int32_t changedHeight, int32_t screenDensity)
+{
+    SetDeviceWidth(aceRunArgs, changedWidth);
+    SetDeviceHeight(aceRunArgs, changedHeight);
+    orignalWidth = changedOriginWidth;
+    orignalHeight = changedOriginHeight;
+    VirtualScreenImpl::GetInstance().SetVirtualScreenWidthAndHeight(changedOriginWidth, changedOriginHeight,
+                                                                    changedWidth, changedHeight);
+    SetDeviceScreenDensity(screenDensity,
+                           CommandParser::GetInstance().GetDeviceType());
+    AdaptDeviceType(aceRunArgs, CommandParser::GetInstance().GetDeviceType(),
+                    VirtualScreenImpl::GetInstance().GetOrignalWidth());
+    AssignValueForWidthAndHeight(VirtualScreenImpl::GetInstance().GetOrignalWidth(),
+                                 VirtualScreenImpl::GetInstance().GetOrignalHeight(),
+                                 VirtualScreenImpl::GetInstance().GetCompressionWidth(),
+                                 VirtualScreenImpl::GetInstance().GetCompressionHeight());
+    if (changedWidth <= changedHeight) {
+        JsAppImpl::GetInstance().SetDeviceOrentation("portrait");
+    } else {
+        JsAppImpl::GetInstance().SetDeviceOrentation("landscape");
+    }
+    SetOrientation(aceRunArgs, orientation);
+    ILOG("ResolutionChanged: %s %d %d %f", orientation.c_str(), aceRunArgs.deviceWidth,
+         aceRunArgs.deviceHeight, aceRunArgs.deviceConfig.density);
 }
 
 void JsAppImpl::SetArgsColorMode(const string& value)
