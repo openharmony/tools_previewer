@@ -39,6 +39,9 @@ namespace AbilityRuntime {
     class Simulator;
     struct Options;
 }
+namespace AppExecFwk {
+    class Configuration;
+}
 #endif
 }
 
@@ -134,7 +137,9 @@ private:
     std::unique_ptr<OHOS::AbilityRuntime::Simulator> simulator;
     int64_t debugAbilityId = -1;
     void SetSimulatorParams(OHOS::AbilityRuntime::Options& options);
-    void UpdateConfiguration(OHOS::Ace::Platform::AceRunArgs& args);
+    void SetSimulatorCommonParams(OHOS::AbilityRuntime::Options& options);
+    void SetSimulatorConfigParams(OHOS::AbilityRuntime::Options& options);
+    std::shared_ptr<OHOS::AppExecFwk::Configuration> UpdateConfiguration(OHOS::Ace::Platform::AceRunArgs& args);
 
     std::shared_ptr<OHOS::Previewer::PreviewerWindowModel> windowModel;
     void SetWindowParams() const;
