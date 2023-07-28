@@ -321,10 +321,16 @@ static void ConvertHapModuleInfo(const Ide::HapModuleInfo &info, AppExecFwk::Hap
 
 void JsAppImpl::SetSimulatorParams(OHOS::AbilityRuntime::Options& options)
 {
-    std::string abilityPath = CommandParser::GetInstance().GetAbilityPath();
     const string path = CommandParser::GetInstance().GetAppResourcePath() +
                         FileSystem::GetSeparator() + "module.json";
     GetModuleJsonInfo(path);
+    SetSimulatorCommonParams(options);
+    SetSimulatorConfigParams(options);
+    ILOG("setted bundleName:%s moduleName:%s", options.bundleName.c_str(), options.moduleName.c_str());
+}
+
+void JsAppImpl::SetSimulatorCommonParams(OHOS::AbilityRuntime::Options& options)
+{
     options.bundleName = OHOS::Ide::StageContext::GetInstance().GetAppInfo().bundleName;
     options.moduleName = OHOS::Ide::StageContext::GetInstance().GetHapModuleInfo().name;
     options.modulePath = aceRunArgs.assetPath + FileSystem::GetSeparator() + "modules.abc";
@@ -354,13 +360,25 @@ void JsAppImpl::SetSimulatorParams(OHOS::AbilityRuntime::Options& options)
     options.compatibleVersion = OHOS::Ide::StageContext::GetInstance().GetAppInfo().minAPIVersion;
     options.installationFree =
         OHOS::Ide::StageContext::GetInstance().GetAppInfo().bundleType == "atomicService" ? true : false;
-    options.labelId = OHOS::Ide::StageContext::GetInstance().GetAbilityInfo(abilityPath).labelId;
+    options.labelId = OHOS::Ide::StageContext::GetInstance().GetAbilityInfo(
+        CommandParser::GetInstance().GetAbilityPath()).labelId;
     options.compileMode = OHOS::Ide::StageContext::GetInstance().GetHapModuleInfo().compileMode;
     options.pageProfile = OHOS::Ide::StageContext::GetInstance().GetHapModuleInfo().pages;
     options.targetVersion = OHOS::Ide::StageContext::GetInstance().GetAppInfo().targetAPIVersion;
     options.releaseType = OHOS::Ide::StageContext::GetInstance().GetAppInfo().apiReleaseType;
     options.enablePartialUpdate = OHOS::Ide::StageContext::GetInstance().GetHapModuleInfo().isPartialUpdate;
-    // new add
+    string fPath = CommandParser::GetInstance().GetConfigPath();
+    std::size_t pos = fPath.find(".idea");
+    if (pos != std::string::npos) {
+        ELOG("previewPath error:%s", fPath.c_str());
+    } else {
+        options.previewPath = fPath.substr(0, pos) + ".idea" + FileSystem::GetSeparator() + "previewer";
+        ILOG("previewPath info:%s", options.previewPath.c_str());
+    }
+}
+
+void JsAppImpl::SetSimulatorConfigParams(OHOS::AbilityRuntime::Options& options)
+{
     AppExecFwk::ApplicationInfo applicationInfo;
     ConvertApplicationInfo(Ide::StageContext::GetInstance().GetAppInfo(), applicationInfo);
     options.applicationInfo = applicationInfo;
@@ -368,30 +386,30 @@ void JsAppImpl::SetSimulatorParams(OHOS::AbilityRuntime::Options& options)
     ConvertHapModuleInfo(OHOS::Ide::StageContext::GetInstance().GetHapModuleInfo(), hapModuleInfo);
     options.hapModuleInfo = hapModuleInfo;
     AppExecFwk::AbilityInfo abilityInfo;
-    ConvertAbilityInfo(OHOS::Ide::StageContext::GetInstance().GetAbilityInfo(abilityPath), abilityInfo);
+    ConvertAbilityInfo(OHOS::Ide::StageContext::GetInstance().GetAbilityInfo(
+        CommandParser::GetInstance().GetAbilityPath()), abilityInfo);
     options.abilityInfo = abilityInfo;
-
-    ILOG("setted bundleName:%s moduleName:%s", options.bundleName.c_str(), options.moduleName.c_str());
+    options.configuration = UpdateConfiguration(aceRunArgs);
 }
 
-void JsAppImpl::UpdateConfiguration(OHOS::Ace::Platform::AceRunArgs& args)
+std::shared_ptr<AppExecFwk::Configuration> JsAppImpl::UpdateConfiguration(OHOS::Ace::Platform::AceRunArgs& args)
 {
-    OHOS::AppExecFwk::Configuration configuration;
-    configuration.AddItem(OHOS::AAFwk::GlobalConfigurationKey::SYSTEM_LANGUAGE,
+    std::shared_ptr<AppExecFwk::Configuration> configuration = make_shared<AppExecFwk::Configuration>();
+    configuration->AddItem(OHOS::AAFwk::GlobalConfigurationKey::SYSTEM_LANGUAGE,
         SharedData<string>::GetData(SharedDataType::LANGUAGE));
     string colorMode = "light";
     if (aceRunArgs.deviceConfig.colorMode == ColorMode::DARK) {
         colorMode = "dark";
     }
-    configuration.AddItem(OHOS::AAFwk::GlobalConfigurationKey::SYSTEM_COLORMODE, colorMode);
+    configuration->AddItem(OHOS::AAFwk::GlobalConfigurationKey::SYSTEM_COLORMODE, colorMode);
     string direction = "portrait";
     if (aceRunArgs.deviceConfig.orientation == DeviceOrientation::LANDSCAPE) {
         orientation = "landscape";
     }
-    configuration.AddItem(OHOS::AppExecFwk::ConfigurationInner::APPLICATION_DIRECTION, direction);
+    configuration->AddItem(OHOS::AppExecFwk::ConfigurationInner::APPLICATION_DIRECTION, direction);
     string density = std::to_string(aceRunArgs.deviceConfig.density);
-    configuration.AddItem(OHOS::AppExecFwk::ConfigurationInner::APPLICATION_DENSITYDPI, density);
-    simulator->UpdateConfiguration(configuration);
+    configuration->AddItem(OHOS::AppExecFwk::ConfigurationInner::APPLICATION_DENSITYDPI, density);
+    return configuration;
 }
 
 
@@ -621,7 +639,7 @@ void JsAppImpl::ResolutionChanged(int32_t changedOriginWidth, int32_t changedOri
         OHOS::AppExecFwk::EventHandler::PostTask([this]() {
             glfwRenderContext->SetWindowSize(width, height);
         });
-        UpdateConfiguration(aceRunArgs);
+        simulator->UpdateConfiguration(*(UpdateConfiguration(aceRunArgs).get()));
         window->SetViewportConfig(config);
 #endif
     } else {
