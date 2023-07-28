@@ -369,7 +369,7 @@ void JsAppImpl::SetSimulatorCommonParams(OHOS::AbilityRuntime::Options& options)
     options.enablePartialUpdate = OHOS::Ide::StageContext::GetInstance().GetHapModuleInfo().isPartialUpdate;
     string fPath = CommandParser::GetInstance().GetConfigPath();
     std::size_t pos = fPath.find(".idea");
-    if (pos != std::string::npos) {
+    if (pos == std::string::npos) {
         ELOG("previewPath error:%s", fPath.c_str());
     } else {
         options.previewPath = fPath.substr(0, pos) + ".idea" + FileSystem::GetSeparator() + "previewer";
