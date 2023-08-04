@@ -55,8 +55,12 @@ export function generateClassDeclaration(rootName: string, classEntity: ClassEnt
         classBody += `${value.clauseToken} `;
         value.types.forEach((val, index) => {
           const moduleName = firstCharacterToUppercase(rootName);
-          if (classEntity.exportModifiers.includes(SyntaxKind.ExportKeyword) && rootName !== '') {
-            val = `mock${moduleName}().${val}`;
+          if (val.startsWith('Array<')) {
+            val = 'Array';
+          } else {
+            if (classEntity.exportModifiers.includes(SyntaxKind.ExportKeyword) && rootName !== '') {
+              val = `mock${moduleName}().${val}`;
+            }
           }
           if (index !== value.types.length - 1) {
             classBody += `${val},`;

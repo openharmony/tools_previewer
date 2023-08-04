@@ -29,24 +29,22 @@ MouseInputImpl::MouseInputImpl()
 {
 }
 
-TouchType MouseInputImpl::ConvertToOsType(MouseInput::MouseStatus status) const
+TouchType MouseInputImpl::ConvertToOsType(int status) const
 {
-    TouchType type;
-    switch (status) {
-        case INDEV_STATE_RELEASE:
-            type = TouchType::UP;
-            break;
-        case INDEV_STATE_PRESS:
-            type = TouchType::DOWN;
-            break;
-        case INDEV_STATE_MOVE:
-            type = TouchType::MOVE;
-            break;
-        default:
-            break;
+    if (status < static_cast<int>(TouchType::DOWN) || status > static_cast<int>(TouchType::UNKNOWN)) {
+        return TouchType::UNKNOWN;
     }
-    return type;
+    return static_cast<TouchType>(status);
 }
+
+SourceTool MouseInputImpl::ConvertToOsTool(int tools) const
+{
+    if (tools < static_cast<int>(SourceTool::UNKNOWN) || tools > static_cast<int>(SourceTool::LENS)) {
+        return SourceTool::UNKNOWN;
+    }
+    return static_cast<SourceTool>(tools);
+}
+
 void MouseInputImpl::DispatchOsTouchEvent() const
 {
     auto pointerEvent = std::make_shared<PointerEvent>();
@@ -54,9 +52,18 @@ void MouseInputImpl::DispatchOsTouchEvent() const
     pointerEvent->id = 1;
     pointerEvent->x = mouseXPosition;
     pointerEvent->y = mouseYPosition;
-    pointerEvent->type = ConvertToOsType(mouseStatus);
+    pointerEvent->type = ConvertToOsType(touchAction);
+    pointerEvent->buttonId_ = pointButton;
+    pointerEvent->pointerAction_ = pointAction;
+    pointerEvent->sourceType = sourceType;
+    pointerEvent->sourceTool = ConvertToOsTool(sourceTool);
+    pointerEvent->pressedButtons_ = pressedBtnsVec;
+    std::copy(axisValuesArr.begin(), axisValuesArr.end(), pointerEvent->axisValues_.begin());
     pointerEvent->size = sizeof (PointerEvent);
-    ILOG("MouseInputImpl::DispatchEvent x: %f y:%f", mouseXPosition, mouseYPosition);
+    ILOG("MouseInputImpl::DispatchEvent x: %f y:%f type:%d buttonId_:%d pointerAction_:%d sourceType:%d \
+        sourceTool:%d pressedButtonsSize:%d axisValuesSize:%d", pointerEvent->x, pointerEvent->y,
+        pointerEvent->type, pointerEvent->buttonId_, pointerEvent->pointerAction_, pointerEvent->sourceType,
+        pointerEvent->sourceTool, pointerEvent->pressedButtons_.size(), pointerEvent->axisValues_.size());
     ILOG("current thread: %d", this_thread::get_id());
     JsAppImpl::GetInstance().DispatchPointerEvent(pointerEvent);
 }
@@ -74,9 +81,9 @@ MouseInputImpl& MouseInputImpl::GetInstance()
     return instance;
 }
 
-void MouseInputImpl::SetMouseStatus(MouseStatus status)
+void MouseInputImpl::SetMouseStatus(int status)
 {
-    mouseStatus = status;
+    touchAction = status;
 }
 
 void MouseInputImpl::SetMousePosition(double xPosition, double yPosition)
