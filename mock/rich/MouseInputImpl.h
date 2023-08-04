@@ -27,7 +27,7 @@ public:
     void DispatchOsTouchEvent() const override;
     void DispatchOsBackEvent() const override;
 private:
-    MouseInputImpl();
+    MouseInputImpl() noexcept;
     virtual ~MouseInputImpl() {}
     OHOS::MMI::TouchType ConvertToOsType(int status) const;
     OHOS::MMI::SourceTool ConvertToOsTool(int tools) const;
