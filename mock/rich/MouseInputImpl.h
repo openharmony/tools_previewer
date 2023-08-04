@@ -22,14 +22,15 @@
 class MouseInputImpl : public MouseInput {
 public:
     static MouseInputImpl& GetInstance();
-    void SetMouseStatus(MouseStatus status) override;
+    void SetMouseStatus(int status) override;
     void SetMousePosition(double xPosition, double yPosition) override;
     void DispatchOsTouchEvent() const override;
     void DispatchOsBackEvent() const override;
 private:
     MouseInputImpl();
     virtual ~MouseInputImpl() {}
-    OHOS::MMI::TouchType ConvertToOsType(MouseStatus status) const;
+    OHOS::MMI::TouchType ConvertToOsType(int status) const;
+    OHOS::MMI::SourceTool ConvertToOsTool(int tools) const;
 };
 
 #endif // MOUSEINPUTIMPL_H

@@ -29,15 +29,16 @@ bool MouseInputImpl::Read(OHOS::DeviceData& data)
 {
     data.point.x = static_cast<short>(mouseXPosition);
     data.point.y = static_cast<short>(mouseYPosition);
-    data.state = mouseStatus;
+    data.state = touchAction;
     return false;
 }
 
-void MouseInputImpl::SetMouseStatus(MouseStatus status)
+void MouseInputImpl::SetMouseStatus(int status)
 {
-    if (status == INDEV_STATE_MOVE) {
+    int moveType = 2;
+    if (status == moveType) {
         return;
     }
-    mouseStatus = status;
+    touchAction = status;
 }
 

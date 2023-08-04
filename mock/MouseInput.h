@@ -16,23 +16,40 @@
 #ifndef MOUSEINPUT_H
 #define MOUSEINPUT_H
 
+#include <set>
+#include <vector>
+
 class MouseInput {
 public:
-    enum MouseStatus { INDEV_STATE_RELEASE = 0, INDEV_STATE_PRESS, INDEV_STATE_MOVE };
-
     double GetMouseXPosition() const;
     double GetMouseYPosition() const;
-    virtual void SetMouseStatus(MouseStatus status);
+    virtual void SetMouseStatus(int status);
     virtual void SetMousePosition(double xPosition, double yPosition);
     virtual void DispatchOsTouchEvent() const {};
     virtual void DispatchOsBackEvent() const {};
+    virtual void SetMouseButton(int buttonVal);
+    virtual void SetMouseAction(int actionVal);
+    virtual void SetSourceType(int sourceTypeVal);
+    virtual void SetSourceTool(int sourceToolVal);
+    virtual void SetPressedBtns(std::set<int>& pressedBtns);
+    virtual void SetAxisValues(std::vector<double>& axisValues); // 13 is array size
+    const int DEFAULT_BUTTON = -1; // default unknown
+    const int DEFAULT_ACTION = 0;  // default unknown
+    const int DEFAULT_SOURCETYPE = 2; // default touch
+    const int DEFAULT_SOURCETOOL = 1; // default finger
 
 protected:
     MouseInput();
     virtual ~MouseInput() {}
-    MouseStatus mouseStatus;
+    int touchAction;
     double mouseXPosition;
     double mouseYPosition;
+    int pointButton;
+    int pointAction;
+    int sourceType;
+    int sourceTool;
+    std::set<int> pressedBtnsVec;
+    std::vector<double> axisValuesArr; // 13 is array size
 };
 
 #endif // MOUSEINPUT_H

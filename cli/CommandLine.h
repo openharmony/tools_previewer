@@ -17,6 +17,8 @@
 #define COMMANDLINE_H
 
 #include <json.h>
+#include <set>
+#include <vector>
 
 #include "LocalSocket.h"
 
@@ -86,7 +88,24 @@ private:
     void Run();
 };
 
-class TouchPressCommand : public CommandLine {
+class TouchAndMouseCommand {
+protected:
+    struct EventParams {
+        double x;
+        double y;
+        int type;
+        int button;
+        int action;
+        int sourceType;
+        int sourceTool;
+        std::set<int> pressedBtnsVec;
+        std::vector<double> axisVec; // 13 is array size
+        std::string name;
+    };
+    void SetEventParams(EventParams& params);
+};
+
+class TouchPressCommand : public CommandLine, public TouchAndMouseCommand {
 public:
     TouchPressCommand(CommandType commandType, const Json::Value& arg, const LocalSocket& socket);
     ~TouchPressCommand() override {}
@@ -96,7 +115,7 @@ protected:
     bool IsActionArgValid() const override;
 };
 
-class TouchMoveCommand : public CommandLine {
+class TouchMoveCommand : public CommandLine, public TouchAndMouseCommand {
 public:
     TouchMoveCommand(CommandType commandType, const Json::Value& arg, const LocalSocket& socket);
     ~TouchMoveCommand() override {}
@@ -106,7 +125,7 @@ protected:
     bool IsActionArgValid() const override;
 };
 
-class TouchReleaseCommand : public CommandLine {
+class TouchReleaseCommand : public CommandLine, public TouchAndMouseCommand {
 public:
     TouchReleaseCommand(CommandType commandType, const Json::Value& arg, const LocalSocket& socket);
     ~TouchReleaseCommand() override {}
@@ -460,5 +479,17 @@ protected:
     bool IsActionArgValid() const override;
     bool IsImeArgsValid() const;
     bool IsKeyArgsValid() const;
+};
+
+class PointEventCommand : public CommandLine, public TouchAndMouseCommand {
+public:
+    PointEventCommand(CommandType commandType, const Json::Value& arg, const LocalSocket& socket);
+    ~PointEventCommand() override {}
+
+protected:
+    void RunAction() override;
+    bool IsActionArgValid() const override;
+    bool IsArgsExist() const;
+    bool IsArgsValid() const;
 };
 #endif // COMMANDLINE_H

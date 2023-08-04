@@ -70,6 +70,7 @@ void CommandLineFactory::InitCommandMap()
     typeMap["exit"] = &CommandLineFactory::CreateObject<ExitCommand>;
     typeMap["Resolution"] = &CommandLineFactory::CreateObject<ResolutionCommand>;
     typeMap["DeviceType"] = &CommandLineFactory::CreateObject<DeviceTypeCommand>;
+    typeMap["PointEvent"] = &CommandLineFactory::CreateObject<PointEventCommand>;
 }
 
 unique_ptr<CommandLine> CommandLineFactory::CreateCommandLine(string command,
