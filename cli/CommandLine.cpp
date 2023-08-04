@@ -17,6 +17,7 @@
 
 #include <algorithm>
 #include <regex>
+#include <sstream>
 
 #include "CommandLineInterface.h"
 #include "CommandParser.h"
@@ -173,8 +174,15 @@ void TouchAndMouseCommand::SetEventParams(EventParams& params)
     MouseInputImpl::GetInstance().SetPressedBtns(params.pressedBtnsVec);
     MouseInputImpl::GetInstance().SetAxisValues(params.axisVec);
     MouseInputImpl::GetInstance().DispatchOsTouchEvent();
-    ILOG("%s(%f,%f,%d,%d,%d,%d,%d,%d,%d)", params.name.c_str(), params.x, params.y, params.type, params.button,
-        params.action, params.sourceType, params.sourceTool, params.pressedBtnsVec.size(), params.axisVec.size());
+    std::stringstream ss;
+    ss << "[";
+    for (double val : params.axisVec) {
+        ss << " " << val << " ";
+    }
+    ss << "]" << std::endl;
+    ILOG("%s(%f,%f,%d,%d,%d,%d,%d,%d,%d,%s)", params.name.c_str(), params.x, params.y, params.type, params.button,
+        params.action, params.sourceType, params.sourceTool, params.pressedBtnsVec.size(), params.axisVec.size(),
+        ss.str().c_str());
 }
 
 bool TouchPressCommand::IsActionArgValid() const
@@ -1427,29 +1435,26 @@ PointEventCommand::PointEventCommand(CommandType commandType, const Json::Value&
 void PointEventCommand::RunAction()
 {
     int type = 9;
-    set<int> pressedBtnsVec;
+    EventParams param;
     if (args.isMember("pressedButtons") && args["pressedButtons"].isArray()) {
         Json::Value pressedCodes = args["pressedCodes"];
         for (unsigned int i = 0; i < pressedCodes.size(); i++) {
             if (!pressedCodes[i].isInt() || pressedCodes[i].asInt() < -1) {
                 continue;
             }
-            pressedBtnsVec.insert(pressedCodes[i].asInt());
+            param.pressedBtnsVec.insert(pressedCodes[i].asInt());
         }
     }
     vector<double> axisVec; // 13 is array size
-    Json::Value axisCodes = args["pressedCodes"];
+    Json::Value axisCodes = args["axisValues"];
     for (unsigned int i = 0; i < axisCodes.size(); i++) {
-        axisVec[i] = axisCodes[i].asDouble();
+        param.axisVec.push_back(axisCodes[i].asDouble());
     }
-    EventParams param;
     param.x = atof(args["x"].asString().data());
     param.y = atof(args["y"].asString().data());
     param.type = type;
     param.button = args["button"].asInt();
     param.action = args["action"].asInt();
-    param.pressedBtnsVec = pressedBtnsVec;
-    param.axisVec = axisVec;
     param.sourceType = args["sourceType"].asInt();
     param.sourceTool = args["sourceTool"].asInt();
     param.name = "PointEvent";

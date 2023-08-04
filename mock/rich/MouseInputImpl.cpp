@@ -18,6 +18,7 @@
 #include <thread>
 #include <vector>
 #include <chrono>
+#include <sstream>
 
 #include "PreviewerEngineLog.h"
 
@@ -25,7 +26,7 @@ using namespace std;
 
 using namespace OHOS::MMI;
 
-MouseInputImpl::MouseInputImpl()
+MouseInputImpl::MouseInputImpl() noexcept
 {
 }
 
@@ -60,10 +61,16 @@ void MouseInputImpl::DispatchOsTouchEvent() const
     pointerEvent->pressedButtons_ = pressedBtnsVec;
     std::copy(axisValuesArr.begin(), axisValuesArr.end(), pointerEvent->axisValues_.begin());
     pointerEvent->size = sizeof (PointerEvent);
+    std::stringstream ss;
+    ss << "[";
+    for (double val : axisValuesArr) {
+        ss << " " << val << " ";
+    }
+    ss << "]" << std::endl;
     ILOG("MouseInputImpl::DispatchEvent x: %f y:%f type:%d buttonId_:%d pointerAction_:%d sourceType:%d \
-        sourceTool:%d pressedButtonsSize:%d axisValuesSize:%d", pointerEvent->x, pointerEvent->y,
+        sourceTool:%d pressedButtonsSize:%d axisValuesArr:%s", pointerEvent->x, pointerEvent->y,
         pointerEvent->type, pointerEvent->buttonId_, pointerEvent->pointerAction_, pointerEvent->sourceType,
-        pointerEvent->sourceTool, pointerEvent->pressedButtons_.size(), pointerEvent->axisValues_.size());
+        pointerEvent->sourceTool, pointerEvent->pressedButtons_.size(), ss.str().c_str());
     ILOG("current thread: %d", this_thread::get_id());
     JsAppImpl::GetInstance().DispatchPointerEvent(pointerEvent);
 }
