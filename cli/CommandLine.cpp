@@ -17,6 +17,7 @@
 
 #include <algorithm>
 #include <regex>
+#include <sstream>
 
 #include "CommandLineInterface.h"
 #include "CommandParser.h"
@@ -51,11 +52,11 @@ CommandLine::~CommandLine()
 void CommandLine::CheckAndRun()
 {
     if (!IsArgValid()) {
+        ELOG("CheckAndRun: invalid command params");
         SetCommandResult("result", false);
         SendResult();
         return;
     }
-
     Run();
     SendResult();
 }
@@ -159,6 +160,31 @@ bool CommandLine::IsOneDigitFloatType(string arg) const
     return regex_match(arg, isFloat);
 }
 
+void TouchAndMouseCommand::SetEventParams(EventParams& params)
+{
+    if (CommandParser::GetInstance().GetScreenMode() == CommandParser::ScreenMode::STATIC) {
+        return;
+    }
+    MouseInputImpl::GetInstance().SetMousePosition(params.x, params.y);
+    MouseInputImpl::GetInstance().SetMouseStatus(params.type);
+    MouseInputImpl::GetInstance().SetMouseButton(params.button);
+    MouseInputImpl::GetInstance().SetMouseAction(params.action);
+    MouseInputImpl::GetInstance().SetSourceType(params.sourceType);
+    MouseInputImpl::GetInstance().SetSourceTool(params.sourceTool);
+    MouseInputImpl::GetInstance().SetPressedBtns(params.pressedBtnsVec);
+    MouseInputImpl::GetInstance().SetAxisValues(params.axisVec);
+    MouseInputImpl::GetInstance().DispatchOsTouchEvent();
+    std::stringstream ss;
+    ss << "[";
+    for (double val : params.axisVec) {
+        ss << " " << val << " ";
+    }
+    ss << "]" << std::endl;
+    ILOG("%s(%f,%f,%d,%d,%d,%d,%d,%d,%d,%s)", params.name.c_str(), params.x, params.y, params.type, params.button,
+        params.action, params.sourceType, params.sourceTool, params.pressedBtnsVec.size(), params.axisVec.size(),
+        ss.str().c_str());
+}
+
 bool TouchPressCommand::IsActionArgValid() const
 {
     if (args.isNull() || !args.isMember("x") || !args.isMember("y") ||
@@ -185,15 +211,18 @@ TouchPressCommand::TouchPressCommand(CommandType commandType, const Json::Value&
 
 void TouchPressCommand::RunAction()
 {
-    if (CommandParser::GetInstance().GetScreenMode() == CommandParser::ScreenMode::STATIC) {
-        return;
-    }
-    MouseInputImpl::GetInstance().SetMousePosition(atof(args["x"].asString().data()),
-                                                   atof(args["y"].asString().data()));
-    MouseInputImpl::GetInstance().SetMouseStatus(MouseInputImpl::INDEV_STATE_PRESS);
-    MouseInputImpl::GetInstance().DispatchOsTouchEvent();
+    int type = 0;
+    EventParams param;
+    param.x = atof(args["x"].asString().data());
+    param.y = atof(args["y"].asString().data());
+    param.type = type;
+    param.name = "TouchPress";
+    param.button = MouseInputImpl::GetInstance().DEFAULT_BUTTON;
+    param.action = MouseInputImpl::GetInstance().DEFAULT_ACTION;
+    param.sourceType = MouseInputImpl::GetInstance().DEFAULT_SOURCETYPE;
+    param.sourceTool = MouseInputImpl::GetInstance().DEFAULT_SOURCETOOL;
+    SetEventParams(param);
     SetCommandResult("result", true);
-    ILOG("MousePress(%s,%s)", args["x"].asString().c_str(), args["y"].asString().c_str());
 }
 
 bool MouseWheelCommand::IsActionArgValid() const
@@ -226,13 +255,18 @@ TouchReleaseCommand::TouchReleaseCommand(CommandType commandType, const Json::Va
 
 void TouchReleaseCommand::RunAction()
 {
-    if (CommandParser::GetInstance().GetScreenMode() == CommandParser::ScreenMode::STATIC) {
-        return;
-    }
-    MouseInputImpl::GetInstance().SetMouseStatus(MouseInputImpl::INDEV_STATE_RELEASE);
-    MouseInputImpl::GetInstance().DispatchOsTouchEvent();
+    int type = 1;
+    EventParams param;
+    param.x = atof(args["x"].asString().data());
+    param.y = atof(args["y"].asString().data());
+    param.type = type;
+    param.name = "TouchRelease";
+    param.button = MouseInputImpl::GetInstance().DEFAULT_BUTTON;
+    param.action = MouseInputImpl::GetInstance().DEFAULT_ACTION;
+    param.sourceType = MouseInputImpl::GetInstance().DEFAULT_SOURCETYPE;
+    param.sourceTool = MouseInputImpl::GetInstance().DEFAULT_SOURCETOOL;
+    SetEventParams(param);
     SetCommandResult("result", true);
-    ILOG("MouseRelease run finished");
 }
 
 bool TouchMoveCommand::IsActionArgValid() const
@@ -261,16 +295,18 @@ TouchMoveCommand::TouchMoveCommand(CommandType commandType, const Json::Value& a
 
 void TouchMoveCommand::RunAction()
 {
-    if (CommandParser::GetInstance().GetScreenMode() == CommandParser::ScreenMode::STATIC) {
-        return;
-    }
-    MouseInputImpl::GetInstance().SetMouseStatus(MouseInput::INDEV_STATE_MOVE);
-    MouseInputImpl::GetInstance().SetMousePosition(atof(args["x"].asString().data()),
-                                                   atof(args["y"].asString().data()));
-    MouseInputImpl::GetInstance().DispatchOsTouchEvent();
-    Json::Value res = true;
-    SetCommandResult("result", res);
-    ILOG("MouseMove run finished");
+    int type = 2;
+    EventParams param;
+    param.x = atof(args["x"].asString().data());
+    param.y = atof(args["y"].asString().data());
+    param.type = type;
+    param.name = "TouchMove";
+    param.button = MouseInputImpl::GetInstance().DEFAULT_BUTTON;
+    param.action = MouseInputImpl::GetInstance().DEFAULT_ACTION;
+    param.sourceType = MouseInputImpl::GetInstance().DEFAULT_SOURCETYPE;
+    param.sourceTool = MouseInputImpl::GetInstance().DEFAULT_SOURCETOOL;
+    SetEventParams(param);
+    SetCommandResult("result", true);
 }
 
 PowerCommand::PowerCommand(CommandType commandType, const Json::Value& arg, const LocalSocket& socket)
@@ -1334,4 +1370,94 @@ void KeyPressCommand::RunAction()
     }
     SetCommandResult("result", true);
     ILOG("KeyPressCommand run finished.");
+}
+
+bool PointEventCommand::IsActionArgValid() const
+{
+    return IsArgsExist() && IsArgsValid();
+}
+
+bool PointEventCommand::IsArgsExist() const
+{
+    if (args.isNull() || !args.isMember("x") || !args.isMember("y") ||
+        !args["x"].isInt() || !args["y"].isInt()) {
+        return false;
+    }
+    if (!args.isMember("button") || !args.isMember("action") ||
+        !args["button"].isInt() || !args["action"].isInt()) {
+        return false;
+    }
+    if (!args.isMember("sourceType") || !args.isMember("sourceTool") ||
+        !args["sourceType"].isInt() || !args["sourceTool"].isInt()) {
+        return false;
+    }
+    if (!args.isMember("axisValues") || !args["axisValues"].isArray()) {
+        return false;
+    }
+    return true;
+}
+
+bool PointEventCommand::IsArgsValid() const
+{
+    int32_t pointX = args["x"].asInt();
+    int32_t pointY = args["y"].asInt();
+    int32_t button = args["button"].asInt();
+    int32_t action = args["action"].asInt();
+    int32_t sourceType = args["sourceType"].asInt();
+    int32_t sourcceTool = args["sourcceTool"].asInt();
+    if (pointX < 0 || pointX > VirtualScreenImpl::GetInstance().GetOrignalWidth()) {
+        ELOG("X coordinate range %d ~ %d", 0, VirtualScreenImpl::GetInstance().GetOrignalWidth());
+        return false;
+    }
+    if (pointY < 0 || pointY > VirtualScreenImpl::GetInstance().GetOrignalHeight()) {
+        ELOG("Y coordinate range %d ~ %d", 0, VirtualScreenImpl::GetInstance().GetOrignalHeight());
+        return false;
+    }
+    if (button < -1 || action < 0 || sourceType < 0 || sourcceTool < 0) {
+        ELOG("action,sourceType,sourcceTool must >= 0, button must >= -1");
+        return false;
+    }
+    Json::Value axisArrayNum = args["axisValues"];
+    for (unsigned int i = 0; i < axisArrayNum.size(); i++) {
+        if (!axisArrayNum[i].isDouble()) {
+            ELOG("Param axisValues's value is invalid.");
+            return false;
+        }
+    }
+    return true;
+}
+
+PointEventCommand::PointEventCommand(CommandType commandType, const Json::Value& arg, const LocalSocket& socket)
+    : CommandLine(commandType, arg, socket)
+{
+}
+
+void PointEventCommand::RunAction()
+{
+    int type = 9;
+    EventParams param;
+    if (args.isMember("pressedButtons") && args["pressedButtons"].isArray()) {
+        Json::Value pressedCodes = args["pressedCodes"];
+        for (unsigned int i = 0; i < pressedCodes.size(); i++) {
+            if (!pressedCodes[i].isInt() || pressedCodes[i].asInt() < -1) {
+                continue;
+            }
+            param.pressedBtnsVec.insert(pressedCodes[i].asInt());
+        }
+    }
+    vector<double> axisVec; // 13 is array size
+    Json::Value axisCodes = args["axisValues"];
+    for (unsigned int i = 0; i < axisCodes.size(); i++) {
+        param.axisVec.push_back(axisCodes[i].asDouble());
+    }
+    param.x = atof(args["x"].asString().data());
+    param.y = atof(args["y"].asString().data());
+    param.type = type;
+    param.button = args["button"].asInt();
+    param.action = args["action"].asInt();
+    param.sourceType = args["sourceType"].asInt();
+    param.sourceTool = args["sourceTool"].asInt();
+    param.name = "PointEvent";
+    SetEventParams(param);
+    SetCommandResult("result", true);
 }

@@ -15,11 +15,12 @@
 
 #include "MouseInput.h"
 
-MouseInput::MouseInput() : mouseStatus(INDEV_STATE_RELEASE), mouseXPosition(0), mouseYPosition(0) {}
+MouseInput::MouseInput() : touchAction(0), mouseXPosition(0), mouseYPosition(0),
+    pointButton(0), pointAction(0), sourceType(0), sourceTool(0) {}
 
-void MouseInput::SetMouseStatus(MouseStatus status)
+void MouseInput::SetMouseStatus(int status)
 {
-    mouseStatus = status;
+    touchAction = status;
 }
 
 void MouseInput::SetMousePosition(double xPosition, double yPosition)
@@ -36,4 +37,34 @@ double MouseInput::GetMouseXPosition() const
 double MouseInput::GetMouseYPosition() const
 {
     return mouseYPosition;
+}
+
+void MouseInput::SetMouseButton(int buttonVal)
+{
+    pointButton = buttonVal;
+}
+
+void MouseInput::SetMouseAction(int actionVal)
+{
+    pointAction = actionVal;
+}
+
+void MouseInput::SetSourceType(int sourceTypeVal)
+{
+    sourceType = sourceTypeVal;
+}
+
+void MouseInput::SetSourceTool(int sourceToolVal)
+{
+    sourceTool = sourceToolVal;
+}
+
+void MouseInput::SetPressedBtns(std::set<int>& pressedBtns)
+{
+    pressedBtnsVec = pressedBtns;
+}
+
+void MouseInput::SetAxisValues(std::vector<double>& axisValues) // 13 is array size
+{
+    axisValuesArr = axisValues;
 }
