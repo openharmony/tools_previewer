@@ -217,10 +217,10 @@ void TouchPressCommand::RunAction()
     param.y = atof(args["y"].asString().data());
     param.type = type;
     param.name = "TouchPress";
-    param.button = MouseInputImpl::GetInstance().DEFAULT_BUTTON;
-    param.action = MouseInputImpl::GetInstance().DEFAULT_ACTION;
-    param.sourceType = MouseInputImpl::GetInstance().DEFAULT_SOURCETYPE;
-    param.sourceTool = MouseInputImpl::GetInstance().DEFAULT_SOURCETOOL;
+    param.button = MouseInputImpl::GetInstance().defaultButton;
+    param.action = MouseInputImpl::GetInstance().defaultAction;
+    param.sourceType = MouseInputImpl::GetInstance().defaultSourceType;
+    param.sourceTool = MouseInputImpl::GetInstance().defaultSourceTool;
     SetEventParams(param);
     SetCommandResult("result", true);
 }
@@ -261,10 +261,10 @@ void TouchReleaseCommand::RunAction()
     param.y = atof(args["y"].asString().data());
     param.type = type;
     param.name = "TouchRelease";
-    param.button = MouseInputImpl::GetInstance().DEFAULT_BUTTON;
-    param.action = MouseInputImpl::GetInstance().DEFAULT_ACTION;
-    param.sourceType = MouseInputImpl::GetInstance().DEFAULT_SOURCETYPE;
-    param.sourceTool = MouseInputImpl::GetInstance().DEFAULT_SOURCETOOL;
+    param.button = MouseInputImpl::GetInstance().defaultButton;
+    param.action = MouseInputImpl::GetInstance().defaultAction;
+    param.sourceType = MouseInputImpl::GetInstance().defaultSourceType;
+    param.sourceTool = MouseInputImpl::GetInstance().defaultSourceTool;
     SetEventParams(param);
     SetCommandResult("result", true);
 }
@@ -301,10 +301,10 @@ void TouchMoveCommand::RunAction()
     param.y = atof(args["y"].asString().data());
     param.type = type;
     param.name = "TouchMove";
-    param.button = MouseInputImpl::GetInstance().DEFAULT_BUTTON;
-    param.action = MouseInputImpl::GetInstance().DEFAULT_ACTION;
-    param.sourceType = MouseInputImpl::GetInstance().DEFAULT_SOURCETYPE;
-    param.sourceTool = MouseInputImpl::GetInstance().DEFAULT_SOURCETOOL;
+    param.button = MouseInputImpl::GetInstance().defaultButton;
+    param.action = MouseInputImpl::GetInstance().defaultAction;
+    param.sourceType = MouseInputImpl::GetInstance().defaultSourceType;
+    param.sourceTool = MouseInputImpl::GetInstance().defaultSourceTool;
     SetEventParams(param);
     SetCommandResult("result", true);
 }

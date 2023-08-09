@@ -33,10 +33,10 @@ public:
     virtual void SetSourceTool(int sourceToolVal);
     virtual void SetPressedBtns(std::set<int>& pressedBtns);
     virtual void SetAxisValues(std::vector<double>& axisValues); // 13 is array size
-    const int DEFAULT_BUTTON = -1; // default unknown
-    const int DEFAULT_ACTION = 0;  // default unknown
-    const int DEFAULT_SOURCETYPE = 2; // default touch
-    const int DEFAULT_SOURCETOOL = 1; // default finger
+    const int defaultButton = -1; // default unknown
+    const int defaultAction = 0;  // default unknown
+    const int defaultSourceType = 2; // default touch
+    const int defaultSourceTool = 1; // default finger
 
 protected:
     MouseInput();
