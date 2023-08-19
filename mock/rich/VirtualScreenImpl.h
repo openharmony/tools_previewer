@@ -55,6 +55,7 @@ private:
     uint64_t bufferSize;
     unsigned long long currentPos;
     static constexpr int SEND_IMG_DURATION_MS = 300;
+    static constexpr int STOP_SEND_CARD_DURATION_MS = 10000;
 
     uint8_t* loadDocTempBuffer;
     uint8_t* loadDocCopyBuffer;
