@@ -34,6 +34,7 @@ bool VirtualScreen::isWebSocketListening = false;
 std::string VirtualScreen::webSocketPort = "";
 
 std::chrono::system_clock::time_point VirtualScreen::startTime = std::chrono::system_clock::now();
+std::chrono::system_clock::time_point VirtualScreen::staticCardStartTime = std::chrono::system_clock::now();
 bool VirtualScreen::isStartCount = true;
 bool VirtualScreen::isOutOfSeconds = false;
 
@@ -270,6 +271,24 @@ bool VirtualScreen::JudgeStaticImage(const int duration)
         }
     }
     return true;
+}
+
+bool VirtualScreen::StopSendStaticCardImage(const int duration)
+{
+    if (CommandParser::GetInstance().IsStaticCard()) {
+        static bool first = true;
+        if (first) {
+            first = false;
+            VirtualScreen::staticCardStartTime = std::chrono::system_clock::now();
+        }
+        auto endTime = std::chrono::system_clock::now();
+        int64_t timePassed = chrono::duration_cast<chrono::milliseconds>(endTime -
+                             VirtualScreen::staticCardStartTime).count();
+        if (timePassed > duration) {
+            return true;
+        }
+    }
+    return false;
 }
 
 void VirtualScreen::RgbToJpg(unsigned char* data, const int32_t width, const int32_t height)
