@@ -89,7 +89,7 @@ previewer_executable("rich_previewer") {
     "./jsapp/rich/",
   ]
   libs = []
-  external_deps = [ "ace_engine:libace" ]
+  external_deps = [ "ace_engine:libace_compatible" ]
   deps = [
     "cli:cli_rich",
     "jsapp:jsapp_rich",
