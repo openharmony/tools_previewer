@@ -57,6 +57,7 @@ public:
     bool CheckParamInvalidity(std::string param, bool isNum);
     bool IsComponentMode() const;
     std::string GetAbilityPath() const;
+    bool IsStaticCard() const;
 
 private:
     CommandParser();
@@ -110,6 +111,7 @@ private:
     std::string regex4Str = "^(?:[a-zA-Z0-9-_./\\s]+)$";
     bool isComponentMode;
     std::string abilityPath;
+    bool staticCard;
 
     bool IsDebugPortValid();
     bool IsAppPathValid();
@@ -142,6 +144,7 @@ private:
     bool IsContainerSdkPathValid();
     bool IsComponentModeValid();
     bool IsAbilityPathValid();
+    bool IsStaticCardValid();
     std::string HelpText();
     void ProcessingCommand(const std::vector<std::string>& strs);
 };
