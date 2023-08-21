@@ -103,6 +103,9 @@ bool VirtualScreenImpl::LoadDocCallback(const void* data,
 bool VirtualScreenImpl::CallBack(const void* data, const size_t length,
                                  const int32_t width, const int32_t height)
 {
+    if (VirtualScreenImpl::GetInstance().StopSendStaticCardImage(STOP_SEND_CARD_DURATION_MS)) {
+        return false;
+    }
     if (VirtualScreenImpl::GetInstance().GetLoadDocFlag() < VirtualScreen::LoadDocType::FINISHED) {
         return false;
     }

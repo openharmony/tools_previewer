@@ -17,6 +17,7 @@
 #define COMMANDLINEINTERFACE_H
 
 #include <memory>
+#include <vector>
 
 #include "CommandLine.h"
 #include "LocalSocket.h"
@@ -51,6 +52,8 @@ private:
     const static uint32_t MAX_COMMAND_LENGTH = 128;
     static bool isFirstWsSend;
     static bool isPipeConnected;
+    std::vector<std::string> staticIgnoreCmd = { "ResolutionSwitch" };
+    bool IsStaticIgnoreCmd(const std::string cmd) const;
 };
 
 #endif // COMMANDLINEINTERFACE_H
