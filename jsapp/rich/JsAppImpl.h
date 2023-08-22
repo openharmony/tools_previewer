@@ -91,6 +91,7 @@ protected:
     double tvScreenDensity = 320;     // TV Screen Density
     double tabletScreenDensity = 400; // Tablet Screen Density
     double carScreenDensity = 320;    // Car Screen Density
+    double twoInOneScreenDensity = 240;    // Car Screen Density
 
 private:
     void SetAssetPath(OHOS::Ace::Platform::AceRunArgs& args, const std::string) const;
