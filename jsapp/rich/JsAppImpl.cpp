@@ -450,9 +450,16 @@ void JsAppImpl::AdaptDeviceType(Platform::AceRunArgs& args, const std::string ty
         args.deviceConfig.density = args.deviceWidth / adaptWidthTv;
         return;
     }
-    if (type == "phone" || type == "2in1" || type == "default") {
+    if (type == "phone" || type == "default") {
         args.deviceConfig.deviceType = DeviceType::PHONE;
         double density = screenDendity > 0 ? screenDendity : phoneScreenDensity;
+        double adaptWidthPhone = realDeviceWidth * BASE_SCREEN_DENSITY / density;
+        args.deviceConfig.density = args.deviceWidth / adaptWidthPhone;
+        return;
+    }
+    if (type == "2in1") {
+        args.deviceConfig.deviceType = DeviceType::TABLET;
+        double density = screenDendity > 0 ? screenDendity : twoInOneScreenDensity;
         double adaptWidthPhone = realDeviceWidth * BASE_SCREEN_DENSITY / density;
         args.deviceConfig.density = args.deviceWidth / adaptWidthPhone;
         return;
@@ -715,8 +722,12 @@ void JsAppImpl::SetDeviceScreenDensity(const int32_t screenDensity, const std::s
         tvScreenDensity = screenDensity;
         return;
     }
-    if ((type == "phone" || type == "2in1" || type == "default") && screenDensity != 0) {
+    if ((type == "phone" || type == "default") && screenDensity != 0) {
         phoneScreenDensity = screenDensity;
+        return;
+    }
+    if (type == "2in1" && screenDensity != 0) {
+        twoInOneScreenDensity = screenDensity;
         return;
     }
     if (type == "tablet" && screenDensity != 0) {
