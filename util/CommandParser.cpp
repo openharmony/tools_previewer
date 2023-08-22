@@ -45,7 +45,8 @@ CommandParser::CommandParser()
       pages("main_pages"),
       containerSdkPath(""),
       isComponentMode(false),
-      abilityPath("")
+      abilityPath(""),
+      staticCard(false)
 {
     Register("-j", 1, "Launch the js app in <directory>.");
     Register("-n", 1, "Set the js app name show on <window title>.");
@@ -81,6 +82,7 @@ CommandParser::CommandParser()
     Register("-hsp", 1, "Set container sdk path.");
     Register("-cpm", 1, "Set previewer start mode.");
     Register("-abp", 1, "Set abilityPath for debug.");
+    Register("-staticCard", 1, "Set card mode.");
 }
 
 CommandParser& CommandParser::GetInstance()
@@ -118,7 +120,7 @@ bool CommandParser::IsCommandValid()
     partRet = partRet && IsColorModeValid() && IsOrientationValid() && IsWebSocketPortValid() && IsAceVersionValid();
     partRet = partRet && IsScreenModeValid() && IsAppResourcePathValid();
     partRet = partRet && IsProjectModelValid() && IsPagesValid() && IsContainerSdkPathValid();
-    partRet = partRet && IsComponentModeValid() && IsAbilityPathValid();
+    partRet = partRet && IsComponentModeValid() && IsAbilityPathValid() && IsStaticCardValid();
     if (partRet) {
         return true;
     }
@@ -271,6 +273,11 @@ bool CommandParser::IsComponentMode() const
 string CommandParser::GetAbilityPath() const
 {
     return abilityPath;
+}
+
+bool CommandParser::IsStaticCard() const
+{
+    return staticCard;
 }
 
 bool CommandParser::IsDebugPortValid()
@@ -823,5 +830,22 @@ bool CommandParser::IsAbilityPathValid()
         return false;
     }
     abilityPath = path;
+    return true;
+}
+
+bool CommandParser::IsStaticCardValid()
+{
+    if (!IsSet("staticCard")) {
+        return true;
+    }
+    string val = Value("staticCard");
+    if (val != "true" && val != "false") {
+        errorInfo = string("The staticCard argument unsupported.");
+        ELOG("Launch -staticCard parameters abnormal!");
+        return false;
+    }
+    if (val == "true") {
+        staticCard = true;
+    }
     return true;
 }

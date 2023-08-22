@@ -25,6 +25,7 @@
 #include "ModelManager.h"
 #include "PreviewerEngineLog.h"
 #include "VirtualScreen.h"
+#include "CommandParser.h"
 
 using namespace std;
 
@@ -135,6 +136,9 @@ void CommandLineInterface::ProcessCommandMessage(std::string message) const
     }
 
     string command = jsonData["command"].asString();
+    if (CommandParser::GetInstance().IsStaticCard() && IsStaticIgnoreCmd(command)) {
+        return;
+    }
     std::unique_ptr<CommandLine> commandLine =
         CommandLineFactory::CreateCommandLine(command, type, jsonData["args"], *socket);
     if (commandLine == nullptr) {
@@ -265,4 +269,14 @@ void CommandLineInterface::CreatCommandToSendData(const string commandName,
         return;
     }
     commandLine->RunAndSendResultToManager();
+}
+
+bool CommandLineInterface::IsStaticIgnoreCmd(const string cmd) const
+{
+    auto it = std::find(staticIgnoreCmd.begin(), staticIgnoreCmd.end(), cmd);
+    if (it != staticIgnoreCmd.end()) {
+        return false;
+    } else {
+        return true;
+    }
 }

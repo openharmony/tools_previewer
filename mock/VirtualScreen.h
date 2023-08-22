@@ -86,6 +86,7 @@ public:
     bool JudgeAndDropFrame();
     void SetDropFrameFrequency(const int32_t& value);
     static bool JudgeStaticImage(const int duration);
+    static bool StopSendStaticCardImage(const int duration);
     void RgbToJpg(unsigned char* data, const int32_t width, const int32_t height);
     static uint32_t inputKeyCountPerMinute;
     static uint32_t inputMethodCountPerMinute;
@@ -121,6 +122,7 @@ protected:
     int bluePos = 2;
 
     static std::chrono::system_clock::time_point startTime;
+    static std::chrono::system_clock::time_point staticCardStartTime;
     VirtualScreen::LoadDocType startLoadDoc = VirtualScreen::LoadDocType::INIT;
     std::chrono::system_clock::time_point startDropFrameTime;   // record start drop frame time
     int dropFrameFrequency = 0; // save drop frame frequency
