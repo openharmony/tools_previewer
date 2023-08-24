@@ -47,7 +47,7 @@ export function generatePropertyDeclaration(rootName: string, propertyDeclaratio
     } else if (propertyDeclaration.kind === SyntaxKind.TypeReference) {
       propertyBody = `this.${propertyDeclaration.propertyName} = `;
       if (getClassNameSet().has(propertyDeclaration.propertyTypeName)) {
-        if (propertyDeclaration.propertyTypeName !== 'Want' && propertyDeclaration.propertyTypeName !== 'InputMethodExtensionContext') {
+        if (!['Want', 'InputMethodExtensionContext'].includes(propertyDeclaration.propertyTypeName)) {
           propertyBody += `new ${getTheRealReferenceFromImport(sourceFile, propertyDeclaration.propertyTypeName)}();`;
         } else {
           propertyBody += `${getTheRealReferenceFromImport(sourceFile, propertyDeclaration.propertyTypeName)};`;

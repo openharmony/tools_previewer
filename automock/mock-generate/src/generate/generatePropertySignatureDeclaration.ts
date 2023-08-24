@@ -69,7 +69,10 @@ export function generatePropertySignatureDeclaration(rootName: string, propertyS
     } else if (propertySignature.kind === SyntaxKind.BooleanKeyword) {
       propertySignatureBody = `${propertySignature.propertyName}: true,`;
     } else if (propertySignature.kind === SyntaxKind.UnionType) {
-      const unionFirstElement = propertySignature.propertyTypeName.split('|')[0].trimStart().trimEnd();
+      let unionFirstElement = propertySignature.propertyTypeName.split('|')[0].trimStart().trimEnd();
+      if (unionFirstElement.includes('[]')) {
+        unionFirstElement = '[]'
+      }
       if (unionFirstElement.startsWith('"') || unionFirstElement.startsWith("'")) {
         propertySignatureBody = `${propertySignature.propertyName}: ${unionFirstElement},`;
       } else if (unionFirstElement === 'string') {
