@@ -228,7 +228,7 @@ export function getTheRealReferenceFromImport(sourceFile: SourceFile, typeName: 
   } else {
     returnName = getImportTypeAliasNameFromImportElements(importArray, typeName);
   }
-  return returnName;
+  return returnName.split('<')[0];
 }
 
 /**

@@ -19,10 +19,13 @@ import {
   isComputedPropertyName, isIdentifier, isModuleBlock, isModuleDeclaration, isPrivateIdentifier, MethodDeclaration,
   MethodSignature, ModifiersArray, ModuleDeclaration, NodeArray, ParameterDeclaration, PropertyName, SourceFile
 } from 'typescript';
+import fs from 'fs';
 
 const allLegalImports = new Set<string>();
 const fileNameList = new Set<string>();
 const allClassSet = new Set<string>();
+
+export const dtsFileList: Array<string> = [];
 
 /**
  * get all legal imports
@@ -219,4 +222,98 @@ export interface ParameterEntity {
 export interface ReturnTypeEntity {
   returnKindName: string,
   returnKind: number
+}
+
+/**
+ *
+ * return project dir
+ */
+
+export function getProjectDir(): string {
+  const apiInputPath = process.argv[2];
+  const privateInterface = path.join('vendor', 'huawei', 'interface', 'hmscore_sdk_js', 'api');
+  const openInterface = path.join('interface', 'sdk-js', 'api');
+  if (apiInputPath.indexOf(openInterface) > -1) {
+    return apiInputPath.replace(`${path.sep}${openInterface}`, '');
+  } else {
+    return apiInputPath.replace(`${path.sep}${privateInterface}`, '')
+  }
+}
+
+/**
+ * return ohos interface dir
+ */
+export function getOhosInterfacesDir(): string {
+  return path.join(getProjectDir(), 'interface', 'sdk-js', 'api');
+}
+
+/**
+ * return interface api root path
+ * @returns apiInputPath
+ */
+export function getApiInputPath () {
+  return process.argv[2];
+}
+
+/**
+ * return OpenHarmony file path dependent on by HarmonyOs
+ * @param importPath path of depend imported
+ * @param sourceFile sourceFile of current file
+ * @returns dependsFilePath
+ */
+export function findOhosDependFile(importPath: string, sourceFile: SourceFile): string {
+  const interFaceDir = getOhosInterfacesDir();
+  const tmpImportPath = importPath.replace(/'/g, '').replace('.d.ts', '').replace('.d.ets', '');
+  const sourceFileDir = path.dirname(sourceFile.fileName);
+  let dependsFilePath: string;
+  if (tmpImportPath.startsWith('./')) {
+    dependsFilePath = path.join(sourceFileDir, tmpImportPath.substring(2));
+  } else if (tmpImportPath.startsWith('../')) {
+    const backSymbolList = tmpImportPath.split('/').filter(step => step === '..');
+    dependsFilePath = [
+      ...sourceFileDir.split(path.sep).slice(0, -backSymbolList.length),
+      ...tmpImportPath.split('/').filter(step => step !== '..')
+    ].join(path.sep);
+  } else if (tmpImportPath.startsWith('@ohos.inner.')) {
+    const pathSteps = tmpImportPath.replace(/@ohos\.inner\./g, '').split('.');
+    for (let i = 0; i < pathSteps.length; i++) {
+      const tmpInterFaceDir = path.join(interFaceDir, ...pathSteps.slice(0, i), pathSteps.slice(i).join('.'));
+      if (fs.existsSync(tmpInterFaceDir + '.d.ts')){
+        return tmpInterFaceDir + '.d.ts';
+      }
+
+      if (fs.existsSync(tmpInterFaceDir + '.d.ets')){
+        return tmpInterFaceDir + '.d.ets';
+      }
+    }
+  } else if (tmpImportPath.startsWith('@ohos.')) {
+    dependsFilePath = path.join(getOhosInterfacesDir(), tmpImportPath);
+  }
+
+  if (fs.existsSync(dependsFilePath + '.d.ts')){
+    return dependsFilePath + '.d.ts';
+  }
+
+  if (fs.existsSync(dependsFilePath + '.d.ets')){
+    return dependsFilePath + '.d.ets';
+  }
+}
+
+/**
+ * Determine if the file is a openHarmony interface file
+ * @param path: interface file path
+ * @returns
+ */
+export function isOhosInterface(path: string): boolean {
+  return path.startsWith(getOhosInterfacesDir());
+}
+
+/**
+ * reutn js-sdk root folder full path
+ * @returns
+ */
+export function getJsSdkDir(): string {
+  let sdkJsDir = process.argv[2].split(path.sep).slice(0, -1).join(path.sep);
+  sdkJsDir += sdkJsDir.endsWith(path.sep) ? '' : path.sep
+  return sdkJsDir;
 }
