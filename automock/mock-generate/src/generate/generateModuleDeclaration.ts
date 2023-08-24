@@ -40,11 +40,11 @@ import { generateVariableStatementDelcatation } from './generateVariableStatemen
  * @returns
  */
 export function generateModuleDeclaration(rootName: string, moduleEntity: ModuleBlockEntity, sourceFile: SourceFile, filename: string): string {
-  const moduleName = moduleEntity.moduleName;
-  const mockNameArr = filename.split('_');
-  const mockName = mockNameArr[mockNameArr.length - 1];
-  let moduleBody = `export function mock${firstCharacterToUppercase(mockName)}() {\n`;
-  addToIndexArray({ fileName: filename, mockFunctionName: `mock${firstCharacterToUppercase(mockName)}` });
+  let moduleName = moduleEntity.moduleName.replace(/["']/g, '');
+  let moduleBody = `export function mock${firstCharacterToUppercase(moduleName)}() {\n`;
+  if (!moduleEntity.exportModifiers.includes(SyntaxKind.DeclareKeyword) && moduleEntity.moduleName.startsWith('"')) {
+    addToIndexArray({ fileName: filename, mockFunctionName: `mock${firstCharacterToUppercase(moduleName)}` });
+  }
   let outBody = '';
   const defaultExportClass = getDefaultExportClassDeclaration(sourceFile);
 
@@ -119,7 +119,11 @@ export function generateModuleDeclaration(rootName: string, moduleEntity: Module
 
   if (moduleEntity.moduleDeclarations.length > 0) {
     moduleEntity.moduleDeclarations.forEach(value => {
-      moduleBody += generateInnerModule(value, sourceFile) + '\n';
+      if (moduleEntity.exportModifiers.includes(SyntaxKind.DeclareKeyword)) {
+        outBody += generateInnerDeclareModule(value) + '\n';
+      } else {
+        moduleBody += generateInnerModule(value, sourceFile) + '\n';
+      }
     });
   }
 
@@ -174,6 +178,23 @@ export function generateModuleDeclaration(rootName: string, moduleEntity: Module
   moduleBody += `\n\treturn ${moduleName};}\n`;
   moduleBody += outBody;
   return moduleBody;
+}
+
+/**
+ * generate inner module for declare module
+ * @param moduleEntity
+ * @param sourceFile
+ * @returns
+ */
+function generateInnerDeclareModule(moduleEntity: ModuleBlockEntity): string {
+  let moduleName = '$' + moduleEntity.moduleName.replace(/["']/g, '');
+  let module = `\n\texport const ${moduleName} = `;
+  if (moduleEntity.exportDeclarations.length > 0) {
+    moduleEntity.exportDeclarations.forEach(value => {
+      module += value.match(/{[^{}]*}/g)[0] + '\n';
+    });
+  }
+  return module;
 }
 
 /**
@@ -245,6 +266,9 @@ function generateInnerModule(moduleEntity: ModuleBlockEntity, sourceFile: Source
  */
 function getModuleExportElements(moduleEntity: ModuleBlockEntity): Array<ModuleExportEntity> {
   const exportElements: Array<ModuleExportEntity> = [];
+  if (moduleEntity.moduleName.startsWith('"') && moduleEntity.moduleName.endsWith('"')) {
+    return exportElements;
+  }
   if (moduleEntity.classDeclarations.length > 0) {
     moduleEntity.classDeclarations.forEach(value => {
       exportElements.push({ name: firstCharacterToUppercase(value.className), type: 'class' });
