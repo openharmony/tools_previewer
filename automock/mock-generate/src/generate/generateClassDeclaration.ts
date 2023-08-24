@@ -54,6 +54,7 @@ export function generateClassDeclaration(rootName: string, classEntity: ClassEnt
         isExtend = true;
         classBody += `${value.clauseToken} `;
         value.types.forEach((val, index) => {
+          const extendClassName = val.split('<')[0];
           const moduleName = firstCharacterToUppercase(rootName);
           if (val.startsWith('Array<')) {
             val = 'Array';
@@ -63,9 +64,9 @@ export function generateClassDeclaration(rootName: string, classEntity: ClassEnt
             }
           }
           if (index !== value.types.length - 1) {
-            classBody += `${val},`;
+            classBody += `${extendClassName},`;
           } else {
-            classBody += `${val}`;
+            classBody += `${extendClassName}`;
           }
         });
       }
@@ -80,7 +81,7 @@ export function generateClassDeclaration(rootName: string, classEntity: ClassEnt
       classBody += `constructor() { `;
     }
     if (isExtend) {
-      classBody += `super();`;
+      classBody += `super();\n`;
     }
     classBody += getWarnConsole(className, 'constructor');
   }

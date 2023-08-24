@@ -13,12 +13,13 @@
  * limitations under the License.
  */
 
-import { SourceFile, SyntaxKind } from 'typescript';
-import { collectAllLegalImports, firstCharacterToUppercase, getAllFileNameList } from '../common/commonUtils';
+import fs from 'fs';
+import path from 'path';
+import { ScriptTarget, SourceFile, SyntaxKind, createSourceFile } from 'typescript';
+import { collectAllLegalImports, dtsFileList, firstCharacterToUppercase, getAllFileNameList, getApiInputPath } from '../common/commonUtils';
 import { ImportElementEntity } from '../declaration-node/importAndExportDeclaration';
-import { getDefaultExportClassDeclaration, getSourceFileFunctions, getSourceFileVariableStatements, SourceFileEntity } from '../declaration-node/sourceFileElementsAssemply';
+import { getDefaultExportClassDeclaration, SourceFileEntity } from '../declaration-node/sourceFileElementsAssemply';
 import { generateClassDeclaration } from './generateClassDeclaration';
-import { generateCommonFunction } from './generateCommonFunction';
 import { generateEnumDeclaration } from './generateEnumDeclaration';
 import { addToIndexArray } from './generateIndex';
 import { generateInterfaceDeclaration } from './generateInterfaceDeclaration';
@@ -26,7 +27,6 @@ import { generateModuleDeclaration } from './generateModuleDeclaration';
 import { generateStaticFunction } from './generateStaticFunction';
 import { addToSystemIndexArray } from './generateSystemIndex';
 import { generateTypeAliasDeclaration } from './generateTypeAlias';
-import { generateVariableStatementDelcatation } from './generateVariableStatementDeclaration';
 
 /**
  * generate mock file string
@@ -39,10 +39,11 @@ import { generateVariableStatementDelcatation } from './generateVariableStatemen
 export function generateSourceFileElements(rootName: string, sourceFileEntity: SourceFileEntity, sourceFile: SourceFile, fileName: string): string {
   let mockApi = '';
   const mockFunctionElements: Array<MockFunctionElementEntity> = [];
+  const dependsSourceFileList = collectReferenceFiles(sourceFile);
   const heritageClausesArray = getCurrentApiHeritageArray(sourceFileEntity, sourceFile);
   if (sourceFileEntity.importDeclarations.length > 0) {
     sourceFileEntity.importDeclarations.forEach(value => {
-      mockApi += generateImportDeclaration(value, fileName, heritageClausesArray);
+      mockApi += generateImportDeclaration(value, fileName, heritageClausesArray, sourceFile.fileName, dependsSourceFileList);
     });
   }
 
@@ -148,7 +149,28 @@ export function generateSourceFileElements(rootName: string, sourceFileEntity: S
  * @param sourceFileName
  * @returns
  */
-export function generateImportDeclaration(importEntity: ImportElementEntity, sourceFileName: string, heritageClausesArray: string[]): string {
+export function generateImportDeclaration(
+  importEntity: ImportElementEntity,
+  sourceFileName: string,
+  heritageClausesArray: string[],
+  currentFilePath: string,
+  dependsSourceFileList?: SourceFile[]
+  ): string {
+  if (dependsSourceFileList.length) {
+    if (!importEntity.importPath.includes('.')) {
+      for (let i = 0; i < dependsSourceFileList.length; i++) {
+        if (dependsSourceFileList[i].text.includes(`declare module ${importEntity.importPath.replace(/'/g, '"')}`)) {
+          let relatePath = path.relative(path.dirname(currentFilePath), dependsSourceFileList[i].fileName)
+            .replace(/\\/g, '/')
+            .replace(/.d.ts/g, '')
+            .replace(/.d.es/g, '');
+          relatePath = (relatePath.startsWith('@internal/component') ? './' : '') + relatePath;
+          return `import ${importEntity.importElements} from "${relatePath}"\n`;
+        }
+      }
+    }
+  }
+
   let importPathName = '';
   const importPathSplit = importEntity.importPath.split('/');
   let fileName = importPathSplit[importPathSplit.length - 1];
@@ -170,13 +192,9 @@ export function generateImportDeclaration(importEntity: ImportElementEntity, sou
     if (importEntity.importPath.includes('@ohos')) {
       const tmpArr = importEntity.importPath.split('.');
       importElements = `{ mock${firstCharacterToUppercase(tmpArr[tmpArr.length - 1].replace('"', '').replace('\'', ''))} }`;
-    } else {
-      importElements = `{ ${importElements} }`;
     }
   }
-  if (checIsDefaultExportClass(importEntity.importElements)) {
-    importElements = `{ ${importEntity.importElements} }`;
-  }
+  
   const testPath = importPath.replace(/"/g, '').replace(/'/g, '').split('/');
   if (getAllFileNameList().has(testPath[testPath.length - 1]) || testPath[testPath.length - 1] === 'ohos_application_want') {
     let tmpImportPath = importPath.replace(/'/g, '').replace(/"/g, '');
@@ -243,6 +261,50 @@ function getCurrentApiHeritageArray(sourceFileEntity: SourceFileEntity, sourceFi
     });
   });
   return heritageClausesArray;
+}
+
+function collectReferenceFiles(sourceFile: SourceFile): SourceFile[] {
+  const referenceElementTemplate = /\/\/\/\s*<reference\s+path="[^'"\[\]]+/g;
+  const referenceFiles: SourceFile[] = [];
+  const text = sourceFile.text;
+  const referenceElement = text.match(referenceElementTemplate);
+
+  referenceElement && referenceElement.forEach(element => {
+    const referenceRelatePath = element.split(/path=["']/g)[1];
+    const realReferenceFilePath = contentRelatePath2RealRelatePath(sourceFile.fileName, referenceRelatePath);
+    if (!realReferenceFilePath) {
+      return;
+    }
+
+    if (!fs.existsSync(realReferenceFilePath)) {
+      console.error(`Can not resolve file: ${realReferenceFilePath}`);
+      return;
+    }
+    const code = fs.readFileSync(realReferenceFilePath);
+    referenceFiles.push(createSourceFile(realReferenceFilePath, code.toString(), ScriptTarget.Latest));
+    !dtsFileList.includes(realReferenceFilePath) && dtsFileList.push(realReferenceFilePath);
+  });
+  return referenceFiles;
+}
+
+function contentRelatePath2RealRelatePath(currentFilePath: string, contentReferenceRelatePath: string): string | undefined {
+  const conmponentSourceFileTemplate = /component\/[^'"\/]+\.d\.ts/;
+  const currentFolderSourceFileTemplate = /\.\/[^\/]+\.d\.ts/;
+  const baseFileNameTemplate = /[^\/]+\.d\.ts/;
+
+  let realReferenceFilePath: string;
+  if (conmponentSourceFileTemplate.test(contentReferenceRelatePath)) {
+    const newRelateReferencePath = contentReferenceRelatePath.match(conmponentSourceFileTemplate)[0];
+    const referenceFileName = path.basename(newRelateReferencePath);
+    realReferenceFilePath = path.join(getApiInputPath(), '@internal', 'component', 'ets', referenceFileName);
+  } else if (currentFolderSourceFileTemplate.test(contentReferenceRelatePath)) {
+    const referenceFileName = path.basename(contentReferenceRelatePath);
+    realReferenceFilePath = currentFilePath.replace(baseFileNameTemplate, referenceFileName).replace(/\//g, path.sep);
+  } else {
+    console.error(`Can not find reference ${contentReferenceRelatePath} from ${currentFilePath}`);
+    return;
+  }
+  return realReferenceFilePath
 }
 
 interface MockFunctionElementEntity {
