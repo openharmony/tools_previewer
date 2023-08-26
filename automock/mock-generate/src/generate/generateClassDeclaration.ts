@@ -40,8 +40,10 @@ export function generateClassDeclaration(rootName: string, classEntity: ClassEnt
 
   const className = firstCharacterToUppercase(classEntity.className);
   let classBody = '';
-  if (classEntity.exportModifiers.includes(SyntaxKind.ExportKeyword) && !isInnerMockFunction) {
-    classBody += `export const ${className} = class ${className} `;
+  if ((classEntity.exportModifiers.includes(SyntaxKind.ExportKeyword) 
+    || classEntity.exportModifiers.includes(SyntaxKind.DeclareKeyword)) 
+    && !isInnerMockFunction) {
+  classBody += `export const ${className} = class ${className} `;
   } else {
     classBody += `const ${className} = class ${className} `;
   }
