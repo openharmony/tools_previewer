@@ -87,7 +87,6 @@ rollup.rollup(configJSAPIMockInput).then(bundle => {
     fs.writeFileSync(configJSAPIMockOutput.file, 
       fileContent
       .replace(/\$\d*/g, '')
-      // .replace(/(FontWeight)|(FontStyle)|(Curve)|(PlayMode)|(SharedTransitionEffectType)|(TransitionType)/g, warnMsg)
       , 'utf-8') 
   });
 });
