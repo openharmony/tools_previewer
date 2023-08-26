@@ -117,16 +117,6 @@ export function generateModuleDeclaration(rootName: string, moduleEntity: Module
     });
   }
 
-  if (moduleEntity.moduleDeclarations.length > 0) {
-    moduleEntity.moduleDeclarations.forEach(value => {
-      if (moduleEntity.exportModifiers.includes(SyntaxKind.DeclareKeyword)) {
-        outBody += generateInnerDeclareModule(value) + '\n';
-      } else {
-        moduleBody += generateInnerModule(value, sourceFile) + '\n';
-      }
-    });
-  }
-
   let functionBody = '';
   if (moduleEntity.functionDeclarations.size > 0) {
     moduleEntity.functionDeclarations.forEach(value => {
