@@ -41,6 +41,8 @@ export function generateSourceFileElements(rootName: string, sourceFileEntity: S
   const mockFunctionElements: Array<MockFunctionElementEntity> = [];
   const dependsSourceFileList = collectReferenceFiles(sourceFile);
   const heritageClausesArray = getCurrentApiHeritageArray(sourceFileEntity, sourceFile);
+  const extraImport = [];
+
   if (sourceFileEntity.importDeclarations.length > 0) {
     sourceFileEntity.importDeclarations.forEach(value => {
       mockApi += generateImportDeclaration(value, fileName, heritageClausesArray, sourceFile.fileName, dependsSourceFileList);
@@ -64,7 +66,8 @@ export function generateSourceFileElements(rootName: string, sourceFileEntity: S
 
   if (sourceFileEntity.interfaceDeclarations.length > 0) {
     sourceFileEntity.interfaceDeclarations.forEach(value => {
-      mockApi += generateInterfaceDeclaration('', value, sourceFile, true, sourceFileEntity.interfaceDeclarations) + '\n';
+      mockApi += generateInterfaceDeclaration('', value, sourceFile, true, sourceFileEntity.interfaceDeclarations,
+      sourceFileEntity.importDeclarations, extraImport) + '\n';
       mockFunctionElements.push({ elementName: value.interfaceName, type: 'interface' });
     });
   }
@@ -143,6 +146,7 @@ export function generateSourceFileElements(rootName: string, sourceFileEntity: S
       }
     });
   }
+  mockApi = extraImport.join('') + mockApi
   return mockApi;
 }
 

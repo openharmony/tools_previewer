@@ -20,6 +20,7 @@ import {
   MethodSignature, ModifiersArray, ModuleDeclaration, NodeArray, ParameterDeclaration, PropertyName, SourceFile
 } from 'typescript';
 import fs from 'fs';
+import { ImportElementEntity } from '../declaration-node/importAndExportDeclaration';
 
 const allLegalImports = new Set<string>();
 const fileNameList = new Set<string>();
@@ -317,3 +318,27 @@ export function getJsSdkDir(): string {
   sdkJsDir += sdkJsDir.endsWith(path.sep) ? '' : path.sep
   return sdkJsDir;
 }
+
+export function hasBeenImported(importDeclarations: ImportElementEntity[], typeName: string): boolean {
+  if (!typeName.trim()){
+    return;
+  }
+  if (isFirstCharLowerCase(typeName)){
+    return true;
+  }
+  return importDeclarations.some(importDeclaration => importDeclaration.importElements.includes(typeName));
+}
+
+function isFirstCharLowerCase(str: string): boolean {
+  const lowerCaseFirstChar = str[0].toLowerCase();
+  return str[0] === lowerCaseFirstChar;
+}
+
+export const specialFiles = [
+  '@internal/component/ets/common.d.ts',
+  '@internal/component/ets/units.d.ts',
+  '@internal/component/ets/common_ts_ets_api.d.ts',
+  '@internal/component/ets/enums.d.ts',
+  '@internal/component/ets/alert_dialog.d.ts',
+  '@internal/component/ets/ability_component.d.ts'
+]
