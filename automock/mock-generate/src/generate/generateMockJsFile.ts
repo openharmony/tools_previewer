@@ -135,6 +135,9 @@ export function generateSourceFileElements(rootName: string, sourceFileEntity: S
   }
   if (sourceFileEntity.exportDeclarations.length > 0) {
     sourceFileEntity.exportDeclarations.forEach(value => {
+      if (value.includes('export type {')) {
+        return;
+      }
       if (!value.includes('export {')) {
         mockApi += `${value}\n`;
       }
