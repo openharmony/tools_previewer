@@ -58,6 +58,7 @@ public:
     bool IsComponentMode() const;
     std::string GetAbilityPath() const;
     bool IsStaticCard() const;
+    bool IsMainArgLengthInvalid(const char* str) const;
 
 private:
     CommandParser();
@@ -112,6 +113,7 @@ private:
     bool isComponentMode;
     std::string abilityPath;
     bool staticCard;
+    const size_t maxMainArgLength = 1024;
 
     bool IsDebugPortValid();
     bool IsAppPathValid();
