@@ -849,3 +849,13 @@ bool CommandParser::IsStaticCardValid()
     }
     return true;
 }
+
+bool CommandParser::IsMainArgLengthInvalid(const char* str) const
+{
+    size_t argLength = strlen(str);
+    if (argLength > maxMainArgLength) {
+        ELOG("param size is more than %d", maxMainArgLength);
+        return true;
+    }
+    return false;
+}
