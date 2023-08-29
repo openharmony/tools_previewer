@@ -159,13 +159,15 @@ int main(int argc, char* argv[])
     CommandParser& parser = CommandParser::GetInstance();
     vector<string> strs;
     for (int i = 1; i < argc; ++i) {
+        if (parser.IsMainArgLengthInvalid(argv[i]))
+            return START_PARAM_INVALID_CODE;
         strs.push_back(argv[i]);
     }
 
     if (!parser.ProcessCommand(strs)) {
         return 0;
     }
-
+    // check params
     if (!parser.IsCommandValid()) {
         return START_PARAM_INVALID_CODE;
     }
