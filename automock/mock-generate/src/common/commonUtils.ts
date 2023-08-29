@@ -22,6 +22,8 @@ import {
 import fs from 'fs';
 import { ImportElementEntity } from '../declaration-node/importAndExportDeclaration';
 
+
+const paramIndex = 2;
 const allLegalImports = new Set<string>();
 const fileNameList = new Set<string>();
 const allClassSet = new Set<string>();
@@ -226,23 +228,23 @@ export interface ReturnTypeEntity {
 }
 
 /**
- *
- * return project dir
+ * Get OpenHarmony project dir
+ * @return project dir
  */
 
 export function getProjectDir(): string {
-  const apiInputPath = process.argv[2];
+  const apiInputPath = process.argv[paramIndex];
   const privateInterface = path.join('vendor', 'huawei', 'interface', 'hmscore_sdk_js', 'api');
   const openInterface = path.join('interface', 'sdk-js', 'api');
   if (apiInputPath.indexOf(openInterface) > -1) {
     return apiInputPath.replace(`${path.sep}${openInterface}`, '');
   } else {
-    return apiInputPath.replace(`${path.sep}${privateInterface}`, '')
+    return apiInputPath.replace(`${path.sep}${privateInterface}`, '');
   }
 }
 
 /**
- * return ohos interface dir
+ * return interface api dir in OpenHarmony
  */
 export function getOhosInterfacesDir(): string {
   return path.join(getProjectDir(), 'interface', 'sdk-js', 'api');
@@ -252,8 +254,8 @@ export function getOhosInterfacesDir(): string {
  * return interface api root path
  * @returns apiInputPath
  */
-export function getApiInputPath () {
-  return process.argv[2];
+export function getApiInputPath(): string {
+  return process.argv[paramIndex];
 }
 
 /**
@@ -268,7 +270,8 @@ export function findOhosDependFile(importPath: string, sourceFile: SourceFile): 
   const sourceFileDir = path.dirname(sourceFile.fileName);
   let dependsFilePath: string;
   if (tmpImportPath.startsWith('./')) {
-    dependsFilePath = path.join(sourceFileDir, tmpImportPath.substring(2));
+    const subIndex = 2;
+    dependsFilePath = path.join(sourceFileDir, tmpImportPath.substring(subIndex));
   } else if (tmpImportPath.startsWith('../')) {
     const backSymbolList = tmpImportPath.split('/').filter(step => step === '..');
     dependsFilePath = [
@@ -279,11 +282,11 @@ export function findOhosDependFile(importPath: string, sourceFile: SourceFile): 
     const pathSteps = tmpImportPath.replace(/@ohos\.inner\./g, '').split('.');
     for (let i = 0; i < pathSteps.length; i++) {
       const tmpInterFaceDir = path.join(interFaceDir, ...pathSteps.slice(0, i), pathSteps.slice(i).join('.'));
-      if (fs.existsSync(tmpInterFaceDir + '.d.ts')){
+      if (fs.existsSync(tmpInterFaceDir + '.d.ts')) {
         return tmpInterFaceDir + '.d.ts';
       }
 
-      if (fs.existsSync(tmpInterFaceDir + '.d.ets')){
+      if (fs.existsSync(tmpInterFaceDir + '.d.ets')) {
         return tmpInterFaceDir + '.d.ets';
       }
     }
@@ -291,13 +294,16 @@ export function findOhosDependFile(importPath: string, sourceFile: SourceFile): 
     dependsFilePath = path.join(getOhosInterfacesDir(), tmpImportPath);
   }
 
-  if (fs.existsSync(dependsFilePath + '.d.ts')){
+  if (fs.existsSync(dependsFilePath + '.d.ts')) {
     return dependsFilePath + '.d.ts';
   }
 
-  if (fs.existsSync(dependsFilePath + '.d.ets')){
+  if (fs.existsSync(dependsFilePath + '.d.ets')) {
     return dependsFilePath + '.d.ets';
   }
+
+  console.warn(`Cannot find module '${importPath}'`);
+  return;
 }
 
 /**
@@ -314,11 +320,17 @@ export function isOhosInterface(path: string): boolean {
  * @returns
  */
 export function getJsSdkDir(): string {
-  let sdkJsDir = process.argv[2].split(path.sep).slice(0, -1).join(path.sep);
-  sdkJsDir += sdkJsDir.endsWith(path.sep) ? '' : path.sep
+  let sdkJsDir = process.argv[paramIndex].split(path.sep).slice(0, -1).join(path.sep);
+  sdkJsDir += sdkJsDir.endsWith(path.sep) ? '' : path.sep;
   return sdkJsDir;
 }
 
+/**
+ * Determine whether the object has been imported
+ * @param importDeclarations imported Declaration list in current file
+ * @param typeName Object being inspected
+ * @returns 
+ */
 export function hasBeenImported(importDeclarations: ImportElementEntity[], typeName: string): boolean {
   if (!typeName.trim()){
     return;
@@ -329,6 +341,11 @@ export function hasBeenImported(importDeclarations: ImportElementEntity[], typeN
   return importDeclarations.some(importDeclaration => importDeclaration.importElements.includes(typeName));
 }
 
+/**
+ * Determine whether the first character in a string is a lowercase letter
+ * @param str target string
+ * @returns 
+ */
 function isFirstCharLowerCase(str: string): boolean {
   const lowerCaseFirstChar = str[0].toLowerCase();
   return str[0] === lowerCaseFirstChar;

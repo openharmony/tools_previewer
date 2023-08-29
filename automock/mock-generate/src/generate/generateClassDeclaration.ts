@@ -78,12 +78,12 @@ export function generateClassDeclaration(rootName: string, classEntity: ClassEnt
   if (!isSystem) {
     classBody += '{';
     if (classEntity.classConstructor.length > 1) {
-      classBody += `constructor(...arg) { `;
+      classBody += 'constructor(...arg) { ';
     } else {
-      classBody += `constructor() { `;
+      classBody += 'constructor() { ';
     }
     if (isExtend) {
-      classBody += `super();\n`;
+      classBody += 'super();\n';
     }
     classBody += getWarnConsole(className, 'constructor');
   }
