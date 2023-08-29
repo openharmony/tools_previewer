@@ -303,7 +303,7 @@ export function findOhosDependFile(importPath: string, sourceFile: SourceFile): 
   }
 
   console.warn(`Cannot find module '${importPath}'`);
-  return;
+  return '';
 }
 
 /**
