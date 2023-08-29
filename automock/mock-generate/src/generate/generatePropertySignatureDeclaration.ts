@@ -71,7 +71,7 @@ export function generatePropertySignatureDeclaration(rootName: string, propertyS
     } else if (propertySignature.kind === SyntaxKind.UnionType) {
       let unionFirstElement = propertySignature.propertyTypeName.split('|')[0].trimStart().trimEnd();
       if (unionFirstElement.includes('[]')) {
-        unionFirstElement = '[]'
+        unionFirstElement = '[]';
       }
       if (unionFirstElement.startsWith('"') || unionFirstElement.startsWith("'")) {
         propertySignatureBody = `${propertySignature.propertyName}: ${unionFirstElement},`;

@@ -104,7 +104,7 @@ function main(apiInputPath) {
   });
 
   let index = 0;
-  while (index < dtsFileList.length){
+  while (index < dtsFileList.length) {
     const value = dtsFileList[index];
     index ++;
 
@@ -157,5 +157,6 @@ function main(apiInputPath) {
   fs.writeFileSync(path.join(outMockJsFileDir, 'entry.js'), generateEntry());
 }
 
-const apiInputPath = process.argv[2];
+const paramIndex = 2;
+const apiInputPath = process.argv[paramIndex];
 main(apiInputPath);
