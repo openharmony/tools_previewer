@@ -15,10 +15,12 @@
 
 import fs from 'fs';
 import path from 'path';
-import { ScriptTarget, SourceFile, SyntaxKind, createSourceFile } from 'typescript';
+import { ScriptTarget, SyntaxKind, createSourceFile } from 'typescript';
+import type { SourceFile } from 'typescript';
 import { collectAllLegalImports, dtsFileList, firstCharacterToUppercase, getAllFileNameList, getApiInputPath } from '../common/commonUtils';
 import { ImportElementEntity } from '../declaration-node/importAndExportDeclaration';
-import { getDefaultExportClassDeclaration, SourceFileEntity } from '../declaration-node/sourceFileElementsAssemply';
+import { getDefaultExportClassDeclaration } from '../declaration-node/sourceFileElementsAssemply';
+import type { SourceFileEntity } from '../declaration-node/sourceFileElementsAssemply';
 import { generateClassDeclaration } from './generateClassDeclaration';
 import { generateEnumDeclaration } from './generateEnumDeclaration';
 import { addToIndexArray } from './generateIndex';
@@ -161,76 +163,39 @@ export function generateImportDeclaration(
   sourceFileName: string,
   heritageClausesArray: string[],
   currentFilePath: string,
-  dependsSourceFileList?: SourceFile[]
-  ): string {
-  if (dependsSourceFileList.length) {
-    if (!importEntity.importPath.includes('.')) {
-      for (let i = 0; i < dependsSourceFileList.length; i++) {
-        if (dependsSourceFileList[i].text.includes(`declare module ${importEntity.importPath.replace(/'/g, '"')}`)) {
-          let relatePath = path.relative(path.dirname(currentFilePath), dependsSourceFileList[i].fileName)
-            .replace(/\\/g, '/')
-            .replace(/.d.ts/g, '')
-            .replace(/.d.es/g, '');
-          relatePath = (relatePath.startsWith('@internal/component') ? './' : '') + relatePath;
-          return `import ${importEntity.importElements} from "${relatePath}"\n`;
-        }
-      }
-    }
-  }
-
-  let importPathName = '';
-  const importPathSplit = importEntity.importPath.split('/');
-  let fileName = importPathSplit[importPathSplit.length - 1];
-  if (fileName.endsWith('.d.ts') || fileName.endsWith('.d.ets')) {
-    fileName = fileName.split('.d.')[0];
-  }
-  if (fileName.includes('@')) {
-    importPathName = fileName.replace('@', '').replace(/\./g, '_');
-  } else {
-    importPathName = fileName.replace(/\./g, '_');
-  }
-  let importPath = '';
-  for (let i = 0; i < importPathSplit.length - 1; i++) {
-    importPath += importPathSplit[i] + '/';
-  }
-  importPath += importPathName;
-  let importElements = importEntity.importElements;
-  if (!importElements.includes('{') && !importElements.includes('* as') && !heritageClausesArray.includes(importElements)) {
-    if (importEntity.importPath.includes('@ohos')) {
-      const tmpArr = importEntity.importPath.split('.');
-      importElements = `{ mock${firstCharacterToUppercase(tmpArr[tmpArr.length - 1].replace('"', '').replace('\'', ''))} }`;
-    }
+  dependsSourceFileList: SourceFile[]): string {
+  const importDeclaration = referenctImport2ModuleImport(importEntity, currentFilePath, dependsSourceFileList);
+  if (importDeclaration){
+    return importDeclaration;
   }
   
-  const testPath = importPath.replace(/"/g, '').replace(/'/g, '').split('/');
-  if (getAllFileNameList().has(testPath[testPath.length - 1]) || testPath[testPath.length - 1] === 'ohos_application_want') {
-    let tmpImportPath = importPath.replace(/'/g, '').replace(/"/g, '');
-    if (!tmpImportPath.startsWith('./') && !tmpImportPath.startsWith('../')) {
-      importPath = `'./${tmpImportPath}'`;
-    }
-    tmpImportPath = importPath.replace(/'/g, '').replace(/"/g, '');
-    if (sourceFileName === 'tagSession' && tmpImportPath === './basic' || sourceFileName === 'notificationContent' &&
-    tmpImportPath === './ohos_multimedia_image') {
-      importPath = `'.${importPath.replace(/'/g, '')}'`;
-    }
+  const importPathSplit = importEntity.importPath.split('/');
 
-    // adapt no rules .d.ts
-    if (importElements.trimRight().trimEnd() === 'AccessibilityExtensionContext, { AccessibilityElement }') {
-      importElements = '{ AccessibilityExtensionContext, AccessibilityElement }';
-    }
-    if (importElements.trimRight().trimEnd() === '{ image }') {
-      importElements = '{ mockImage as image }';
-    }
-    tmpImportPath = importPath.replace(/'/g, '').replace(/"/g, '');
-    if (sourceFileName === 'AbilityContext' && tmpImportPath === '../ohos_application_Ability' ||
-      sourceFileName === 'Context' && tmpImportPath === './ApplicationContext') {
-      return '';
-    }
-    collectAllLegalImports(importElements);
-    return `import ${importElements} from ${importPath}\n`;
-  } else {
+  let importPath = importPathSplit.slice(0, -1).join('/') + '/';
+  importPath += getImportPathName(importPathSplit);
+
+  const importElements = generateImportElements(importEntity, heritageClausesArray);
+  
+  const testPath = importPath.replace(/"/g, '').replace(/'/g, '').split('/');
+  if (!getAllFileNameList().has(testPath[testPath.length - 1]) && testPath[testPath.length - 1] !== 'ohos_application_want') {
     return '';
   }
+
+  let tmpImportPath = importPath.replace(/'/g, '').replace(/"/g, '');
+  if (!tmpImportPath.startsWith('./') && !tmpImportPath.startsWith('../')) {
+    importPath = `'./${tmpImportPath}'`;
+  }
+  if (sourceFileName === 'tagSession' && tmpImportPath === './basic' || sourceFileName === 'notificationContent' &&
+  tmpImportPath === './ohos_multimedia_image') {
+    importPath = `'.${importPath.replace(/'/g, '')}'`;
+  }
+
+  if (sourceFileName === 'AbilityContext' && tmpImportPath === '../ohos_application_Ability' ||
+    sourceFileName === 'Context' && tmpImportPath === './ApplicationContext') {
+    return '';
+  }
+  collectAllLegalImports(importElements);
+  return `import ${importElements} from ${importPath}\n`;
 }
 
 /**
@@ -309,10 +274,57 @@ function contentRelatePath2RealRelatePath(currentFilePath: string, contentRefere
     realReferenceFilePath = currentFilePath.replace(baseFileNameTemplate, referenceFileName).replace(/\//g, path.sep);
   } else {
     console.error(`Can not find reference ${contentReferenceRelatePath} from ${currentFilePath}`);
-    return;
+    return undefined;
   }
-  return realReferenceFilePath
+  return realReferenceFilePath;
 }
+
+export function referenctImport2ModuleImport(importEntity: ImportElementEntity, currentFilePath: string, dependsSourceFileList: SourceFile[]): string | undefined {
+  if (dependsSourceFileList.length && !importEntity.importPath.includes('.')) {
+    for (let i = 0; i < dependsSourceFileList.length; i++) {
+      if (dependsSourceFileList[i].text.includes(`declare module ${importEntity.importPath.replace(/'/g, '"')}`)) {
+        let relatePath = path.relative(path.dirname(currentFilePath), dependsSourceFileList[i].fileName)
+          .replace(/\\/g, '/')
+          .replace(/.d.ts/g, '')
+          .replace(/.d.es/g, '');
+        relatePath = (relatePath.startsWith('@internal/component') ? './' : '') + relatePath;
+        return `import ${importEntity.importElements} from "${relatePath}"\n`;
+      }
+    }
+  }
+  return;
+}
+
+function getImportPathName(importPathSplit: string[]): string {
+  let importPathName: string;
+  let fileName = importPathSplit[importPathSplit.length - 1];
+  if (fileName.endsWith('.d.ts') || fileName.endsWith('.d.ets')) {
+    fileName = fileName.split(/\.d\.e?ts/)[0];
+  }
+  if (fileName.includes('@')) {
+    importPathName = fileName.replace('@', '').replace(/\./g, '_');
+  } else {
+    importPathName = fileName.replace(/\./g, '_');
+  }
+  return importPathName
+}
+
+function generateImportElements(importEntity: ImportElementEntity, heritageClausesArray: string[]): string {
+  let importElements = importEntity.importElements;
+  if (!importElements.includes('{') && !importElements.includes('* as') && !heritageClausesArray.includes(importElements) && importEntity.importPath.includes('@ohos')) {
+    const tmpArr = importEntity.importPath.split('.');
+    importElements = `{ mock${firstCharacterToUppercase(tmpArr[tmpArr.length - 1].replace('"', '').replace('\'', ''))} }`;
+  } else {
+    // adapt no rules .d.ts
+    if (importElements.trimRight().trimEnd() === 'AccessibilityExtensionContext, { AccessibilityElement }') {
+      importElements = '{ AccessibilityExtensionContext, AccessibilityElement }';
+    } else if (importElements.trimRight().trimEnd() === '{ image }') {
+      importElements = '{ mockImage as image }';
+    }
+  }
+  return importElements;
+}
+
 
 interface MockFunctionElementEntity {
   elementName: string,
