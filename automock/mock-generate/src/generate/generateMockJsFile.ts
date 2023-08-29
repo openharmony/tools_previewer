@@ -165,7 +165,7 @@ export function generateImportDeclaration(
   currentFilePath: string,
   dependsSourceFileList: SourceFile[]): string {
   const importDeclaration = referenctImport2ModuleImport(importEntity, currentFilePath, dependsSourceFileList);
-  if (importDeclaration){
+  if (importDeclaration) {
     return importDeclaration;
   }
   
@@ -259,7 +259,7 @@ function collectReferenceFiles(sourceFile: SourceFile): SourceFile[] {
   return referenceFiles;
 }
 
-function contentRelatePath2RealRelatePath(currentFilePath: string, contentReferenceRelatePath: string): string | undefined {
+function contentRelatePath2RealRelatePath(currentFilePath: string, contentReferenceRelatePath: string): string {
   const conmponentSourceFileTemplate = /component\/[^'"\/]+\.d\.ts/;
   const currentFolderSourceFileTemplate = /\.\/[^\/]+\.d\.ts/;
   const baseFileNameTemplate = /[^\/]+\.d\.ts/;
@@ -274,12 +274,13 @@ function contentRelatePath2RealRelatePath(currentFilePath: string, contentRefere
     realReferenceFilePath = currentFilePath.replace(baseFileNameTemplate, referenceFileName).replace(/\//g, path.sep);
   } else {
     console.error(`Can not find reference ${contentReferenceRelatePath} from ${currentFilePath}`);
-    return undefined;
+    return '';
   }
   return realReferenceFilePath;
 }
 
-export function referenctImport2ModuleImport(importEntity: ImportElementEntity, currentFilePath: string, dependsSourceFileList: SourceFile[]): string | undefined {
+export function referenctImport2ModuleImport(importEntity: ImportElementEntity, currentFilePath: string,
+  dependsSourceFileList: SourceFile[]): string {
   if (dependsSourceFileList.length && !importEntity.importPath.includes('.')) {
     for (let i = 0; i < dependsSourceFileList.length; i++) {
       if (dependsSourceFileList[i].text.includes(`declare module ${importEntity.importPath.replace(/'/g, '"')}`)) {
@@ -292,7 +293,7 @@ export function referenctImport2ModuleImport(importEntity: ImportElementEntity, 
       }
     }
   }
-  return;
+  return '';
 }
 
 function getImportPathName(importPathSplit: string[]): string {
@@ -306,7 +307,7 @@ function getImportPathName(importPathSplit: string[]): string {
   } else {
     importPathName = fileName.replace(/\./g, '_');
   }
-  return importPathName
+  return importPathName;
 }
 
 function generateImportElements(importEntity: ImportElementEntity, heritageClausesArray: string[]): string {
