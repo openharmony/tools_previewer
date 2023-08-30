@@ -20,7 +20,7 @@ import {
   MethodSignature, ModifiersArray, ModuleDeclaration, NodeArray, ParameterDeclaration, PropertyName, SourceFile
 } from 'typescript';
 import fs from 'fs';
-import { ImportElementEntity } from '../declaration-node/importAndExportDeclaration';
+import type { ImportElementEntity } from '../declaration-node/importAndExportDeclaration';
 
 
 const paramIndex = 2;
@@ -332,10 +332,10 @@ export function getJsSdkDir(): string {
  * @returns 
  */
 export function hasBeenImported(importDeclarations: ImportElementEntity[], typeName: string): boolean {
-  if (!typeName.trim()){
-    return;
+  if (!typeName.trim()) {
+    return true;
   }
-  if (isFirstCharLowerCase(typeName)){
+  if (isFirstCharLowerCase(typeName)) {
     return true;
   }
   return importDeclarations.some(importDeclaration => importDeclaration.importElements.includes(typeName));
@@ -358,4 +358,4 @@ export const specialFiles = [
   '@internal/component/ets/enums.d.ts',
   '@internal/component/ets/alert_dialog.d.ts',
   '@internal/component/ets/ability_component.d.ts'
-]
+];
