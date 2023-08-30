@@ -14,14 +14,15 @@
  */
 
 import fs from 'fs';
+import path from 'path';
 import { SourceFile } from 'typescript';
 import { InterfaceEntity } from '../declaration-node/interfaceDeclaration';
 import { generateCommonMethodSignature } from './generateCommonMethodSignature';
 import { generateIndexSignature } from './generateIndexSignature';
 import { generatePropertySignatureDeclaration } from './generatePropertySignatureDeclaration';
-import { dtsFileList, getApiInputPath, hasBeenImported, specialFiles } from '../common/commonUtils'
-import { ImportElementEntity } from '../declaration-node/importAndExportDeclaration';
-import path from 'path';
+import { dtsFileList, getApiInputPath, hasBeenImported, specialFiles } from '../common/commonUtils';
+import type { ImportElementEntity } from '../declaration-node/importAndExportDeclaration';
+import type { PropertySignatureEntity } from '../declaration-node/propertySignatureDeclaration';
 
 /**
  * generate interface
@@ -107,25 +108,37 @@ function generateHeritageInterface(interfaceEntity: InterfaceEntity, sourceFile:
   return interfaceBody;
 }
 
-function addExtraImport(extraImport: string[], importDeclarations: ImportElementEntity[], sourceFile: SourceFile, value) {
-  if (extraImport && importDeclarations){
+/**
+ * 
+ * @param extraImport 
+ * @param importDeclarations 
+ * @param sourceFile 
+ * @param value 
+ * @returns 
+ */
+function addExtraImport(
+  extraImport: string[],
+  importDeclarations: ImportElementEntity[],
+  sourceFile: SourceFile,
+  value: PropertySignatureEntity): void {
+  if (extraImport && importDeclarations) {
     const propertyTypeName = value.propertyTypeName.split('.')[0].split('|')[0].split('&')[0].replace(/"'/g, '').trim();
-    if (propertyTypeName.includes('/')){
+    if (propertyTypeName.includes('/')) {
       return;
     }
     if (hasBeenImported(importDeclarations, propertyTypeName)) {
       return;
     }
     const specialFilesList = [...specialFiles.map(specialFile=>path.join(getApiInputPath(), ...specialFile.split('/')))];
-    if (!specialFilesList.includes(sourceFile.fileName)){
+    if (!specialFilesList.includes(sourceFile.fileName)) {
       specialFilesList.unshift(sourceFile.fileName);
     }
-    for (let i=0; i < specialFilesList.length; i++) {
+    for (let i = 0; i < specialFilesList.length; i++) {
       const specialFilePath = specialFilesList[i];
       const specialFileContent = fs.readFileSync(specialFilePath, 'utf-8');
       const regex = new RegExp(`\\s${propertyTypeName}\\s({|=|extends)`);
-      const results = specialFileContent.match(regex)
-      if (!results){
+      const results = specialFileContent.match(regex);
+      if (!results) {
         continue;
       }
       if (sourceFile.fileName === specialFilePath) {
@@ -135,24 +148,24 @@ function addExtraImport(extraImport: string[], importDeclarations: ImportElement
       if (!specialFileRelatePath.startsWith('./') && !specialFileRelatePath.startsWith('../')) {
         specialFileRelatePath = './' + specialFileRelatePath;
       }
-      if (!dtsFileList.includes(specialFilePath)){
-        dtsFileList.push(specialFilePath)
+      if (!dtsFileList.includes(specialFilePath)) {
+        dtsFileList.push(specialFilePath);
       }
       specialFileRelatePath = specialFileRelatePath.split(path.sep).join('/');
       const importStr = `import {${propertyTypeName}} from '${
         specialFileRelatePath}${
-          specialFileRelatePath.endsWith('/') ? '': '/'}${
-            path.basename(specialFilePath).replace('.d.ts', '').replace('.d.ets', '')}'\n`;
-      if (extraImport.includes(importStr)){
+        specialFileRelatePath.endsWith('/') ? '' : '/'}${
+        path.basename(specialFilePath).replace('.d.ts', '').replace('.d.ets', '')}'\n`;
+      if (extraImport.includes(importStr)) {
         return;
       }
       extraImport.push(importStr);
       return;
     }
-    if (propertyTypeName.includes('<') 
-      || propertyTypeName.includes('[')){
+    if (propertyTypeName.includes('<') || propertyTypeName.includes('[')) {
       return;
-      }
+    }
     console.log(sourceFile.fileName, 'propertyTypeName', propertyTypeName);
+    return;
   }
 }

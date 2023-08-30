@@ -69,7 +69,7 @@ export function generateSourceFileElements(rootName: string, sourceFileEntity: S
   if (sourceFileEntity.interfaceDeclarations.length > 0) {
     sourceFileEntity.interfaceDeclarations.forEach(value => {
       mockApi += generateInterfaceDeclaration('', value, sourceFile, true, sourceFileEntity.interfaceDeclarations,
-      sourceFileEntity.importDeclarations, extraImport) + '\n';
+        sourceFileEntity.importDeclarations, extraImport) + '\n';
       mockFunctionElements.push({ elementName: value.interfaceName, type: 'interface' });
     });
   }
@@ -148,7 +148,7 @@ export function generateSourceFileElements(rootName: string, sourceFileEntity: S
       }
     });
   }
-  mockApi = extraImport.join('') + mockApi
+  mockApi = extraImport.join('') + mockApi;
   return mockApi;
 }
 
