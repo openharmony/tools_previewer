@@ -243,7 +243,10 @@ export function getTheRealReferenceFromImport(sourceFile: SourceFile, typeName: 
       const importElements = importElementEntity[i].importElements.replace('{', '').replace('}', '').split(',');
       for (let j = 0; j < importElements.length; j++) {
         const element = importElements[j].trimStart().trimEnd();
-        if (`_${typeName}` === element.split('as')[1].trimStart().trimEnd()) {
+        if (!element) {
+          continue;
+        }
+        if (`_${typeName}` === element.split('as')[1].trim()) {
           return `_${typeName}`;
         }
       }
