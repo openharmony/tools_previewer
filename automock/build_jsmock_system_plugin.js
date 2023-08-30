@@ -81,13 +81,9 @@ const configJSAPIMockOutput = {
 
 rollup.rollup(configJSAPIMockInput).then(bundle => {
   bundle.write(configJSAPIMockOutput).then(() => {
-    console.log(configJSAPIMockOutput.file)
     countSize(configJSAPIMockOutput.file);
     const fileContent = fs.readFileSync(configJSAPIMockOutput.file, 'utf-8');
-    fs.writeFileSync(configJSAPIMockOutput.file, 
-      fileContent
-      .replace(/\$\d*/g, '')
-      , 'utf-8') 
+    fs.writeFileSync(configJSAPIMockOutput.file, fileContent.replace(/\$\d*/g, ''), 'utf-8');
   });
 });
 
