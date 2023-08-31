@@ -13,10 +13,13 @@
  * limitations under the License.
  */
 
-import { SourceFile, SyntaxKind } from 'typescript';
-import { firstCharacterToUppercase, getClassNameSet, ReturnTypeEntity } from '../common/commonUtils';
-import { getImportDeclarationArray, ImportElementEntity } from '../declaration-node/importAndExportDeclaration';
-import { MethodEntity } from '../declaration-node/methodDeclaration';
+import type { SourceFile } from 'typescript';
+import { SyntaxKind } from 'typescript';
+import { firstCharacterToUppercase, getClassNameSet } from '../common/commonUtils';
+import type { ReturnTypeEntity } from '../common/commonUtils';
+import { getImportDeclarationArray } from '../declaration-node/importAndExportDeclaration';
+import type { ImportElementEntity } from '../declaration-node/importAndExportDeclaration';
+import type { MethodEntity } from '../declaration-node/methodDeclaration';
 
 /**
  * get warn console template
@@ -41,7 +44,7 @@ export function getReturnStatement(returnType: ReturnTypeEntity, sourceFile: Sou
         resolve('[PC Preview] unknown type');
       })`;
     } else if (returnType.returnKindName === 'T') {
-      return `return '[PC Preview] unknown type'`;
+      return 'return \'[PC Preview] unknown type\'';
     } else if (returnType.returnKindName === 'String') {
       return `return ${returnType.returnKindName}(...args)`;
     } else if (returnType.returnKindName === 'ArrayBuffer') {
@@ -107,7 +110,7 @@ export function getReturnStatement(returnType: ReturnTypeEntity, sourceFile: Sou
     } else if (returnType.returnKindName.includes('<T>')) {
       const tmpReturn = returnType.returnKindName.split('<')[0];
       if (tmpReturn.startsWith('Array')) {
-        return `return []`;
+        return 'return []';
       } else {
         `return new ${tmpReturn}()`;
       }
@@ -116,7 +119,7 @@ export function getReturnStatement(returnType: ReturnTypeEntity, sourceFile: Sou
     } else {
       if (getClassNameSet().has(returnType.returnKindName)) {
         if (returnType.returnKindName === 'Want') {
-          return `return mockWant().Want`;
+          return 'return mockWant().Want';
         } else {
           return `return new ${returnType.returnKindName}()`;
         }
@@ -136,7 +139,7 @@ export function getReturnStatement(returnType: ReturnTypeEntity, sourceFile: Sou
       }
     }
     if (returnName.trimStart().trimEnd() === 'void') {
-      return ``;
+      return '';
     }
     if (getClassNameSet().has(returnName)) {
       return `return new ${returnName}()`;
@@ -144,9 +147,9 @@ export function getReturnStatement(returnType: ReturnTypeEntity, sourceFile: Sou
       return `return ${getBaseReturnValue(returnName.trimStart().trimEnd())}`;
     }
   } else {
-    return `return '[PC Preview] unknown type'`;
+    return 'return \'[PC Preview] unknown type\'';
   }
-  return `return '[PC Preview] unknown type'`;
+  return 'return \'[PC Preview] unknown type\'';
 }
 
 /**
@@ -154,7 +157,7 @@ export function getReturnStatement(returnType: ReturnTypeEntity, sourceFile: Sou
  * @param propertyTypeName
  * @returns
  */
-export function propertyTypeWhiteList(propertyTypeName: string): any {
+export function propertyTypeWhiteList(propertyTypeName: string): boolean | number | string {
   const whiteList = ['GLboolean', 'GLuint', 'GLenum', 'GLint', 'NotificationFlags'];
   if (whiteList.includes(propertyTypeName)) {
     if (propertyTypeName === 'NotificationFlags' || propertyTypeName === 'GLenum') {
@@ -176,17 +179,17 @@ export function propertyTypeWhiteList(propertyTypeName: string): any {
  */
 export function getBaseReturnValue(value: string): string | number | boolean {
   if (value === 'string') {
-    return `''`;
+    return '\'\'';
   } else if (value === 'number') {
     return 0;
   } else if (value === 'boolean') {
     return true;
   } else if (value === 'Object' || value === 'object') {
-    return `{}`;
+    return '{}';
   } else if (checkIsGenericSymbol(value)) {
-    return `'[PC Preview] unknown type'`;
+    return '\'[PC Preview] unknown type\'';
   } else if (value === 'WebGLActiveInfo') {
-    return `{size: '[PC Preview] unknown GLint', type: 0, name: '[PC Preview] unknown name'}`;
+    return '{size: \'[PC Preview] unknown GLint\', type: 0, name: \'[PC Preview] unknown name\'}';
   } else {
     return value;
   }
@@ -237,7 +240,7 @@ export function getTheRealReferenceFromImport(sourceFile: SourceFile, typeName: 
  * @param typeName
  * @returns
  */
- function getImportTypeAliasNameFromImportElements(importElementEntity: ImportElementEntity[], typeName: string): string {
+function getImportTypeAliasNameFromImportElements(importElementEntity: ImportElementEntity[], typeName: string): string {
   for (let i = 0; i < importElementEntity.length; i++) {
     if (importElementEntity[i].importElements.includes('_')) {
       const importElements = importElementEntity[i].importElements.replace('{', '').replace('}', '').split(',');
@@ -253,9 +256,9 @@ export function getTheRealReferenceFromImport(sourceFile: SourceFile, typeName: 
     }
   }
   if (typeName === 'Want') {
-    typeName = `mockWant().Want`;
+    typeName = 'mockWant().Want';
   } else if (typeName === 'InputMethodExtensionContext') {
-    typeName = `mockInputmethodextensioncontext().InputMethodExtensionContext`;
+    typeName = 'mockInputmethodextensioncontext().InputMethodExtensionContext';
   }
   return typeName;
 }
@@ -275,10 +278,10 @@ export function checkIsGenericSymbol(type: string): boolean {
  * @param kindName
  * @returns
  */
-export function generateGenericTypeToMockValue(kindName: string): any {
+export function generateGenericTypeToMockValue(kindName: string): string | number | boolean {
   const genericTypeName = kindName.split('<')[1].split('>')[0];
   if (genericTypeName === 'string') {
-    return `''`;
+    return '\'\'';
   } else if (genericTypeName === 'number') {
     return 0;
   } else if (genericTypeName === 'boolean') {
@@ -286,7 +289,7 @@ export function generateGenericTypeToMockValue(kindName: string): any {
   } else if (genericTypeName === 'Object' || genericTypeName === 'object') {
     return '{}';
   } else {
-    return ``;
+    return '';
   }
 }
 

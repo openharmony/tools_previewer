@@ -13,9 +13,10 @@
  * limitations under the License.
  */
 
-import { SourceFile, SyntaxKind } from 'typescript';
+import { SyntaxKind } from 'typescript';
+import type { SourceFile } from 'typescript';
 import { firstCharacterToUppercase } from '../common/commonUtils';
-import { ModuleBlockEntity } from '../declaration-node/moduleDeclaration';
+import type { ModuleBlockEntity } from '../declaration-node/moduleDeclaration';
 import {
   getDefaultExportClassDeclaration, getSourceFileFunctions,
   getSourceFileVariableStatements

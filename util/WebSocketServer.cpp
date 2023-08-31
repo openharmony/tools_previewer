@@ -84,14 +84,14 @@ int WebSocketServer::ProtocolCallback(struct lws* wsi,
     return 0;
 }
 
-void WebSocketServer::sigint_handler(int sig)
+void WebSocketServer::SignalHandler(int sig)
 {
     interrupted = true;
 }
 
 void WebSocketServer::StartWebsocketListening()
 {
-    const auto sig = signal(SIGINT, sigint_handler);
+    const auto sig = signal(SIGINT, SignalHandler);
     if (sig == SIG_ERR) {
         ELOG("StartWebsocketListening failed");
         return;

@@ -13,9 +13,10 @@
  * limitations under the License.
  */
 
-import { SourceFile, SyntaxKind } from 'typescript';
+import { SyntaxKind } from 'typescript';
+import type { SourceFile } from 'typescript';
 import { firstCharacterToUppercase } from '../common/commonUtils';
-import { StaticMethodEntity } from '../declaration-node/methodDeclaration';
+import type { StaticMethodEntity } from '../declaration-node/methodDeclaration';
 import { generateSymbolIterator, getCallbackStatement, getReturnStatement, getWarnConsole } from './generateCommonUtil';
 
 /**
