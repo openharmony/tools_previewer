@@ -17,13 +17,13 @@
 using namespace std;
 
 namespace OHOS::AppExecFwk {
-EventTask::EventTask(size_t order, Callback task, std::chrono::steady_clock::time_point target_time)
-    : order(order), task(task), target_time(target_time)
+EventTask::EventTask(size_t order, Callback task, std::chrono::steady_clock::time_point targetTime)
+    : order(order), task(task), targetTime(targetTime)
 {
 }
 
 EventTask::EventTask(const EventTask& other)
-    : order(other.order), task(other.task), target_time(other.target_time)
+    : order(other.order), task(other.task), targetTime(other.targetTime)
 {
 }
 
@@ -32,7 +32,7 @@ EventTask& EventTask::operator=(const EventTask& other)
     if (this != &other) {
         order = other.order;
         task = other.task;
-        target_time = other.target_time;
+        targetTime = other.targetTime;
     }
     return *this;
 }
@@ -46,14 +46,14 @@ const Callback& EventTask::GetTask() const
 
 std::chrono::steady_clock::time_point EventTask::GetTargetTime() const
 {
-    return target_time;
+    return targetTime;
 }
 
 bool EventTask::operator>(const EventTask& other) const
 {
-    if (target_time == other.target_time) {
+    if (targetTime == other.targetTime) {
         return order > other.order;
     }
-    return target_time > other.target_time;
+    return targetTime > other.targetTime;
 }
 }

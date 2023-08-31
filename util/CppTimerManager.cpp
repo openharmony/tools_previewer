@@ -44,12 +44,12 @@ void CppTimerManager::RemoveCppTimer(CppTimer& timer)
 
 void CppTimerManager::RunTimerTick()
 {
-    auto tempTimers = runningTimers;
+    std::list<CppTimer*> tempTimers = runningTimers;
     if (tempTimers.size() == 0) {
         ILOG("CppTimerManager::RunTimerTick No timer exec.");
     }
-    auto iter = tempTimers.begin();
-    while (iter != tempTimers.end()) {
+    auto iter = tempTimers.cbegin();
+    while (iter != tempTimers.cend()) {
         CppTimer* timer = *iter;
         timer->RunTimerTick(callbackQueue);
 

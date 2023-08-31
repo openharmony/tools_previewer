@@ -13,8 +13,9 @@
  * limitations under the License.
  */
 
-import { SourceFile, SyntaxKind } from 'typescript';
-import { PropertySignatureEntity } from '../declaration-node/propertySignatureDeclaration';
+import { SyntaxKind } from 'typescript';
+import type { SourceFile } from 'typescript';
+import type { PropertySignatureEntity } from '../declaration-node/propertySignatureDeclaration';
 import {
   checkIsGenericSymbol, getCallbackStatement, getTheRealReferenceFromImport,
   getWarnConsole, propertyTypeWhiteList
@@ -88,7 +89,7 @@ export function generatePropertySignatureDeclaration(rootName: string, propertyS
         if (element === 'HTMLCanvasElement') {
           element = `'[PC Preview] unknown ${propertySignature.propertyName}'`;
         } else if (element === 'WebGLActiveInfo') {
-          element = `{size: '[PC Preview] unknown GLint', type: 0, name: '[PC Preview] unknown name'}`;
+          element = '{size: \'[PC Preview] unknown GLint\', type: 0, name: \'[PC Preview] unknown name\'}';
         } else if (element.startsWith('Array')) {
           element = '[]';
         } else if (propertyTypeWhiteList(unionFirstElement) === unionFirstElement) {

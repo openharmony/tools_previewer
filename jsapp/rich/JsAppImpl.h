@@ -79,7 +79,7 @@ public:
     void DispatchKeyEvent(const std::shared_ptr<OHOS::MMI::KeyEvent>& keyEvent) const;
     void DispatchPointerEvent(const std::shared_ptr<OHOS::MMI::PointerEvent>& pointerEvent) const;
     void DispatchAxisEvent(const std::shared_ptr<OHOS::MMI::AxisEvent>& axisEvent) const;
-    void DispatchInputMethodEvent(const unsigned int code_point) const;
+    void DispatchInputMethodEvent(const unsigned int codePoint) const;
 
 protected:
     void SetJsAppArgs(OHOS::Ace::Platform::AceRunArgs& args);
