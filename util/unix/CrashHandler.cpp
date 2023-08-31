@@ -26,8 +26,8 @@
 
 using namespace std;
 
-static void *oldBacetrace[10] = { nullptr };
-static size_t oldSize = 0;
+static void *g_oldBacetrace[10] = { nullptr };
+static size_t g_oldSize = 0;
 
 void CrashHandler::InitExceptionHandler()
 {
@@ -45,9 +45,9 @@ void CrashHandler::ApplicationCrashHandler(int signal)
     void *array[len];
     size_t size = backtrace(array, MAX_STACK_SIZE);
     bool isSame = true;
-    if (oldSize == size) {
+    if (g_oldSize == size) {
         for (size_t i = 0; i < size; i++) {
-            if (oldBacetrace[i] != array[i]) {
+            if (g_oldBacetrace[i] != array[i]) {
                 isSame = false;
             }
         }
@@ -65,9 +65,9 @@ void CrashHandler::ApplicationCrashHandler(int signal)
     write(STDERR_FILENO, stackIntLog, itoaLength);
     // print out all the frames to stdout
     backtrace_symbols_fd(array, size, STDERR_FILENO);
-    std::fill(oldBacetrace, oldBacetrace + len, nullptr);
-    std::copy(array, array + len, oldBacetrace);
-    oldSize = size;
+    std::fill(g_oldBacetrace, g_oldBacetrace + len, nullptr);
+    std::copy(array, array + len, g_oldBacetrace);
+    g_oldSize = size;
     // print crash log end
     int8_t crashEndLog[] = "\n[JsEngine Crash]Engine Crash Info End.\n";
     write(STDERR_FILENO, crashEndLog, sizeof(crashEndLog) - 1);

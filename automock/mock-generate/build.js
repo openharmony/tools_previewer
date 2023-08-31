@@ -24,7 +24,7 @@ function compileMock(apiInputPath) {
 
   
   const bat = spawnSync(`
-  ${path.join(__dirname, '..', nodeDir)} ${path.join(__dirname, '..','./node_modules/typescript/bin/tsc')} && 
+  ${path.join(__dirname, '..', nodeDir)} ${path.join(__dirname, '..', './node_modules/typescript/bin/tsc')} && 
   ${path.join(__dirname, '..', nodeDir)} ${path.join(__dirname, 'dist')}/main.js ${apiInputPath} && 
   ${path.join(__dirname, '..', nodeDir)} ${path.join(__dirname, '..', './node_modules/eslint/bin/eslint.js')} 
   -c .eslintrc --fix ${mockJsPath}/**/*.js`, {
@@ -32,6 +32,6 @@ function compileMock(apiInputPath) {
     shell: true
   });
 }
-
-const apiInputPath = process.argv[2];
+const PARAM_INDEX = 2;
+const apiInputPath = process.argv[PARAM_INDEX];
 compileMock(apiInputPath);

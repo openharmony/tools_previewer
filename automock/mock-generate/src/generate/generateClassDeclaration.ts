@@ -13,9 +13,10 @@
  * limitations under the License.
  */
 
-import { SourceFile, SyntaxKind } from 'typescript';
+import type { SourceFile } from 'typescript';
+import { SyntaxKind } from 'typescript';
 import { firstCharacterToUppercase } from '../common/commonUtils';
-import { ClassEntity } from '../declaration-node/classDeclaration';
+import type { ClassEntity } from '../declaration-node/classDeclaration';
 import { generateCommonMethod } from './generateCommonMethod';
 import { getWarnConsole } from './generateCommonUtil';
 import { generatePropertyDeclaration } from './generatePropertyDeclaration';

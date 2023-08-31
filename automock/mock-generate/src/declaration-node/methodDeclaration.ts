@@ -15,9 +15,9 @@
 
 import { isComputedPropertyName, MethodDeclaration, Node, SourceFile } from 'typescript';
 import {
-  getFunctionAndMethodReturnInfo, getModifiers, getParameter,
-  getPropertyName, ParameterEntity, ReturnTypeEntity
+  getFunctionAndMethodReturnInfo, getModifiers, getParameter, getPropertyName
 } from '../common/commonUtils';
+import type { ParameterEntity, ReturnTypeEntity } from '../common/commonUtils';
 
 /**
  * get method info

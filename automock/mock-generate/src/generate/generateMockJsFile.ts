@@ -18,7 +18,7 @@ import path from 'path';
 import { ScriptTarget, SyntaxKind, createSourceFile } from 'typescript';
 import type { SourceFile } from 'typescript';
 import { collectAllLegalImports, dtsFileList, firstCharacterToUppercase, getAllFileNameList, getApiInputPath } from '../common/commonUtils';
-import { ImportElementEntity } from '../declaration-node/importAndExportDeclaration';
+import type { ImportElementEntity } from '../declaration-node/importAndExportDeclaration';
 import { getDefaultExportClassDeclaration } from '../declaration-node/sourceFileElementsAssemply';
 import type { SourceFileEntity } from '../declaration-node/sourceFileElementsAssemply';
 import { generateClassDeclaration } from './generateClassDeclaration';
@@ -203,7 +203,7 @@ export function generateImportDeclaration(
  * @param importName
  * @returns
  */
- function checIsDefaultExportClass(importName: string): boolean {
+function checIsDefaultExportClass(importName: string): boolean {
   const defaultExportClass = ['Context', 'BaseContext', 'ExtensionContext', 'ApplicationContext',
     'ExtensionAbility', 'Ability', 'UIExtensionAbility', 'UIExtensionContext'];
   return defaultExportClass.includes(importName);

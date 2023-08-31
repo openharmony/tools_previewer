@@ -13,9 +13,10 @@
  * limitations under the License.
  */
 
-import { SourceFile, SyntaxKind } from 'typescript';
+import { SyntaxKind } from 'typescript';
+import type { SourceFile } from 'typescript';
 import { getClassNameSet } from '../common/commonUtils';
-import { PropertyEntity } from '../declaration-node/propertyDeclaration';
+import type { PropertyEntity } from '../declaration-node/propertyDeclaration';
 import { getTheRealReferenceFromImport } from './generateCommonUtil';
 
 /**

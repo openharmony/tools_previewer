@@ -13,8 +13,9 @@
  * limitations under the License.
  */
 
-import { SourceFile, SyntaxKind } from 'typescript';
-import { FunctionEntity } from '../declaration-node/functionDeclaration';
+import type { SourceFile } from 'typescript';
+import { SyntaxKind } from 'typescript';
+import type { FunctionEntity } from '../declaration-node/functionDeclaration';
 import { getCallbackStatement, getReturnStatement, getWarnConsole } from './generateCommonUtil';
 
 /**
@@ -40,7 +41,7 @@ export function generateCommonFunction(rootName: string, functionArray: Array<Fu
       if (rootName === 'featureAbility' && functionEntity.returnType.returnKindName === 'Context') {
         functionBody += 'return _Context;';
       } else if (rootName === 'inputMethod' && functionEntity.returnType.returnKindName === 'InputMethodSubtype') {
-        functionBody += 'return mockInputMethodSubtype().InputMethodSubtype;'
+        functionBody += 'return mockInputMethodSubtype().InputMethodSubtype;';
       } else {
         functionBody += getReturnStatement(functionEntity.returnType, sourceFile);
       }

@@ -13,8 +13,9 @@
  * limitations under the License.
  */
 
-import { SourceFile, SyntaxKind } from 'typescript';
-import { MethodEntity } from '../declaration-node/methodDeclaration';
+import type { SourceFile } from 'typescript';
+import { SyntaxKind } from 'typescript';
+import type { MethodEntity } from '../declaration-node/methodDeclaration';
 import {
   generateSymbolIterator, getCallbackStatement,
   getReturnStatement, getWarnConsole
