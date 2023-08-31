@@ -49,7 +49,7 @@ function getAllDtsFile(dir: string): Array<string> {
  * delete the old mock file befor generate new mock file
  * @param outDir
  */
- function deleteOldMockJsFile(outDir: string) {
+function deleteOldMockJsFile(outDir: string): void {
   const arr = fs.readdirSync(outDir);
   arr.forEach(value => {
     const currPath = path.join(outDir, value);
@@ -71,7 +71,7 @@ function getAllDtsFile(dir: string): Array<string> {
  * @param dirname
  * @returns
  */
-function mkdirsSync(dirname) {
+function mkdirsSync(dirname): boolean {
   if (fs.existsSync(dirname)) {
     return true;
   } else {
@@ -80,9 +80,10 @@ function mkdirsSync(dirname) {
       return true;
     }
   }
+  return false;
 }
 
-function main(apiInputPath) {
+function main(apiInputPath): void {
   let interfaceRootDir = '';
   if (os.platform() === 'linux' || os.platform() === 'darwin') {
     interfaceRootDir = __dirname.split('/out')[0];

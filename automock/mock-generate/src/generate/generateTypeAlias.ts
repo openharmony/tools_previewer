@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-import { TypeAliasEntity } from '../declaration-node/typeAliasDeclaration';
+import type { TypeAliasEntity } from '../declaration-node/typeAliasDeclaration';
 
 /**
  * generate type alias

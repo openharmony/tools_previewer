@@ -13,14 +13,14 @@
  * limitations under the License.
  */
 
-import { firstCharacterToUppercase } from "../common/commonUtils";
+import { firstCharacterToUppercase } from '../common/commonUtils';
 
 /**
  * save all mock function
  */
 const indexArray: Array<IndexEntity> = [];
 
-export function addToIndexArray(indexEntity: IndexEntity) {
+export function addToIndexArray(indexEntity: IndexEntity): void {
   indexArray.push(indexEntity);
 }
 

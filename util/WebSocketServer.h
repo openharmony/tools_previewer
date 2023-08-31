@@ -40,7 +40,7 @@ public:
 private:
     WebSocketServer();
     virtual ~WebSocketServer();
-    static void sigint_handler(int sig);
+    static void SignalHandler(int sig);
     std::unique_ptr<std::thread> serverThread;
     int serverPort;
     const char* serverHostname = "127.0.0.1";

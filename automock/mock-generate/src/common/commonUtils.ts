@@ -14,10 +14,12 @@
  */
 
 import path from 'path';
-import {
-  CallSignatureDeclaration, ComputedPropertyName, FunctionDeclaration, Identifier, isClassDeclaration,
-  isComputedPropertyName, isIdentifier, isModuleBlock, isModuleDeclaration, isPrivateIdentifier, MethodDeclaration,
+import type {
+  CallSignatureDeclaration, ComputedPropertyName, FunctionDeclaration, Identifier, MethodDeclaration,
   MethodSignature, ModifiersArray, ModuleDeclaration, NodeArray, ParameterDeclaration, PropertyName, SourceFile
+} from 'typescript';
+import {
+  isClassDeclaration, isComputedPropertyName, isIdentifier, isModuleBlock, isModuleDeclaration, isPrivateIdentifier
 } from 'typescript';
 import fs from 'fs';
 import type { ImportElementEntity } from '../declaration-node/importAndExportDeclaration';
@@ -42,7 +44,7 @@ export function getAllLegalImports(): Set<string> {
  * get all legal imports
  * @param element
  */
-export function collectAllLegalImports(element: string) {
+export function collectAllLegalImports(element: string): void {
   allLegalImports.add(element);
 }
 
@@ -57,7 +59,7 @@ export function getAllFileNameList(): Set<string> {
 /**
  * collect all file name
  */
-export function collectAllFileName(filePath: string) {
+export function collectAllFileName(filePath: string): void {
   const fullFileName = path.basename(filePath);
   let fileName = '';
   if (fullFileName.endsWith('d.ts')) {
@@ -177,7 +179,7 @@ export function getParameter(parameter: ParameterDeclaration, sourceFile: Source
  * @returns
  */
 export function getFunctionAndMethodReturnInfo(node: FunctionDeclaration | MethodDeclaration |
-  MethodSignature | CallSignatureDeclaration, sourceFile: SourceFile): ReturnTypeEntity {
+    MethodSignature | CallSignatureDeclaration, sourceFile: SourceFile): ReturnTypeEntity {
   const returnInfo = { returnKindName: '', returnKind: -1 };
   if (node.type !== undefined) {
     const start = node.type.pos === undefined ? 0 : node.type.pos;

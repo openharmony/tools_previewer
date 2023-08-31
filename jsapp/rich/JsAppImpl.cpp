@@ -880,9 +880,9 @@ void JsAppImpl::DispatchAxisEvent(const std::shared_ptr<OHOS::MMI::AxisEvent>& a
 {
     ability->OnInputEvent(axisEvent);
 }
-void JsAppImpl::DispatchInputMethodEvent(const unsigned int code_point) const
+void JsAppImpl::DispatchInputMethodEvent(const unsigned int codePoint) const
 {
-    ability->OnInputMethodEvent(code_point);
+    ability->OnInputMethodEvent(codePoint);
 }
 
 string JsAppImpl::GetDeviceTypeName(const OHOS::Ace::DeviceType type) const

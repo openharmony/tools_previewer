@@ -15,8 +15,8 @@
 
 import fs from 'fs';
 import path from 'path';
-import { SourceFile } from 'typescript';
-import { InterfaceEntity } from '../declaration-node/interfaceDeclaration';
+import type { SourceFile } from 'typescript';
+import type { InterfaceEntity } from '../declaration-node/interfaceDeclaration';
 import { generateCommonMethodSignature } from './generateCommonMethodSignature';
 import { generateIndexSignature } from './generateIndexSignature';
 import { generatePropertySignatureDeclaration } from './generatePropertySignatureDeclaration';

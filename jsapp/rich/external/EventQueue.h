@@ -26,7 +26,7 @@ using Callback = std::function<void()>;
 
 class EventTask {
 public:
-    EventTask(size_t order, Callback task, std::chrono::steady_clock::time_point target_time);
+    EventTask(size_t order, Callback task, std::chrono::steady_clock::time_point targetTime);
     EventTask(const EventTask& other);
     EventTask& operator=(const EventTask& other);
     ~EventTask();
@@ -37,7 +37,7 @@ public:
 private:
     size_t order;
     Callback task;
-    std::chrono::steady_clock::time_point target_time;
+    std::chrono::steady_clock::time_point targetTime;
 };
 
 using EventQueue = std::priority_queue<EventTask, std::deque<EventTask>, std::greater<EventTask>>;
