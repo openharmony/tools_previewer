@@ -179,7 +179,7 @@ export function getParameter(parameter: ParameterDeclaration, sourceFile: Source
  * @returns
  */
 export function getFunctionAndMethodReturnInfo(node: FunctionDeclaration | MethodDeclaration |
-    MethodSignature | CallSignatureDeclaration, sourceFile: SourceFile): ReturnTypeEntity {
+  MethodSignature | CallSignatureDeclaration, sourceFile: SourceFile): ReturnTypeEntity {
   const returnInfo = { returnKindName: '', returnKind: -1 };
   if (node.type !== undefined) {
     const start = node.type.pos === undefined ? 0 : node.type.pos;
