@@ -263,76 +263,22 @@ void JsAppImpl::RunDebugAbility()
     window->CreateSurfaceNode(options.moduleName, std::move(VirtualScreenImpl::CallBack));
 }
 
-static void ConvertAbilityInfo(const Ide::AbilityInfo &info, AppExecFwk::AbilityInfo &abilityInfo)
-{
-    abilityInfo.name = info.name;
-    abilityInfo.iconPath = info.icon;
-    abilityInfo.labelId = info.iconId;
-    abilityInfo.label = info.label;
-    abilityInfo.labelId = info.labelId;
-    abilityInfo.srcEntrance = info.srcEntrty;
-    abilityInfo.description = info.description;
-    abilityInfo.descriptionId = info.descriptionId;
-    abilityInfo.startWindowBackground = info.startWindowBackground;
-    abilityInfo.startWindowBackgroundId = info.startWindowBackgroundId;
-    abilityInfo.startWindowIconId = info.startWindowIconId;
-    abilityInfo.startWindowIcon = info.startWindowIcon;
-}
-
-static void ConvertApplicationInfo(const Ide::AppInfo &info, AppExecFwk::ApplicationInfo &applicationInfo)
-{
-    applicationInfo.apiReleaseType = info.apiReleaseType;
-    applicationInfo.bundleName = info.bundleName;
-    applicationInfo.compileSdkType = info.compileSdkType;
-    applicationInfo.compileSdkVersion = info.compileSdkVersion;
-    applicationInfo.debug = info.debug;
-    applicationInfo.icon = info.icon;
-    applicationInfo.iconId = info.iconId;
-    applicationInfo.label = info.label;
-    applicationInfo.labelId = info.labelId;
-    applicationInfo.minCompatibleVersionCode = info.minAPIVersion;
-    applicationInfo.apiTargetVersion = info.targetAPIVersion;
-    applicationInfo.vendor = info.vendor;
-    applicationInfo.vendor = info.vendor;
-    applicationInfo.versionName = info.versionName;
-    applicationInfo.distributedNotificationEnabled = info.distributedNotificationEnabled;
-}
-
-static void ConvertHapModuleInfo(const Ide::HapModuleInfo &info, AppExecFwk::HapModuleInfo &hapModuleInfo)
-{
-    hapModuleInfo.labelId = info.labelId;
-    hapModuleInfo.virtualMachine = info.virtualMachine;
-    hapModuleInfo.pages = info.pages;
-    hapModuleInfo.name = info.name;
-    hapModuleInfo.mainElementName = info.mainElement;
-    hapModuleInfo.installationFree = info.installationFree;
-    hapModuleInfo.descriptionId = info.descriptionId;
-    hapModuleInfo.description = info.description;
-    hapModuleInfo.deliveryWithInstall = info.deliveryWithInstall;
-    hapModuleInfo.compileMode = AppExecFwk::CompileMode::ES_MODULE;
-    hapModuleInfo.deviceTypes = info.deviceTypes;
-    hapModuleInfo.srcEntrance = info.srcEntry;
-    for (auto &ability : info.abilities) {
-        AppExecFwk::AbilityInfo aInfo;
-        ConvertAbilityInfo(ability, aInfo);
-        hapModuleInfo.abilityInfos.emplace_back(aInfo);
-    }
-}
-
 void JsAppImpl::SetSimulatorParams(OHOS::AbilityRuntime::Options& options)
 {
     const string path = CommandParser::GetInstance().GetAppResourcePath() +
                         FileSystem::GetSeparator() + "module.json";
-    GetModuleJsonInfo(path);
+    std::optional<std::vector<uint8_t>> ctx = OHOS::Ide::StageContext::GetInstance().ReadFileContents(path);
+    if (ctx.has_value()) {
+        options.moduleJsonBuffer = ctx.value();
+    } else {
+        ELOG("get module.json content failed");
+    }
     SetSimulatorCommonParams(options);
-    SetSimulatorConfigParams(options);
-    ILOG("setted bundleName:%s moduleName:%s", options.bundleName.c_str(), options.moduleName.c_str());
+    ILOG("setted bundleName:%s moduleName:%s", options.modulePath.c_str(), options.resourcePath.c_str());
 }
 
 void JsAppImpl::SetSimulatorCommonParams(OHOS::AbilityRuntime::Options& options)
 {
-    options.bundleName = OHOS::Ide::StageContext::GetInstance().GetAppInfo().bundleName;
-    options.moduleName = OHOS::Ide::StageContext::GetInstance().GetHapModuleInfo().name;
     options.modulePath = aceRunArgs.assetPath + FileSystem::GetSeparator() + "modules.abc";
     options.resourcePath = CommandParser::GetInstance().GetAppResourcePath() +
                                 FileSystem::GetSeparator() + "resources.index";
@@ -357,17 +303,8 @@ void JsAppImpl::SetSimulatorCommonParams(OHOS::AbilityRuntime::Options& options)
     deviceCfg.colorMode = SetColorMode<OHOS::AbilityRuntime::ColorMode>(aceRunArgs.deviceConfig.colorMode);
     deviceCfg.density = aceRunArgs.deviceConfig.density;
     options.deviceConfig = deviceCfg;
-    options.compatibleVersion = OHOS::Ide::StageContext::GetInstance().GetAppInfo().minAPIVersion;
-    options.installationFree =
-        OHOS::Ide::StageContext::GetInstance().GetAppInfo().bundleType == "atomicService" ? true : false;
-    options.labelId = OHOS::Ide::StageContext::GetInstance().GetAbilityInfo(
-        CommandParser::GetInstance().GetAbilityPath()).labelId;
-    options.compileMode = OHOS::Ide::StageContext::GetInstance().GetHapModuleInfo().compileMode;
-    options.pageProfile = OHOS::Ide::StageContext::GetInstance().GetHapModuleInfo().pages;
-    options.targetVersion = OHOS::Ide::StageContext::GetInstance().GetAppInfo().targetAPIVersion;
-    options.releaseType = OHOS::Ide::StageContext::GetInstance().GetAppInfo().apiReleaseType;
-    options.enablePartialUpdate = OHOS::Ide::StageContext::GetInstance().GetHapModuleInfo().isPartialUpdate;
     string fPath = CommandParser::GetInstance().GetConfigPath();
+    options.configuration = UpdateConfiguration(aceRunArgs);
     std::size_t pos = fPath.find(".idea");
     if (pos == std::string::npos) {
         ELOG("previewPath error:%s", fPath.c_str());
@@ -375,21 +312,6 @@ void JsAppImpl::SetSimulatorCommonParams(OHOS::AbilityRuntime::Options& options)
         options.previewPath = fPath.substr(0, pos) + ".idea" + FileSystem::GetSeparator() + "previewer";
         ILOG("previewPath info:%s", options.previewPath.c_str());
     }
-}
-
-void JsAppImpl::SetSimulatorConfigParams(OHOS::AbilityRuntime::Options& options)
-{
-    AppExecFwk::ApplicationInfo applicationInfo;
-    ConvertApplicationInfo(Ide::StageContext::GetInstance().GetAppInfo(), applicationInfo);
-    options.applicationInfo = applicationInfo;
-    AppExecFwk::HapModuleInfo hapModuleInfo;
-    ConvertHapModuleInfo(OHOS::Ide::StageContext::GetInstance().GetHapModuleInfo(), hapModuleInfo);
-    options.hapModuleInfo = hapModuleInfo;
-    AppExecFwk::AbilityInfo abilityInfo;
-    ConvertAbilityInfo(OHOS::Ide::StageContext::GetInstance().GetAbilityInfo(
-        CommandParser::GetInstance().GetAbilityPath()), abilityInfo);
-    options.abilityInfo = abilityInfo;
-    options.configuration = UpdateConfiguration(aceRunArgs);
 }
 
 std::shared_ptr<AppExecFwk::Configuration> JsAppImpl::UpdateConfiguration(OHOS::Ace::Platform::AceRunArgs& args)
