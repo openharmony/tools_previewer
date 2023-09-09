@@ -13,6 +13,7 @@
  * limitations under the License.
  */
 
+import path from 'path';
 import { SyntaxKind } from 'typescript';
 import type { SourceFile } from 'typescript';
 import { firstCharacterToUppercase } from '../common/commonUtils';
@@ -43,7 +44,10 @@ import { generateVariableStatementDelcatation } from './generateVariableStatemen
 export function generateModuleDeclaration(rootName: string, moduleEntity: ModuleBlockEntity, sourceFile: SourceFile, filename: string): string {
   let moduleName = moduleEntity.moduleName.replace(/["']/g, '');
   let moduleBody = `export function mock${firstCharacterToUppercase(moduleName)}() {\n`;
-  if (!moduleEntity.exportModifiers.includes(SyntaxKind.DeclareKeyword) && moduleEntity.moduleName.startsWith('"')) {
+  if (!(moduleEntity.exportModifiers.includes(SyntaxKind.DeclareKeyword) &&
+    (moduleEntity.moduleName.startsWith('"') || moduleEntity.moduleName.startsWith('\''))) &&
+    path.basename(sourceFile.fileName).startsWith('@ohos')
+  ) {
     addToIndexArray({ fileName: filename, mockFunctionName: `mock${firstCharacterToUppercase(moduleName)}` });
   }
   let outBody = '';
