@@ -139,7 +139,6 @@ private:
     int64_t debugAbilityId = -1;
     void SetSimulatorParams(OHOS::AbilityRuntime::Options& options);
     void SetSimulatorCommonParams(OHOS::AbilityRuntime::Options& options);
-    void SetSimulatorConfigParams(OHOS::AbilityRuntime::Options& options);
     std::shared_ptr<OHOS::AppExecFwk::Configuration> UpdateConfiguration(OHOS::Ace::Platform::AceRunArgs& args);
 
     std::shared_ptr<OHOS::Previewer::PreviewerWindowModel> windowModel;
