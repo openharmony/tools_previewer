@@ -39,6 +39,7 @@ import { generateTypeAliasDeclaration } from './generateTypeAlias';
  * @returns
  */
 export function generateSourceFileElements(rootName: string, sourceFileEntity: SourceFileEntity, sourceFile: SourceFile, fileName: string): string {
+  
   let mockApi = '';
   const mockFunctionElements: Array<MockFunctionElementEntity> = [];
   const dependsSourceFileList = collectReferenceFiles(sourceFile);
@@ -53,14 +54,14 @@ export function generateSourceFileElements(rootName: string, sourceFileEntity: S
 
   if (sourceFileEntity.moduleDeclarations.length > 0) {
     sourceFileEntity.moduleDeclarations.forEach(value => {
-      mockApi += generateModuleDeclaration('', value, sourceFile, fileName) + '\n';
+      mockApi += generateModuleDeclaration('', value, sourceFile, fileName, mockApi) + '\n';
     });
   }
 
   if (sourceFileEntity.classDeclarations.length > 0) {
     sourceFileEntity.classDeclarations.forEach(value => {
       if (!fileName.startsWith('system_') && !value.exportModifiers.includes(SyntaxKind.DefaultKeyword)) {
-        mockApi += generateClassDeclaration('', value, false, '', fileName, sourceFile, false) + '\n';
+        mockApi += generateClassDeclaration('', value, false, '', fileName, sourceFile, false, mockApi) + '\n';
         mockFunctionElements.push({ elementName: value.className, type: 'class' });
       }
     });
@@ -68,7 +69,7 @@ export function generateSourceFileElements(rootName: string, sourceFileEntity: S
 
   if (sourceFileEntity.interfaceDeclarations.length > 0) {
     sourceFileEntity.interfaceDeclarations.forEach(value => {
-      mockApi += generateInterfaceDeclaration('', value, sourceFile, true, sourceFileEntity.interfaceDeclarations,
+      mockApi += generateInterfaceDeclaration('', value, sourceFile, true, mockApi, sourceFileEntity.interfaceDeclarations,
         sourceFileEntity.importDeclarations, extraImport) + '\n';
       mockFunctionElements.push({ elementName: value.interfaceName, type: 'interface' });
     });
@@ -94,7 +95,7 @@ export function generateSourceFileElements(rootName: string, sourceFileEntity: S
     const defaultExportClass = getDefaultExportClassDeclaration(sourceFile);
     if (defaultExportClass.length > 0) {
       defaultExportClass.forEach(value => {
-        mockApi += generateClassDeclaration(rootName, value, false, mockName, '', sourceFile, false) + '\n';
+        mockApi += generateClassDeclaration(rootName, value, false, mockName, '', sourceFile, false, mockApi) + '\n';
         mockFunctionElements.push({ elementName: value.className, type: 'class' });
       });
     }
@@ -110,7 +111,7 @@ export function generateSourceFileElements(rootName: string, sourceFileEntity: S
       if (defaultClass.length > 0) {
         defaultClass.forEach(value => {
           value.staticMethods.forEach(val => {
-            staticMethodBody += generateStaticFunction(val, true, sourceFile);
+            staticMethodBody += generateStaticFunction(val, true, sourceFile, mockApi);
           });
         });
       }
@@ -134,7 +135,7 @@ export function generateSourceFileElements(rootName: string, sourceFileEntity: S
       const mockNameArr = fileName.split('_');
       const mockName = mockNameArr[mockNameArr.length - 1];
       defaultExportClass.forEach(value => {
-        mockApi += generateClassDeclaration(rootName, value, false, mockName, '', sourceFile, false) + '\n';
+        mockApi += generateClassDeclaration(rootName, value, false, mockName, '', sourceFile, false, mockApi) + '\n';
       });
     }
   }

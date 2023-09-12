@@ -25,7 +25,7 @@ import { getCallbackStatement, getReturnStatement, getWarnConsole } from './gene
  * @param sourceFile
  * @returns
  */
-export function generateCommonFunction(rootName: string, functionArray: Array<FunctionEntity>, sourceFile: SourceFile): string {
+export function generateCommonFunction(rootName: string, functionArray: Array<FunctionEntity>, sourceFile: SourceFile, mockApi: string): string {
   let functionBody = '';
   const functionEntity = functionArray[0];
   functionBody = `${functionEntity.functionName}: function(...args) {`;
@@ -35,7 +35,7 @@ export function generateCommonFunction(rootName: string, functionArray: Array<Fu
     const args = functionEntity.args;
     const len = args.length;
     if (args.length > 0 && args[len - 1].paramName.toLowerCase().includes('callback')) {
-      functionBody += getCallbackStatement();
+      functionBody += getCallbackStatement(mockApi, args[len - 1]?.paramTypeString);
     }
     if (functionEntity.returnType.returnKind !== SyntaxKind.VoidKeyword) {
       if (rootName === 'featureAbility' && functionEntity.returnType.returnKindName === 'Context') {
@@ -48,6 +48,7 @@ export function generateCommonFunction(rootName: string, functionArray: Array<Fu
     }
   } else {
     const argSet: Set<string> = new Set<string>();
+    let argParamsSet: string = '';
     const returnSet: Set<string> = new Set<string>();
     let isCallBack = false;
     functionArray.forEach(value => {
@@ -56,11 +57,14 @@ export function generateCommonFunction(rootName: string, functionArray: Array<Fu
         argSet.add(arg.paramName);
         if (arg.paramName.toLowerCase().includes('callback')) {
           isCallBack = true;
+          if (arg.paramTypeString) {
+            argParamsSet = arg.paramTypeString;
+          }
         }
       });
     });
     if (isCallBack) {
-      functionBody += getCallbackStatement();
+      functionBody += getCallbackStatement(mockApi, argParamsSet);
     }
     let isReturnPromise = false;
     returnSet.forEach(value => {
