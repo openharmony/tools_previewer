@@ -16,17 +16,26 @@
 import {
   isClassDeclaration, isEnumDeclaration, isExportAssignment, isExportDeclaration, isFunctionDeclaration,
   isImportDeclaration, isInterfaceDeclaration, isModuleDeclaration, isTypeAliasDeclaration, isVariableStatement,
-  SourceFile, SyntaxKind
+  SyntaxKind
 } from 'typescript';
-import { ClassEntity, getClassDeclaration } from './classDeclaration';
-import { EnumEntity, getEnumDeclaration } from './enumDeclaration';
-import { FunctionEntity, getFunctionDeclaration } from './functionDeclaration';
-import { getExportAssignment, getImportDeclaration, ImportElementEntity } from './importAndExportDeclaration';
-import { getInterfaceDeclaration, InterfaceEntity } from './interfaceDeclaration';
-import { StaticMethodEntity } from './methodDeclaration';
-import { getModuleDeclaration, ModuleBlockEntity } from './moduleDeclaration';
-import { getTypeAliasDeclaration, TypeAliasEntity } from './typeAliasDeclaration';
-import { getVariableStatementDeclaration, StatementEntity } from './variableStatementResolve';
+import type { SourceFile } from 'typescript';
+import { getClassDeclaration } from './classDeclaration';
+import type { ClassEntity } from './classDeclaration';
+import { getEnumDeclaration } from './enumDeclaration';
+import type { EnumEntity } from './enumDeclaration';
+import { getFunctionDeclaration } from './functionDeclaration';
+import type { FunctionEntity } from './functionDeclaration';
+import { getExportAssignment, getImportDeclaration } from './importAndExportDeclaration';
+import type { ImportElementEntity } from './importAndExportDeclaration';
+import { getInterfaceDeclaration } from './interfaceDeclaration';
+import type { InterfaceEntity } from './interfaceDeclaration';
+import type { StaticMethodEntity } from './methodDeclaration';
+import { getModuleDeclaration } from './moduleDeclaration';
+import type { ModuleBlockEntity } from './moduleDeclaration';
+import { getTypeAliasDeclaration } from './typeAliasDeclaration';
+import type { TypeAliasEntity } from './typeAliasDeclaration';
+import { getVariableStatementDeclaration } from './variableStatementResolve';
+import type { StatementEntity } from './variableStatementResolve';
 
 /**
  * assembly all sourceFile node info
