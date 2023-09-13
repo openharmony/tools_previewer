@@ -26,7 +26,7 @@ import { generateSymbolIterator, getCallbackStatement, getReturnStatement, getWa
  * @param sourceFile
  * @returns
  */
-export function generateStaticFunction(staticMethod: StaticMethodEntity, isSystem: boolean, sourceFile: SourceFile): string {
+export function generateStaticFunction(staticMethod: StaticMethodEntity, isSystem: boolean, sourceFile: SourceFile, mockApi: string): string {
   let methodBody = '';
   const rootName = staticMethod.className;
   const methodEntity = staticMethod.methodEntity;
@@ -46,7 +46,7 @@ export function generateStaticFunction(staticMethod: StaticMethodEntity, isSyste
   const args = methodEntity.args;
   const len = args.length;
   if (args.length > 0 && args[len - 1].paramName === 'callback') {
-    methodBody += getCallbackStatement();
+    methodBody += getCallbackStatement(mockApi, args[len - 1]?.paramTypeString);
   }
 
   if (methodEntity.returnType.returnKind !== SyntaxKind.VoidKeyword) {

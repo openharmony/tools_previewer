@@ -34,7 +34,7 @@ import { generateStaticFunction } from './generateStaticFunction';
  * @returns
  */
 export function generateClassDeclaration(rootName: string, classEntity: ClassEntity, isSystem: boolean, globalName: string,
-  filename: string, sourceFile: SourceFile, isInnerMockFunction: boolean): string {
+  filename: string, sourceFile: SourceFile, isInnerMockFunction: boolean, mockApi: string): string {
   if (isSystem) {
     return '';
   }
@@ -96,7 +96,7 @@ export function generateClassDeclaration(rootName: string, classEntity: ClassEnt
 
   if (classEntity.classMethod.size > 0) {
     classEntity.classMethod.forEach(value => {
-      classBody += generateCommonMethod(className, value, sourceFile);
+      classBody += generateCommonMethod(className, value, sourceFile, mockApi);
     });
   }
 
@@ -105,7 +105,7 @@ export function generateClassDeclaration(rootName: string, classEntity: ClassEnt
     if (classEntity.staticMethods.length > 0) {
       let staticMethodBody = '';
       classEntity.staticMethods.forEach(value => {
-        staticMethodBody += generateStaticFunction(value, false, sourceFile) + '\n';
+        staticMethodBody += generateStaticFunction(value, false, sourceFile, mockApi) + '\n';
       });
       classBody += staticMethodBody;
     }

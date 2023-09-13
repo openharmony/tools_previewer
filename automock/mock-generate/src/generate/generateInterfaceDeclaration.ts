@@ -33,7 +33,7 @@ import type { PropertySignatureEntity } from '../declaration-node/propertySignat
  * @returns
  */
 export function generateInterfaceDeclaration(rootName: string, interfaceEntity: InterfaceEntity, sourceFile: SourceFile, isSourceFile: boolean,
-  currentSourceInterfaceArray: InterfaceEntity[], importDeclarations?: ImportElementEntity[], extraImport?: string[]): string {
+  mockApi: string, currentSourceInterfaceArray: InterfaceEntity[], importDeclarations?: ImportElementEntity[], extraImport?: string[]): string {
   const interfaceName = interfaceEntity.interfaceName;
   let interfaceBody = '';
   const interfaceElementSet = new Set<string>();
@@ -45,7 +45,7 @@ export function generateInterfaceDeclaration(rootName: string, interfaceEntity: 
 
   if (interfaceEntity.interfacePropertySignatures.length > 0) {
     interfaceEntity.interfacePropertySignatures.forEach(value => {
-      interfaceBody += generatePropertySignatureDeclaration(interfaceName, value, sourceFile) + '\n';
+      interfaceBody += generatePropertySignatureDeclaration(interfaceName, value, sourceFile, mockApi) + '\n';
       interfaceElementSet.add(value.propertyName);
       addExtraImport(extraImport, importDeclarations, sourceFile, value);
     });
@@ -53,7 +53,7 @@ export function generateInterfaceDeclaration(rootName: string, interfaceEntity: 
 
   if (interfaceEntity.interfaceMethodSignature.size > 0) {
     interfaceEntity.interfaceMethodSignature.forEach(value => {
-      interfaceBody += generateCommonMethodSignature(interfaceName, value, sourceFile) + '\n';
+      interfaceBody += generateCommonMethodSignature(interfaceName, value, sourceFile, mockApi) + '\n';
       interfaceElementSet.add(value[0].functionName);
     });
   }
@@ -69,7 +69,7 @@ export function generateInterfaceDeclaration(rootName: string, interfaceEntity: 
     interfaceEntity.heritageClauses.forEach(value => {
       currentSourceInterfaceArray.forEach(currentInterface => {
         if (value.types.includes(currentInterface.interfaceName)) {
-          interfaceBody += generateHeritageInterface(currentInterface, sourceFile, interfaceElementSet);
+          interfaceBody += generateHeritageInterface(currentInterface, sourceFile, interfaceElementSet, mockApi);
         }
       });
     });
@@ -79,13 +79,13 @@ export function generateInterfaceDeclaration(rootName: string, interfaceEntity: 
   return interfaceBody;
 }
 
-function generateHeritageInterface(interfaceEntity: InterfaceEntity, sourceFile: SourceFile, elements: Set<string>): string {
+function generateHeritageInterface(interfaceEntity: InterfaceEntity, sourceFile: SourceFile, elements: Set<string>, mockApi: string): string {
   const interfaceName = interfaceEntity.interfaceName;
   let interfaceBody = '';
   if (interfaceEntity.interfacePropertySignatures.length > 0) {
     interfaceEntity.interfacePropertySignatures.forEach(value => {
       if (!elements.has(value.propertyName)) {
-        interfaceBody += generatePropertySignatureDeclaration(interfaceName, value, sourceFile) + '\n';
+        interfaceBody += generatePropertySignatureDeclaration(interfaceName, value, sourceFile, mockApi) + '\n';
       }
     });
   }
@@ -93,7 +93,7 @@ function generateHeritageInterface(interfaceEntity: InterfaceEntity, sourceFile:
   if (interfaceEntity.interfaceMethodSignature.size > 0) {
     interfaceEntity.interfaceMethodSignature.forEach(value => {
       if (!elements.has(value[0].functionName)) {
-        interfaceBody += generateCommonMethodSignature(interfaceName, value, sourceFile) + '\n';
+        interfaceBody += generateCommonMethodSignature(interfaceName, value, sourceFile, mockApi) + '\n';
       }
     });
   }

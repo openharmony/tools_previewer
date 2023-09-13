@@ -28,12 +28,12 @@ import {
  * @param sourceFile
  * @returns
  */
-export function generatePropertySignatureDeclaration(rootName: string, propertySignature: PropertySignatureEntity, sourceFile: SourceFile): string {
+export function generatePropertySignatureDeclaration(rootName: string, propertySignature: PropertySignatureEntity, sourceFile: SourceFile, mockApi: string): string {
   let propertySignatureBody = '';
   if (propertySignature.kind === SyntaxKind.FunctionType) {
     propertySignatureBody += `${propertySignature.propertyName}: function(...args) {`;
     propertySignatureBody += getWarnConsole(rootName, propertySignature.propertyName);
-    propertySignatureBody += getCallbackStatement();
+    propertySignatureBody += getCallbackStatement(mockApi);
     propertySignatureBody += '},\n';
   } else {
     if (propertySignature.propertyTypeName.startsWith('{')) {
