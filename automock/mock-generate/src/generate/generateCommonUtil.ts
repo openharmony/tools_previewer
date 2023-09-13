@@ -293,15 +293,112 @@ export function generateGenericTypeToMockValue(kindName: string): string | numbe
   }
 }
 
+const paramsTypeStart = {
+  'void': '[PC Preview] unknown type',
+  'Array': '[]',
+  'Object': '{}',
+  '{': '{}',
+  'string': '',
+  'number': 0,
+  'boolean': false
+};
+
+const removeCallback = (str: string) => {
+  const callbackParams = {
+    type: 'Callback',
+    value: ''
+  };
+  if (str.startsWith('Callback')) {
+    const reg = /callback<(.*?)>/;
+    const matchValue = str.match(reg);
+    callbackParams.value = matchValue ? matchValue[1] : '';
+    callbackParams.type = 'Callback';
+  } else if (str.startsWith('AsyncCallback')) {
+    const reg = /AsyncCallback<(.*?)>/;
+    const matchValue = str.match(reg);
+    callbackParams.value = matchValue ? matchValue[1] : '';
+    callbackParams.type = 'AsyncCallback';
+  }
+  return callbackParams;
+};
+
+const isInImportType = (mockApi: string, value: string) => {
+  let hasDotFirstWorld = '';
+  if (value.includes('.')) {
+    hasDotFirstWorld = value.split('.')[0];
+  }
+  if (hasDotFirstWorld && mockApi.includes(`import { mock${firstLetterWord(hasDotFirstWorld)} `)) {
+    return 'isHasDotImportMock';
+  }
+  if (hasDotFirstWorld && mockApi.includes(`import { ${firstLetterWord(hasDotFirstWorld)} `)) {
+    return 'isNoHasDotImportMock';
+  }
+  if (mockApi.includes(`import { mock${firstLetterWord(value)} `)) {
+    return 'isImportMock';
+  }
+  if (mockApi.includes(`import { ${value} `)) {
+    return 'isImport';
+  }
+  return 'noImport';
+};
+
+const firstLetterWord = (word: string) => {
+  return word.slice(0, 1).toUpperCase() + word.slice(1);
+};
+
+const hasDotFirstWord = (str: string) => {
+  return str.includes('.') ? str.split('.')[0] : str;
+};
+
 /**
  * get callback statement
- * @returns
+ * @returns image.PixelMap  mockImage.PixelMap  mockImage
  */
-export function getCallbackStatement(): string {
-  return `const len = args.length;
-  if (typeof args[len - 1] === 'function') {
-    args[len - 1].call(this, null, '[PC Preview] unknown type')
-  }`;
+export function getCallbackStatement(mockApi: string, paramTypeString?: string): string {
+  let outPut = `if (args && typeof args[args.length - 1] === 'function') {
+    args[args.length - 1].call(this,`;
+  const callbackError = "{'code': '','data': '','name': '','message': '','stack': ''}";
+  let callbackData = '';
+  if (paramTypeString) {
+    const callbackParams = removeCallback(paramTypeString);
+    let importType = '';
+    if (callbackParams.value) {
+      importType = isInImportType(mockApi, callbackParams.value);
+    }
+    if (importType === 'isHasDotImportMock') {
+      const upperWord = firstLetterWord(callbackParams.value); // Image.PixelMap
+      const firstWord = hasDotFirstWord(upperWord); // Image
+      callbackData = `mock${firstWord}()${upperWord.slice(firstWord.length)}`;
+    } else if (importType === 'isNoHasDotImportMock') {
+      callbackData = callbackParams.value;
+    } else if (importType === 'isImportMock') {
+      callbackData = `mock${firstLetterWord(callbackParams.value)}()`;
+    } else if (importType === 'isImport') {
+      callbackData = callbackParams.value;
+    } else if (importType === 'noImport') {
+      let paramsTypeNoHas = true;
+      if (callbackParams.value.endsWith(']')) {
+        callbackData = '[]';
+      } else {
+        Object.keys(paramsTypeStart).forEach(item => {
+          if (callbackParams.value.startsWith(item)) {
+            callbackData = paramsTypeStart[item];
+            paramsTypeNoHas = false;
+          }
+        });
+        if (paramsTypeNoHas) {
+          callbackData = callbackParams.value;
+        }
+      }
+    } else {
+      callbackData = '[PC Preview] unknown type';
+    }
+    if (callbackParams.type === 'AsyncCallback') {
+      outPut += ` ${callbackError},`;
+    }
+  }
+  outPut += callbackData === '[PC Preview] unknown type' ? ` '${callbackData}');\n}` : ` ${callbackData});\n}`;
+  return outPut;
 }
 
 /**

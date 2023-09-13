@@ -28,7 +28,7 @@ import {
  * @param sourceFile
  * @returns
  */
-export function generateCommonMethod(rootName: string, methodArray: Array<MethodEntity>, sourceFile: SourceFile): string {
+export function generateCommonMethod(rootName: string, methodArray: Array<MethodEntity>, sourceFile: SourceFile, mockApi: string): string {
   let methodBody = '';
   const methodEntity = methodArray[0];
   if (methodEntity.functionName.name === 'Symbol.iterator') {
@@ -46,7 +46,7 @@ export function generateCommonMethod(rootName: string, methodArray: Array<Method
     const args = methodEntity.args;
     const len = args.length;
     if (args.length > 0 && args[len - 1].paramName.toLowerCase().includes('callback')) {
-      methodBody += getCallbackStatement();
+      methodBody += getCallbackStatement(mockApi, args[len - 1]?.paramTypeString);
     }
     if (methodEntity.returnType.returnKind !== SyntaxKind.VoidKeyword) {
       if (methodEntity.functionName.name === 'getApplicationContext') {
@@ -57,6 +57,7 @@ export function generateCommonMethod(rootName: string, methodArray: Array<Method
     }
   } else {
     const argSet: Set<string> = new Set<string>();
+    let argParamsSet: string = '';
     const returnSet: Set<string> = new Set<string>();
     let isCallBack = false;
     methodArray.forEach(value => {
@@ -65,11 +66,14 @@ export function generateCommonMethod(rootName: string, methodArray: Array<Method
         argSet.add(arg.paramName);
         if (arg.paramName.toLowerCase().includes('callback')) {
           isCallBack = true;
+          if (arg.paramTypeString) {
+            argParamsSet = arg.paramTypeString;
+          }
         }
       });
     });
     if (isCallBack) {
-      methodBody += getCallbackStatement();
+      methodBody += getCallbackStatement(mockApi, argParamsSet);
     }
     let isReturnPromise = false;
     returnSet.forEach(value => {
