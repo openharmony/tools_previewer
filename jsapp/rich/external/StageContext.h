@@ -19,15 +19,31 @@
 #include <string>
 #include <vector>
 #include <optional>
+#include <map>
+
+namespace Json {
+    class Value;
+}
 
 namespace OHOS::Ide {
 class StageContext {
 public:
     static StageContext& GetInstance();
     const std::optional<std::vector<uint8_t>> ReadFileContents(const std::string& filePath) const;
+    // for Previewer
+    void SetLoaderJsonPath(const std::string& assetPath);
+    void GetModulePathMapFromLoaderJson();
+    void ReleaseHspBuffers();
+    // for ArkUI and Ability
+    std::vector<uint8_t>* GetModuleBuffer(const std::string& inputPath);
 private:
     StageContext() = default;
     ~StageContext() = default;
+    bool ContainsRelativePath(const std::string& path) const;
+    std::map<std::string, std::string> GetModulePathMap() const;
+    std::string loaderJsonPath;
+    std::map<std::string, std::string> modulePathMap;
+    std::vector<std::vector<uint8_t>*> hspBufferPtrsVec;
 };
 }
 #endif // STAGE_CONTEXT_H
