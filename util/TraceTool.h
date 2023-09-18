@@ -18,13 +18,16 @@
 
 #include <memory>
 
-#include "LocalSocket.h"
-#include "json.h"
+namespace Json {
+    class Value;
+}
+
+class LocalSocket;
 
 class TraceTool {
 public:
     static TraceTool& GetInstance();
-    static void SendTraceData(const Json::Value&);
+    static void SendTraceData(const Json::Value& value);
     void InitPipe();
     void HandleTrace(const std::string msg) const;
 
