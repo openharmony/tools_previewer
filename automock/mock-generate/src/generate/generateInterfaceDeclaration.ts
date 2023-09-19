@@ -78,7 +78,11 @@ export function generateInterfaceDeclaration(rootName: string, interfaceEntity: 
 
   interfaceBody += '}\n';
   if (interfaceEntity.exportModifiers.includes(SyntaxKind.DeclareKeyword)) {
-    interfaceBody += `global.${interfaceName} = ${interfaceName};\n`;
+    interfaceBody += `
+      if (!global.${interfaceName}) {
+        global.${interfaceName} = ${interfaceName};\n
+      }
+    `;
   }
   return interfaceBody;
 }
@@ -113,12 +117,12 @@ function generateHeritageInterface(interfaceEntity: InterfaceEntity, sourceFile:
 }
 
 /**
- * 
- * @param extraImport 
- * @param importDeclarations 
- * @param sourceFile 
- * @param value 
- * @returns 
+ *
+ * @param extraImport
+ * @param importDeclarations
+ * @param sourceFile
+ * @param value
+ * @returns
  */
 function addExtraImport(
   extraImport: string[],
@@ -133,7 +137,7 @@ function addExtraImport(
     if (hasBeenImported(importDeclarations, propertyTypeName)) {
       return;
     }
-    const specialFilesList = [...specialFiles.map(specialFile=>path.join(getApiInputPath(), ...specialFile.split('/')))];
+    const specialFilesList = [...specialFiles.map(specialFile => path.join(getApiInputPath(), ...specialFile.split('/')))];
     if (!specialFilesList.includes(sourceFile.fileName)) {
       specialFilesList.unshift(sourceFile.fileName);
     }
