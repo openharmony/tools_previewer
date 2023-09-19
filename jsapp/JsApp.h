@@ -20,7 +20,6 @@
 #include <string>
 #include <thread>
 #include <vector>
-#include "StageContext.h"
 #include "json.h"
 
 class JsApp {
